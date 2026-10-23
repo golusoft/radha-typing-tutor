@@ -1,0 +1,87 @@
+// ============================================================================
+// SectionHeader — a Home section title block
+// ============================================================================
+//
+// Left-aligned title and tagline, with an optional status on the right.
+//
+// Left-aligned rather than centred: the cards below are a left-aligned grid, and a
+// centred heading over a left-aligned grid reads as two unrelated layouts. An accent
+// rule under the title ties the heading to its section.
+//
+// The status slot deliberately shows "Not started yet" rather than a number when
+// there is no progress data. PRD.md Section 8's guidance is to avoid inventing
+// figures — a neutral placeholder is honest, a fabricated "42% complete" is not.
+// Real values arrive with the progress system in Phase 31.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke } from "../theme/metrics.slint";
+
+export component SectionHeader inherits VerticalLayout {
+    in property <string> title;
+    /// Tagline. Empty for Hindi Learn, which per PRD.md Section 6.4 has a title only.
+    in property <string> tagline;
+    /// Accent for the rule under the title.
+    in property <color> accent: Theme.primary;
+    /// Right-hand status text. Empty to omit.
+    in property <string> status;
+
+    spacing: Spacing.sm;
+
+    HorizontalLayout {
+        spacing: Spacing.lg;
+
+        VerticalLayout {
+            spacing: Spacing.xxs;
+            horizontal-stretch: 1;
+
+            Text {
+                text: root.title;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-h1;
+                font-weight: Typography.weight-bold;
+                letter-spacing: Typography.tracking-wide;
+                color: Theme.text-primary;
+            }
+
+            if root.tagline != "": Text {
+                text: root.tagline;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-body-sm;
+                color: Theme.text-secondary;
+            }
+        }
+
+        if root.status != "": Rectangle {
+            height: 26px;
+            border-radius: Radius.pill;
+            background: Theme.bg-sunken;
+            y: 2px;
+
+            HorizontalLayout {
+                padding-left: Spacing.md;
+                padding-right: Spacing.md;
+                alignment: center;
+
+                Text {
+                    text: root.status;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-caption;
+                    font-weight: Typography.weight-medium;
+                    color: Theme.text-tertiary;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+
+    // Accent rule: short, so it marks the section without becoming a divider across
+    // the whole page.
+    Rectangle {
+        width: 48px;
+        height: Stroke.thick;
+        border-radius: Stroke.thick / 2;
+        background: root.accent;
+    }
+}

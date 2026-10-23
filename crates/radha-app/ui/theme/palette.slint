@@ -1,0 +1,182 @@
+// ============================================================================
+// Radha Typing Tutor — Colour palette
+// ============================================================================
+//
+// HARD RULE (DESIGN.md Section 2): no black, no blue.
+//
+// Nothing in this file is pure black (#000000) or any blue hue. Dark-theme
+// surfaces are built from deep *plum* rather than neutral grey/black, which keeps
+// the product's identity intact in both modes instead of defaulting to the
+// generic dark-grey look every other app uses.
+//
+// The darkest value used anywhere is #241A21 — a plum-tinted brown, chosen as
+// the floor because it still reads as "warm" next to true black.
+//
+// Structure
+// ---------
+//   LightPalette / DarkPalette  raw values, one per mode
+//   Theme                       resolves the active mode; this is what UI uses
+//
+// Components must only ever read `Theme`. Reading a palette directly would
+// hard-code a mode and break theme switching.
+// ============================================================================
+
+// ---------------------------------------------------------------------------
+// Light mode — ivory and cream surfaces
+// ---------------------------------------------------------------------------
+export global LightPalette {
+    // --- Surfaces ---
+    out property <color> bg-base: #FFFDF8;      // Ivory — app background
+    out property <color> bg-surface: #FFFFFF;   // Cards, panels
+    out property <color> bg-sunken: #F8F1E8;    // Cream — inputs, recessed areas
+    out property <color> bg-raised: #FDF7EF;    // Hovered rows, subtle emphasis
+
+    // --- Borders ---
+    out property <color> border-soft: #EFE3D6;
+    out property <color> border-strong: #DCC9B8;
+
+    // --- Text ---
+    out property <color> text-primary: #352B30;   // Warm plum-brown, not black
+    out property <color> text-secondary: #6A5A62;
+    out property <color> text-tertiary: #9A8A92;
+    out property <color> text-disabled: #C2B4BB;
+    out property <color> text-on-primary: #FFFDF8; // Text on rose/saffron fills
+
+    // --- Brand ---
+    out property <color> primary: #C84B73;        // Rose / Rani pink
+    out property <color> primary-hover: #B23F64;
+    out property <color> primary-pressed: #9C3555;
+    out property <color> primary-light: #E76F8A;
+    out property <color> primary-subtle: #FBEDF1;  // Tinted background wash
+
+    out property <color> secondary: #6B3A5B;       // Plum / maroon
+    out property <color> secondary-hover: #5A3049;
+    out property <color> secondary-light: #8E5478;
+    out property <color> secondary-subtle: #F2EAEF;
+
+    out property <color> accent: #D9902F;          // Saffron
+    out property <color> accent-hover: #C07D22;
+    out property <color> accent-light: #EDB05C;
+    out property <color> accent-subtle: #FDF3E4;
+
+    // --- Semantic ---
+    out property <color> success: #3F8F68;         // Emerald
+    out property <color> success-subtle: #E8F4EE;
+    out property <color> warning: #C58A27;         // Amber
+    out property <color> warning-subtle: #FBF2E0;
+    out property <color> error: #C95A5A;           // Coral
+    out property <color> error-subtle: #FAEBEB;
+
+    // --- Shadow tint ---
+    // Plum-tinted rather than neutral so elevation feels part of the palette.
+    out property <color> shadow: #6B3A5B;
+}
+
+// ---------------------------------------------------------------------------
+// Dark mode — deep plum surfaces
+// ---------------------------------------------------------------------------
+export global DarkPalette {
+    // --- Surfaces ---
+    out property <color> bg-base: #2A1F27;      // Deep plum, not black
+    out property <color> bg-surface: #352A32;
+    out property <color> bg-sunken: #241A21;    // Darkest value in the product
+    out property <color> bg-raised: #40323C;
+
+    // --- Borders ---
+    out property <color> border-soft: #4A3A44;
+    out property <color> border-strong: #5F4B58;
+
+    // --- Text ---
+    out property <color> text-primary: #F8F1E8;   // Cream on plum
+    out property <color> text-secondary: #D3C2CC;
+    out property <color> text-tertiary: #A896A2;
+    out property <color> text-disabled: #7A6A74;
+    out property <color> text-on-primary: #FFFDF8;
+
+    // --- Brand ---
+    // Lightened so they stay legible against dark surfaces; the same hues, not
+    // different colours.
+    out property <color> primary: #E76F8A;
+    out property <color> primary-hover: #F08CA2;
+    out property <color> primary-pressed: #D15C77;
+    out property <color> primary-light: #F5A8B9;
+    out property <color> primary-subtle: #3E2A33;
+
+    out property <color> secondary: #B0789C;
+    out property <color> secondary-hover: #C28DAE;
+    out property <color> secondary-light: #CFA3C0;
+    out property <color> secondary-subtle: #3A2B36;
+
+    out property <color> accent: #E8A845;
+    out property <color> accent-hover: #F2BA63;
+    out property <color> accent-light: #F7CE8C;
+    out property <color> accent-subtle: #3D3125;
+
+    // --- Semantic ---
+    out property <color> success: #5FB088;
+    out property <color> success-subtle: #26352E;
+    out property <color> warning: #D9A440;
+    out property <color> warning-subtle: #38301F;
+    out property <color> error: #E07A7A;
+    out property <color> error-subtle: #3A2729;
+
+    // --- Shadow tint ---
+    out property <color> shadow: #1A1218;
+}
+
+// ---------------------------------------------------------------------------
+// Active theme
+// ---------------------------------------------------------------------------
+// Every component reads from here. Flipping `dark` re-themes the entire UI,
+// because all colour bindings below are derived from it.
+export global Theme {
+    // Set from Rust at startup (from settings.toml) and by the theme toggle.
+    in-out property <bool> dark: false;
+
+    // --- Surfaces ---
+    out property <color> bg-base: dark ? DarkPalette.bg-base : LightPalette.bg-base;
+    out property <color> bg-surface: dark ? DarkPalette.bg-surface : LightPalette.bg-surface;
+    out property <color> bg-sunken: dark ? DarkPalette.bg-sunken : LightPalette.bg-sunken;
+    out property <color> bg-raised: dark ? DarkPalette.bg-raised : LightPalette.bg-raised;
+
+    // --- Borders ---
+    out property <color> border-soft: dark ? DarkPalette.border-soft : LightPalette.border-soft;
+    out property <color> border-strong: dark ? DarkPalette.border-strong : LightPalette.border-strong;
+
+    // --- Text ---
+    out property <color> text-primary: dark ? DarkPalette.text-primary : LightPalette.text-primary;
+    out property <color> text-secondary: dark ? DarkPalette.text-secondary : LightPalette.text-secondary;
+    out property <color> text-tertiary: dark ? DarkPalette.text-tertiary : LightPalette.text-tertiary;
+    out property <color> text-disabled: dark ? DarkPalette.text-disabled : LightPalette.text-disabled;
+    out property <color> text-on-primary: dark ? DarkPalette.text-on-primary : LightPalette.text-on-primary;
+
+    // --- Brand: primary (Rose) ---
+    out property <color> primary: dark ? DarkPalette.primary : LightPalette.primary;
+    out property <color> primary-hover: dark ? DarkPalette.primary-hover : LightPalette.primary-hover;
+    out property <color> primary-pressed: dark ? DarkPalette.primary-pressed : LightPalette.primary-pressed;
+    out property <color> primary-light: dark ? DarkPalette.primary-light : LightPalette.primary-light;
+    out property <color> primary-subtle: dark ? DarkPalette.primary-subtle : LightPalette.primary-subtle;
+
+    // --- Brand: secondary (Plum) ---
+    out property <color> secondary: dark ? DarkPalette.secondary : LightPalette.secondary;
+    out property <color> secondary-hover: dark ? DarkPalette.secondary-hover : LightPalette.secondary-hover;
+    out property <color> secondary-light: dark ? DarkPalette.secondary-light : LightPalette.secondary-light;
+    out property <color> secondary-subtle: dark ? DarkPalette.secondary-subtle : LightPalette.secondary-subtle;
+
+    // --- Brand: accent (Saffron) ---
+    out property <color> accent: dark ? DarkPalette.accent : LightPalette.accent;
+    out property <color> accent-hover: dark ? DarkPalette.accent-hover : LightPalette.accent-hover;
+    out property <color> accent-light: dark ? DarkPalette.accent-light : LightPalette.accent-light;
+    out property <color> accent-subtle: dark ? DarkPalette.accent-subtle : LightPalette.accent-subtle;
+
+    // --- Semantic ---
+    out property <color> success: dark ? DarkPalette.success : LightPalette.success;
+    out property <color> success-subtle: dark ? DarkPalette.success-subtle : LightPalette.success-subtle;
+    out property <color> warning: dark ? DarkPalette.warning : LightPalette.warning;
+    out property <color> warning-subtle: dark ? DarkPalette.warning-subtle : LightPalette.warning-subtle;
+    out property <color> error: dark ? DarkPalette.error : LightPalette.error;
+    out property <color> error-subtle: dark ? DarkPalette.error-subtle : LightPalette.error-subtle;
+
+    // --- Shadow ---
+    out property <color> shadow: dark ? DarkPalette.shadow : LightPalette.shadow;
+}

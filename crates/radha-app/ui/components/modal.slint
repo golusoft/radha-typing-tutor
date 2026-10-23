@@ -1,0 +1,97 @@
+// ============================================================================
+// RadhaModal
+// ============================================================================
+//
+// Full-window overlay plus a centred dialog surface.
+//
+// Radha uses modals for Settings, Profile, and Analytics. Per RULES.MD Rule 21
+// those are utility surfaces, not part of the four-screen training flow — a modal
+// keeps them reachable without adding a screen to the core navigation.
+//
+// Per DESIGN.md Section 6, modal chrome is never themed per experience: it stays
+// neutral everywhere so utility surfaces feel identical from any product.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Elevation, Motion, Stroke } from "../theme/metrics.slint";
+
+export component RadhaModal inherits Rectangle {
+    in property <bool> open: false;
+    in property <string> title;
+    in property <length> dialog-width: 480px;
+    // Allow dismissal by clicking the backdrop. Off for dialogs that require an
+    // explicit decision.
+    in property <bool> dismiss-on-backdrop: true;
+
+    callback dismissed();
+
+    // Collapses out of the layout entirely when closed, so a hidden modal costs
+    // nothing to render and cannot intercept clicks.
+    visible: open;
+    background: transparent;
+
+    // --- Backdrop -----------------------------------------------------------
+    // Plum-tinted rather than neutral grey, keeping the palette consistent even
+    // in the dimming layer.
+    backdrop := Rectangle {
+        width: 100%;
+        height: 100%;
+        background: Theme.secondary.with-alpha(root.open ? 0.35 : 0.0);
+
+        animate background { duration: Motion.standard; }
+
+        backdrop-touch := TouchArea {
+            // Always enabled while open: even when backdrop dismissal is off,
+            // this must absorb clicks so controls behind the modal stay inert.
+            clicked => {
+                if (root.dismiss-on-backdrop) {
+                    root.dismissed();
+                }
+            }
+        }
+    }
+
+    // --- Dialog -------------------------------------------------------------
+    // Height is deliberately NOT bound to the inner layout's `preferred-height`.
+    // Deriving an element's own size from a descendant's preferred size is a
+    // binding cycle Slint cannot resolve — the element silently collapses to zero
+    // and nothing paints. Leaving `height` unset lets Slint size the Rectangle
+    // from its children, which is the supported direction of that dependency.
+    dialog := Rectangle {
+        width: root.dialog-width;
+        // Positioning may reference `self.width`/`self.height`: x/y do not feed
+        // back into the size calculation, so there is no cycle here.
+        x: (root.width - self.width) / 2;
+        y: (root.height - self.height) / 2;
+
+        background: Theme.bg-surface;
+        border-radius: Radius.xl;
+        border-width: Stroke.hairline;
+        border-color: Theme.border-soft;
+        drop-shadow-blur: Elevation.modal-blur;
+        drop-shadow-offset-y: Elevation.modal-offset-y;
+        drop-shadow-color: Theme.shadow.with-alpha(Elevation.modal-opacity);
+
+        // Swallow clicks so they do not reach the backdrop and dismiss the very
+        // dialog the user is interacting with.
+        TouchArea {
+            clicked => { }
+        }
+
+        layout := VerticalLayout {
+            padding: Spacing.xl;
+            spacing: Spacing.lg;
+
+            if root.title != "": Text {
+                text: root.title;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-h2;
+                font-weight: Typography.weight-semibold;
+                color: Theme.text-primary;
+            }
+
+            @children
+        }
+    }
+}

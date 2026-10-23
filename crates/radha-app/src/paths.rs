@@ -1,0 +1,162 @@
+//! Platform directory resolution.
+//!
+//! Single place that decides where Radha keeps its files, so logging (Task 2),
+//! settings (Task 4), and the database (Task 5) cannot drift apart.
+//!
+//! On Windows this resolves under `%APPDATA%`:
+//!
+//! ```text
+//! %APPDATA%\Radha\Radha Typing Tutor\
+//! ├── settings.toml
+//! ├── radha.sqlite
+//! └── logs\
+//!     └── radha.log
+//! ```
+//!
+//! Writing to the user's app-data directory rather than the install directory
+//! matters: `Program Files` is not writable by a standard user, so keeping state
+//! there would break on any correctly-installed copy.
+
+use std::path::{Path, PathBuf};
+
+use radha_core::{CoreError, Result};
+
+/// Qualifier / organisation / application triple for `directories`.
+const ORGANISATION: &str = "Radha";
+const APPLICATION: &str = "Radha Typing Tutor";
+
+/// Resolved locations for everything Radha writes to disk.
+#[derive(Debug, Clone)]
+pub struct AppPaths {
+    data_dir: PathBuf,
+    config_dir: PathBuf,
+}
+
+impl AppPaths {
+    /// Resolve the standard per-user locations for this platform.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CoreError::PlatformDirUnavailable`] if the OS cannot supply a
+    /// home/app-data directory. Rare, but it must surface as an error rather
+    /// than a panic (`RULES.MD` Rule 23).
+    pub fn resolve() -> Result<Self> {
+        let dirs = directories::ProjectDirs::from("", ORGANISATION, APPLICATION).ok_or(
+            CoreError::PlatformDirUnavailable {
+                purpose: "application data",
+            },
+        )?;
+
+        Ok(AppPaths {
+            data_dir: dirs.data_dir().to_path_buf(),
+            config_dir: dirs.config_dir().to_path_buf(),
+        })
+    }
+
+    /// Build paths rooted at an arbitrary directory.
+    ///
+    /// Used by tests so they never touch the real user profile. Also the seam a
+    /// future portable/USB build would use to keep all state beside the
+    /// executable, which is why it is kept rather than confined to `#[cfg(test)]`.
+    #[cfg_attr(not(test), allow(dead_code))]
+    #[must_use]
+    pub fn rooted_at(root: impl Into<PathBuf>) -> Self {
+        let root = root.into();
+        AppPaths {
+            data_dir: root.join("data"),
+            config_dir: root.join("config"),
+        }
+    }
+
+    /// Directory for persistent data (database, logs).
+    #[must_use]
+    pub fn data_dir(&self) -> &Path {
+        &self.data_dir
+    }
+
+    /// Directory for user configuration.
+    #[must_use]
+    pub fn config_dir(&self) -> &Path {
+        &self.config_dir
+    }
+
+    /// Full path to the settings file.
+    #[must_use]
+    pub fn settings_file(&self) -> PathBuf {
+        self.config_dir.join("settings.toml")
+    }
+
+    /// Full path to the SQLite database.
+    #[must_use]
+    pub fn database_file(&self) -> PathBuf {
+        self.data_dir.join("radha.sqlite")
+    }
+
+    /// Directory holding log files.
+    #[must_use]
+    pub fn log_dir(&self) -> PathBuf {
+        self.data_dir.join("logs")
+    }
+
+    /// Full path to the current log file.
+    #[must_use]
+    pub fn log_file(&self) -> PathBuf {
+        self.log_dir().join("radha.log")
+    }
+
+    /// Create every directory Radha needs, if absent.
+    ///
+    /// Idempotent — safe to call on every launch.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CoreError::Io`] naming the directory that could not be created.
+    pub fn ensure_exist(&self) -> Result<()> {
+        for dir in [&self.data_dir, &self.config_dir, &self.log_dir()] {
+            std::fs::create_dir_all(dir).map_err(|e| CoreError::io(dir, e))?;
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn resolves_real_platform_directories() {
+        let paths = AppPaths::resolve().expect("Windows should always provide app-data");
+        assert!(!paths.data_dir().as_os_str().is_empty());
+        assert!(!paths.config_dir().as_os_str().is_empty());
+    }
+
+    #[test]
+    fn file_names_are_stable() {
+        // These names appear in support docs and user-facing troubleshooting,
+        // so pin them.
+        let paths = AppPaths::rooted_at("C:/tmp/radha");
+        assert!(paths.settings_file().ends_with("settings.toml"));
+        assert!(paths.database_file().ends_with("radha.sqlite"));
+        assert!(paths.log_file().ends_with("radha.log"));
+    }
+
+    #[test]
+    fn logs_live_under_the_data_directory() {
+        let paths = AppPaths::rooted_at("C:/tmp/radha");
+        assert!(paths.log_dir().starts_with(paths.data_dir()));
+    }
+
+    #[test]
+    fn ensure_exist_creates_all_directories_and_is_idempotent() {
+        let temp = tempfile::tempdir().unwrap();
+        let paths = AppPaths::rooted_at(temp.path());
+
+        paths.ensure_exist().expect("first call should succeed");
+        assert!(paths.data_dir().is_dir());
+        assert!(paths.config_dir().is_dir());
+        assert!(paths.log_dir().is_dir());
+
+        // Every launch calls this, so a second call must not fail.
+        paths.ensure_exist().expect("second call should succeed");
+    }
+}

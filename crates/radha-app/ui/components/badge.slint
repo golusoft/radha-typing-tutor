@@ -1,0 +1,88 @@
+// ============================================================================
+// RadhaBadge
+// ============================================================================
+//
+// Small pill label. Two jobs in Radha:
+//
+//   1. Product qualifiers — "Classic", "Beginner"
+//   2. Status             — "Complete", "Locked", difficulty
+//
+// It also carries the Hindi Mastery layout identity chip (DESIGN.md Section 9.3),
+// which is the sole visual differentiator between GAIL, CBI, and Kruti Dev. The
+// `dot` property exists for exactly that case.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke } from "../theme/metrics.slint";
+
+export enum BadgeTone {
+    Neutral,
+    Primary,
+    Accent,
+    Success,
+    Warning,
+    Error,
+}
+
+export component RadhaBadge inherits Rectangle {
+    in property <string> text;
+    in property <BadgeTone> tone: BadgeTone.Neutral;
+    // Show a leading colour dot — used by the layout identity chip.
+    in property <bool> dot: false;
+    // Dot colour, when it should differ from the badge tone (the identity chip
+    // keeps a neutral badge with a layout-coloured dot).
+    in property <color> dot-color: Theme.primary;
+    // Outline instead of a filled wash, for lower emphasis.
+    in property <bool> outlined: false;
+
+    // Resolved tone colours.
+    property <color> tone-fg:
+        tone == BadgeTone.Primary ? Theme.primary
+        : tone == BadgeTone.Accent ? Theme.accent
+        : tone == BadgeTone.Success ? Theme.success
+        : tone == BadgeTone.Warning ? Theme.warning
+        : tone == BadgeTone.Error ? Theme.error
+        : Theme.text-secondary;
+
+    property <color> tone-bg:
+        tone == BadgeTone.Primary ? Theme.primary-subtle
+        : tone == BadgeTone.Accent ? Theme.accent-subtle
+        : tone == BadgeTone.Success ? Theme.success-subtle
+        : tone == BadgeTone.Warning ? Theme.warning-subtle
+        : tone == BadgeTone.Error ? Theme.error-subtle
+        : Theme.bg-sunken;
+
+    height: 22px;
+    border-radius: Radius.pill;
+    background: outlined ? transparent : tone-bg;
+    border-width: outlined ? Stroke.hairline : 0px;
+    border-color: tone-fg;
+
+    HorizontalLayout {
+        padding-left: Spacing.sm;
+        padding-right: Spacing.sm;
+        spacing: Spacing.xs;
+        alignment: center;
+
+        if root.dot: Rectangle {
+            width: 7px;
+            height: 7px;
+            border-radius: 3.5px;
+            background: root.dot-color;
+            y: (parent.height - self.height) / 2;
+        }
+
+        Text {
+            text: root.text;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            font-weight: Typography.weight-medium;
+            // Slight positive tracking; small caps-ish labels read better with
+            // a little air between glyphs.
+            letter-spacing: Typography.tracking-wide;
+            color: root.tone-fg;
+            vertical-alignment: center;
+        }
+    }
+}

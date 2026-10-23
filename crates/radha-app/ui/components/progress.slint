@@ -1,0 +1,147 @@
+// ============================================================================
+// RadhaProgressBar / RadhaProgressRing
+// ============================================================================
+//
+// Both take `progress` as 0.0–1.0 and clamp internally, so a caller computing
+// `typed / total` cannot produce an overrunning bar when total is 0.
+//
+// The ring exists for Typing Flow's circular duration dial (DESIGN.md Section
+// 8.3); the bar covers exercise completion and generic progress.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Radius, Motion, Spacing } from "../theme/metrics.slint";
+
+// ---------------------------------------------------------------------------
+// Horizontal bar
+// ---------------------------------------------------------------------------
+export component RadhaProgressBar inherits Rectangle {
+    in property <float> progress: 0.0;
+    in property <color> fill-color: Theme.primary;
+    in property <length> track-height: 8px;
+    // Show a right-aligned percentage label.
+    in property <bool> show-label: false;
+
+    // Guard against out-of-range input rather than trusting the caller.
+    property <float> clamped: Math.max(0.0, Math.min(1.0, progress));
+
+    height: track-height;
+    background: transparent;
+
+    HorizontalLayout {
+        spacing: Spacing.sm;
+
+        track := Rectangle {
+            height: root.track-height;
+            border-radius: root.track-height / 2;
+            background: Theme.bg-sunken;
+            horizontal-stretch: 1;
+
+            fill := Rectangle {
+                x: 0;
+                y: 0;
+                width: track.width * root.clamped;
+                height: parent.height;
+                border-radius: parent.border-radius;
+                background: root.fill-color;
+
+                animate width { duration: Motion.standard; easing: ease-out; }
+                animate background { duration: Motion.fast; }
+            }
+        }
+
+        if root.show-label: Text {
+            // Rounded to whole percent; sub-percent precision is noise here.
+            text: "\{Math.round(root.clamped * 100)}%";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            font-weight: Typography.weight-medium;
+            color: Theme.text-secondary;
+            vertical-alignment: center;
+            width: 36px;
+            horizontal-alignment: right;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Circular ring
+// ---------------------------------------------------------------------------
+// Drawn as an SVG-style path so the sweep is a single filled stroke rather than
+// many stacked elements — cheaper to rasterise, which matters on the integrated
+// graphics of the target hardware (DESIGN.md Section 16).
+export component RadhaProgressRing inherits Rectangle {
+    in property <float> progress: 0.0;
+    in property <color> fill-color: Theme.primary;
+    in property <length> diameter: 96px;
+    in property <length> thickness: 8px;
+    // Text shown at the centre, e.g. "2m" or "68%".
+    in property <string> center-text;
+
+    property <float> clamped: Math.max(0.0, Math.min(1.0, progress));
+
+    width: diameter;
+    height: diameter;
+    background: transparent;
+
+    // Track: a full circle, drawn as a ring by a transparent inner disc.
+    Rectangle {
+        width: root.diameter;
+        height: root.diameter;
+        border-radius: root.diameter / 2;
+        border-width: root.thickness;
+        border-color: Theme.bg-sunken;
+        background: transparent;
+    }
+
+    // Sweep. `viewbox-*` gives a unit coordinate space so the geometry maths is
+    // independent of the rendered size.
+    Path {
+        width: root.diameter;
+        height: root.diameter;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 100;
+        viewbox-height: 100;
+
+        stroke: root.fill-color;
+        // Stroke width is interpreted in viewbox units when a viewbox is set, so
+        // the pixel thickness is converted into that 0-100 space. The `* 1px`
+        // turns the resulting ratio back into a length, which is the type Slint
+        // requires here.
+        stroke-width: (root.thickness / root.diameter * 100) * 1px;
+        fill: transparent;
+
+        // Start at 12 o'clock.
+        MoveTo {
+            x: 50;
+            y: 50 - 46;
+        }
+
+        ArcTo {
+            // Endpoint on the circle at `clamped` of a full turn, measured
+            // clockwise from 12 o'clock.
+            x: 50 + 46 * Math.sin(root.clamped * 360deg);
+            y: 50 - 46 * Math.cos(root.clamped * 360deg);
+            radius-x: 46;
+            radius-y: 46;
+            // Past the halfway point an arc needs the long path, otherwise the
+            // renderer takes the short way round and the ring appears to reverse.
+            large-arc: root.clamped > 0.5;
+            sweep: true;
+        }
+    }
+
+    if root.center-text != "": Text {
+        text: root.center-text;
+        font-family: Typography.family-ui;
+        font-size: Typography.size-h2;
+        font-weight: Typography.weight-semibold;
+        color: Theme.text-primary;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        width: root.diameter;
+        height: root.diameter;
+    }
+}

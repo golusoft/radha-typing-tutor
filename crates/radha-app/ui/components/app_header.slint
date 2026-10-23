@@ -1,0 +1,65 @@
+// ============================================================================
+// AppHeader — structural header shell
+// ============================================================================
+//
+// Geometry and surface only; callers place content in it via `@children`.
+//
+// Per RULES.MD Rule 8 and DESIGN.md Section 6.2, header chrome is shared and
+// never "dedicated": every screen — Home, Exercise, Typing, Result, and each
+// dedicated experience — uses this same shell at the same height with the same
+// padding and the same bottom hairline. Only the content inside differs. That is
+// what keeps the app feeling like one product while individual training
+// experiences diverge.
+//
+// A `compact` variant exists for the Typing screen, which needs a shorter header
+// so more of the window is given to the text being typed (PRD.md Section 8.1).
+// It is a height change only, not a different structure.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Spacing, Stroke } from "../theme/metrics.slint";
+
+export component AppHeader inherits Rectangle {
+    /// Shorter header, for the Typing screen.
+    in property <bool> compact: false;
+
+    /// Horizontal padding. Exposed because the Home header runs wider content than
+    /// a Typing header does.
+    in property <length> content-padding: Spacing.xl;
+
+    height: compact ? 48px : 64px;
+    background: Theme.bg-surface;
+
+    // Bottom hairline only. A full border would read as a detached box; a single
+    // rule reads as the header being attached to the content below it.
+    Rectangle {
+        y: parent.height - Stroke.hairline;
+        width: 100%;
+        height: Stroke.hairline;
+        background: Theme.border-soft;
+    }
+
+    // Callers place their content directly in here and arrange it themselves.
+    //
+    // For a left/right split, put a stretching spacer between the two groups
+    // rather than relying on `alignment: space-between`. Through this nested-layout
+    // boundary the child layout's free space is not what it appears, and
+    // `space-between` leaves right-hand content positioned outside the visible
+    // area. An explicit spacer does not depend on the parent resolving free space,
+    // so it behaves predictably:
+    //
+    //     AppHeader {
+    //         HorizontalLayout {
+    //             /* left group */
+    //             Rectangle { horizontal-stretch: 1; background: transparent; }
+    //             /* right group */
+    //         }
+    //     }
+    content := HorizontalLayout {
+        padding-left: root.content-padding;
+        padding-right: root.content-padding;
+        spacing: Spacing.lg;
+
+        @children
+    }
+}

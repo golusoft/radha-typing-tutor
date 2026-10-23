@@ -1,0 +1,274 @@
+// ============================================================================
+// ProductCard — the single card used by all nine Home products
+// ============================================================================
+//
+// DESIGN.md Section 5.1 footnote and Section 6.1: the Home card shell is ALWAYS
+// the same component. Same geometry, padding, radius and hover behaviour across all
+// nine. Only the accent, copy, chips and CTA differ.
+//
+// Structure, top to bottom:
+//
+//   accent bar        thin, full-width, the card's only strong colour
+//   title             the largest thing on the card
+//   chips             optional qualifier and/or layout identity
+//   description       one or two lines
+//   key sequence      optional, monospaced (Hindi Learn)
+//   metadata          up to three small facts
+//   ─────────────
+//   CTA               a real button-like affordance, pinned to the bottom
+//
+// The CTA is pinned by a stretching spacer so every card's action sits on the same
+// baseline regardless of how much copy it carries. Without that, rows of cards look
+// ragged.
+//
+// The whole card is clickable, not just the CTA — a 200px-tall target is easier to
+// hit than a 40px one, and the CTA still shows where the click leads.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Elevation, Motion, Stroke } from "../theme/metrics.slint";
+import { RadhaBadge, BadgeTone } from "badge.slint";
+
+component MetaChip inherits Rectangle {
+    in property <string> label;
+
+    height: 22px;
+    border-radius: Radius.sm;
+    background: Theme.bg-sunken;
+
+    HorizontalLayout {
+        padding-left: Spacing.sm;
+        padding-right: Spacing.sm;
+        alignment: center;
+
+        Text {
+            text: root.label;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-micro;
+            font-weight: Typography.weight-medium;
+            color: Theme.text-tertiary;
+            vertical-alignment: center;
+        }
+    }
+}
+
+export component ProductCard inherits Rectangle {
+    in property <string> title;
+    in property <string> subtitle;
+    in property <string> description;
+    in property <string> badge;
+    in property <string> identity-label;
+    in property <string> key-sequence;
+    in property <string> meta-1;
+    in property <string> meta-2;
+    in property <string> meta-3;
+    in property <string> cta: "Open";
+    in property <color> accent: Theme.primary;
+    in property <color> identity-accent: Theme.primary;
+
+    callback open-requested();
+
+    // --- Shell --------------------------------------------------------------
+    // Stretch so a row of three shares the width equally. Without it each card
+    // takes its preferred width — driven by its longest line of text — and a card
+    // with a long title pushes the row wider than the window.
+    // Width is set explicitly by ProductGrid, which divides the row. Deliberately
+    // no `horizontal-stretch` and no `min-width`: stretch would fight the assigned
+    // width, and a minimum would let a long description push the card wider than
+    // its share of the row.
+    min-height: 208px;
+
+    border-radius: Radius.lg;
+    background: hovered ? Theme.bg-raised : Theme.bg-surface;
+
+    // Border picks up the accent on hover or keyboard focus: a clear state change
+    // that does not move anything, so neighbouring cards never reflow. The focus
+    // case is thicker, because keyboard users get no hover cue at all.
+    border-color: (focus.has-focus || hovered) ? root.accent : Theme.border-soft;
+    border-width: focus.has-focus ? Stroke.thick : Stroke.hairline;
+
+    property <bool> hovered: touch.has-hover;
+
+    drop-shadow-blur: hovered ? Elevation.raised-blur : Elevation.card-blur;
+    drop-shadow-offset-y: hovered ? Elevation.raised-offset-y : Elevation.card-offset-y;
+    drop-shadow-color: Theme.shadow.with-alpha(
+        hovered ? Elevation.raised-opacity : Elevation.card-opacity
+    );
+
+    // Pressed feedback: a small downward nudge. Cheap (a transform, no relayout)
+    // and enough to feel responsive without animating anything decorative.
+    y: touch.pressed ? 1px : 0px;
+
+    animate background { duration: Motion.fast; }
+    animate border-color { duration: Motion.fast; }
+    animate drop-shadow-blur { duration: Motion.fast; }
+
+    // --- Accent bar ---------------------------------------------------------
+    Rectangle {
+        x: 0;
+        y: 0;
+        width: root.width;
+        height: 3px;
+        background: root.accent;
+        border-top-left-radius: Radius.lg;
+        border-top-right-radius: Radius.lg;
+    }
+
+    VerticalLayout {
+        padding: Spacing.xl;
+        padding-top: Spacing.xl + 3px; // clear the accent bar
+        spacing: Spacing.sm;
+
+        // --- Title ----------------------------------------------------------
+        Text {
+            text: root.title;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-h3;
+            font-weight: Typography.weight-semibold;
+            letter-spacing: Typography.tracking-tight;
+            color: Theme.text-primary;
+            wrap: word-wrap;
+        }
+
+        if root.subtitle != "": Text {
+            text: root.subtitle;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-body-sm;
+            font-weight: Typography.weight-medium;
+            color: root.accent;
+            wrap: word-wrap;
+        }
+
+        // --- Chips ----------------------------------------------------------
+        if root.badge != "" || root.identity-label != "": HorizontalLayout {
+            spacing: Spacing.sm;
+            alignment: start;
+
+            if root.badge != "": RadhaBadge {
+                text: root.badge;
+                tone: BadgeTone.Primary;
+            }
+
+            // Layout identity chip (DESIGN.md Section 9.3): the sole visual
+            // difference between the GAIL, CBI and Kruti Dev Mastery cards.
+            if root.identity-label != "": RadhaBadge {
+                text: root.identity-label;
+                tone: BadgeTone.Neutral;
+                dot: true;
+                dot-color: root.identity-accent;
+            }
+        }
+
+        // --- Description ----------------------------------------------------
+        if root.description != "": Text {
+            text: root.description;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-body-sm;
+            color: Theme.text-secondary;
+            wrap: word-wrap;
+        }
+
+        // --- Key sequence (Hindi Learn) -------------------------------------
+        // Monospaced and spaced out so it reads as keys to press, not prose.
+        if root.key-sequence != "": Rectangle {
+            background: Theme.bg-sunken;
+            border-radius: Radius.sm;
+
+            HorizontalLayout {
+                padding-left: Spacing.md;
+                padding-right: Spacing.md;
+                padding-top: Spacing.sm;
+                padding-bottom: Spacing.sm;
+
+                Text {
+                    text: root.key-sequence;
+                    font-family: Typography.family-mono;
+                    font-size: Typography.size-caption;
+                    font-weight: Typography.weight-medium;
+                    letter-spacing: Typography.tracking-wide;
+                    color: Theme.text-secondary;
+                    wrap: word-wrap;
+                }
+            }
+        }
+
+        // Pushes the metadata and CTA to the bottom so every card in a row aligns.
+        Rectangle {
+            vertical-stretch: 1;
+            background: transparent;
+        }
+
+        // --- Metadata -------------------------------------------------------
+        if root.meta-1 != "": HorizontalLayout {
+            spacing: Spacing.xs;
+            alignment: start;
+
+            MetaChip {
+                label: root.meta-1;
+            }
+            if root.meta-2 != "": MetaChip {
+                label: root.meta-2;
+            }
+            if root.meta-3 != "": MetaChip {
+                label: root.meta-3;
+            }
+        }
+
+        // --- CTA ------------------------------------------------------------
+        // Reads as a control rather than a link: a tinted pill that fills with the
+        // accent on hover.
+        Rectangle {
+            height: 34px;
+            border-radius: Radius.md;
+            background: root.hovered ? root.accent : Theme.bg-sunken;
+
+            animate background { duration: Motion.fast; }
+
+            HorizontalLayout {
+                padding-left: Spacing.md;
+                padding-right: Spacing.md;
+                spacing: Spacing.xs;
+                alignment: center;
+
+                Text {
+                    text: root.cta;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-body-sm;
+                    font-weight: Typography.weight-semibold;
+                    color: root.hovered ? Theme.text-on-primary : root.accent;
+                    vertical-alignment: center;
+
+                    animate color { duration: Motion.fast; }
+                }
+
+                Text {
+                    text: "→";
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-body-sm;
+                    font-weight: Typography.weight-semibold;
+                    color: root.hovered ? Theme.text-on-primary : root.accent;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+
+    focus := FocusScope {
+        key-pressed(event) => {
+            if (event.text == " " || event.text == "\n") {
+                root.open-requested();
+                return EventResult.accept;
+            }
+            return EventResult.reject;
+        }
+    }
+
+    touch := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => {
+            focus.focus();
+            root.open-requested();
+        }
+    }
+}

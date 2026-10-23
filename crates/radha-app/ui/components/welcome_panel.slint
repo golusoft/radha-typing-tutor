@@ -1,0 +1,136 @@
+// ============================================================================
+// WelcomePanel — compact orientation strip above the product sections
+// ============================================================================
+//
+// Deliberately NOT a marketing hero. Home is a training dashboard, and a large
+// welcome block would push the actual products below the fold on a 768px-tall
+// window — exactly the screen this product targets as its minimum.
+//
+// So: one line of greeting, one supporting line, and three compact stats. Roughly
+// 96px tall.
+//
+// Honest empty state
+// ------------------
+// Until the progress system exists (Phase 31) there are no real figures, so the
+// stats show an em dash and a "no sessions yet" note rather than zeros or invented
+// numbers. A "0 WPM / 0%" readout would look like a measured result rather than an
+// absence of one. `has-data` flips to the real values when they exist, with no
+// layout change.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke } from "../theme/metrics.slint";
+
+component Stat inherits VerticalLayout {
+    in property <string> label;
+    in property <string> value;
+    in property <color> accent: Theme.primary;
+
+    spacing: 1px;
+
+    Text {
+        text: root.label;
+        font-family: Typography.family-ui;
+        font-size: Typography.size-micro;
+        font-weight: Typography.weight-medium;
+        letter-spacing: Typography.tracking-wide;
+        color: Theme.text-tertiary;
+    }
+
+    Text {
+        text: root.value;
+        font-family: Typography.family-ui;
+        font-size: Typography.size-h2;
+        font-weight: Typography.weight-semibold;
+        color: root.accent;
+    }
+}
+
+export component WelcomePanel inherits Rectangle {
+    /// `false` until real session history exists.
+    in property <bool> has-data: false;
+
+    in property <string> practice-time: "—";
+    in property <string> best-wpm: "—";
+    in property <string> accuracy: "—";
+
+    background: Theme.primary-subtle;
+    border-radius: Radius.lg;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-soft;
+
+    // --- Deterministic internal widths --------------------------------------
+    // The greeting column contains a `wrap: word-wrap` Text. Slint sizes a layout
+    // child by its PREFERRED width, and a wrapped Text reports its full unwrapped
+    // line as that preferred width — so leaving the column to `horizontal-stretch`
+    // makes the panel demand far more space than it has and push the page wider
+    // than the window.
+    //
+    // Giving the column an explicit width is what forces the Text to wrap to fit
+    // instead of reporting its unwrapped size upward. `width` on this panel is set
+    // by the caller, so these values come from outside and cannot be influenced by
+    // the content.
+    private property <length> stats-width: 300px;
+    private property <length> greeting-width:
+        root.width - Spacing.xl * 3 - root.stats-width;
+
+    HorizontalLayout {
+        padding: Spacing.xl;
+        spacing: Spacing.xl;
+
+        // --- Greeting -------------------------------------------------------
+        VerticalLayout {
+            width: root.greeting-width;
+            spacing: Spacing.xxs;
+            alignment: center;
+
+            Text {
+                text: root.has-data ? "Welcome back" : "Welcome to Radha Typing Tutor";
+                font-family: Typography.family-ui;
+                font-size: Typography.size-h2;
+                font-weight: Typography.weight-semibold;
+                letter-spacing: Typography.tracking-tight;
+                color: Theme.text-primary;
+            }
+
+            Text {
+                text: root.has-data
+                    ? "Continue building speed, accuracy and consistency."
+                    : "Pick a course below to begin building speed and accuracy.";
+                font-family: Typography.family-ui;
+                font-size: Typography.size-body-sm;
+                color: Theme.text-secondary;
+                wrap: word-wrap;
+            }
+        }
+
+        // --- Stats ----------------------------------------------------------
+        // Labels kept short and spacing moderate: this group's intrinsic width adds
+        // to the whole page's minimum, and long labels here were part of what pushed
+        // content past the 1024px minimum window size.
+        HorizontalLayout {
+            width: root.stats-width;
+            spacing: Spacing.xl;
+            alignment: end;
+
+            Stat {
+                label: "PRACTICE";
+                value: root.practice-time;
+                accent: root.has-data ? Theme.primary : Theme.text-disabled;
+            }
+
+            Stat {
+                label: "BEST WPM";
+                value: root.best-wpm;
+                accent: root.has-data ? Theme.accent : Theme.text-disabled;
+            }
+
+            Stat {
+                label: "ACCURACY";
+                value: root.accuracy;
+                accent: root.has-data ? Theme.success : Theme.text-disabled;
+            }
+        }
+    }
+}

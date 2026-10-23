@@ -1,0 +1,200 @@
+// ============================================================================
+// Product catalogue — the data behind the Home screen
+// ============================================================================
+//
+// The nine Home products as data rather than nine hand-written card blocks. The
+// Home screen renders these with a `for` loop, so a card's layout is defined once.
+//
+// Why the data lives here and not in Rust
+// ---------------------------------------
+// Two things are deliberately split:
+//
+//   * Product *identity* is owned by Rust (`radha_content::ProductId`). It is the
+//     canonical list, it backs navigation, and it will back the SQLite `product`
+//     column. The `slug` field below is exactly that identifier.
+//   * Product *presentation* — copy, accent, badges, CTA wording — lives here,
+//     because it is UI content and belongs with the UI.
+//
+// The slugs are the contract between the two. Rust parses whatever slug a card
+// emits (`ProductId::from_slug`) and rejects anything it does not recognise, so a
+// typo here surfaces as a logged warning rather than a broken card.
+//
+// Accents are named tokens, not colours: `Accents` below maps a name to a `Theme`
+// value. That keeps every colour decision inside the theme layer, so no raw hex
+// can leak into product data.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+
+/// One Home product card's content.
+export struct ProductEntry {
+    /// Stable id, matching `radha_content::ProductId::slug`.
+    slug: string,
+    /// Product name.
+    title: string,
+    /// Tagline shown under the title.
+    subtitle: string,
+    /// One or two lines expanding on what the product does.
+    description: string,
+    /// Optional qualifier chip, e.g. "Classic". Empty to omit.
+    badge: string,
+    /// Optional layout identity chip, e.g. "GAIL". Empty to omit.
+    identity-label: string,
+    /// Accent token name: "primary", "accent", "secondary" or "success".
+    accent: string,
+    /// Accent token for the identity dot, same vocabulary as `accent`.
+    identity-accent: string,
+    /// Optional monospaced key sequence, e.g. "[W H S]". Empty to omit.
+    key-sequence: string,
+    /// Up to three short metadata chips. Empty strings are skipped.
+    meta-1: string,
+    meta-2: string,
+    meta-3: string,
+    /// Call to action wording.
+    cta: string,
+}
+
+/// Maps accent token names to theme colours.
+///
+/// A name rather than a colour so product data never contains a hex value, and so
+/// both themes resolve correctly without the data knowing which is active.
+export global Accents {
+    pure public function resolve(token: string) -> color {
+        if (token == "accent") {
+            return Theme.accent;
+        }
+        if (token == "secondary") {
+            return Theme.secondary;
+        }
+        if (token == "success") {
+            return Theme.success;
+        }
+        return Theme.primary;
+    }
+}
+
+export global Products {
+    // --- Section 1: English Typing Mastery --------------------------------
+    // Classic and Number+Punctuation share the family accent (`primary`).
+    // Typing Flow is marked a dedicated experience in DESIGN.md Section 5.1, so it
+    // carries a distinct accent even on Home.
+    out property <[ProductEntry]> english: [
+        {
+            slug: "english-classic",
+            title: "English Typing Mastery",
+            description: "Complete QWERTY typing, foundation to expert.",
+            badge: "Classic",
+            accent: "primary",
+            // Metadata is kept to two short chips. The row does not wrap, so long
+            // chips drive the card's minimum width up and push the three-card row
+            // past the 1024px minimum window size.
+            meta-1: "200 Exercises",
+            meta-2: "QWERTY",
+            cta: "Start Practice",
+        },
+        {
+            slug: "typing-flow",
+            title: "Typing Flow",
+            subtitle: "Smooth • Consistent • Effortless",
+            description: "Build rhythm, consistency and natural typing flow.",
+            accent: "accent",
+            meta-1: "Flow Training",
+            meta-2: "Adaptive",
+            cta: "Start Flow",
+        },
+        {
+            slug: "number-punctuation",
+            title: "Number + Punctuation Mastery",
+            subtitle: "Speed • Accuracy • Efficiency",
+            description: "Master numbers, symbols and punctuation.",
+            accent: "primary",
+            meta-1: "Numbers",
+            meta-2: "Symbols",
+            cta: "Start Practice",
+        },
+    ];
+
+    // --- Section 2: Hindi Typing Mastery ----------------------------------
+    // All three share ONE accent (`secondary`) per DESIGN.md Section 9.3 — they are
+    // one design family, told apart by the identity chip rather than by colour.
+    out property <[ProductEntry]> hindi-mastery: [
+        {
+            slug: "hindi-mastery-gail",
+            title: "Remington GAIL Typing",
+            subtitle: "Government exam standard",
+            description: "GAIL layout practice with full guide support.",
+            identity-label: "GAIL",
+            identity-accent: "success",
+            accent: "secondary",
+            meta-1: "Remington",
+            meta-2: "Unicode",
+            cta: "Start Practice",
+        },
+        {
+            slug: "hindi-mastery-cbi",
+            title: "Remington CBI Typing",
+            subtitle: "Government exam standard",
+            description: "CBI layout practice with full guide support.",
+            identity-label: "CBI",
+            identity-accent: "accent",
+            accent: "secondary",
+            meta-1: "Remington",
+            meta-2: "Unicode",
+            cta: "Start Practice",
+        },
+        {
+            slug: "hindi-mastery-krutidev",
+            title: "Kruti Dev Typing",
+            subtitle: "Traditional Hindi font typing",
+            description: "Kruti Dev practice with font-accurate output.",
+            identity-label: "Kruti Dev",
+            identity-accent: "primary",
+            accent: "secondary",
+            meta-1: "Kruti Dev",
+            meta-2: "Legacy",
+            cta: "Start Practice",
+        },
+    ];
+
+    // --- Section 3: Hindi Learn (Beginner) --------------------------------
+    // Three dedicated beginner experiences, so three distinct accents. Key
+    // sequences are from PRD.md Section 6.4.
+    out property <[ProductEntry]> hindi-learn: [
+        {
+            slug: "hindi-learn-gail",
+            title: "Remington GAIL",
+            subtitle: "Start from basics",
+            description: "Learn the GAIL keyboard one key at a time.",
+            badge: "Beginner",
+            accent: "success",
+            key-sequence: "C V C V M H A V N C P N",
+            meta-1: "12 Steps",
+            meta-2: "Guided",
+            cta: "Start Learning",
+        },
+        {
+            slug: "hindi-learn-cbi",
+            title: "Remington CBI",
+            subtitle: "Start from basics",
+            description: "A short introduction to the CBI keyboard.",
+            badge: "Beginner",
+            accent: "accent",
+            key-sequence: "W H S",
+            meta-1: "3 Steps",
+            meta-2: "Guided",
+            cta: "Start Learning",
+        },
+        {
+            slug: "hindi-learn-krutidev",
+            title: "Kruti Dev",
+            subtitle: "Start from basics",
+            description: "Kruti Dev key mapping with on-screen guidance.",
+            badge: "Beginner",
+            accent: "secondary",
+            key-sequence: "B M H C R A S N",
+            meta-1: "8 Steps",
+            meta-2: "Guided",
+            cta: "Start Learning",
+        },
+    ];
+}

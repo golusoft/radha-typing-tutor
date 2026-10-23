@@ -1,0 +1,67 @@
+// ============================================================================
+// ProductGrid — a row of product cards
+// ============================================================================
+//
+// Renders a `[ProductEntry]` as equal-width cards, driven by data rather than
+// hand-written per card.
+//
+// Why `card-width` is an input and not computed here
+// --------------------------------------------------
+// An earlier version computed the card width inside this component, from this
+// component's own `width`. That is a circular dependency: the grid's width is
+// derived from its children's sizes, while each child's width was derived from the
+// grid's width. Slint resolves the cycle by discarding the explicit width and
+// falling back to preferred sizes, which made every row render exactly 1.25x wider
+// than its container and clipped the third card — identically at 1024px and 1280px
+// windows, which is what identified it as a cycle rather than a scaling or padding
+// problem.
+//
+// So the cycle is cut here: this component never reads its own `width` to size a
+// child. The caller computes `card-width` from the window width — a genuine
+// external input — and this component only forwards it.
+//
+// Three columns, which is what all three Home sections have. It is a single row
+// rather than a wrapping grid because Slint has no CSS-style auto-wrap and every
+// section here is exactly three items.
+// ============================================================================
+
+import { ProductEntry, Accents } from "../data/products.slint";
+import { ProductCard } from "product_card.slint";
+import { Spacing } from "../theme/metrics.slint";
+
+export component ProductGrid inherits Rectangle {
+    in property <[ProductEntry]> products;
+    /// Exact width for each card, computed by the caller. Never derived from this
+    /// component's own width — see the note above.
+    in property <length> card-width;
+
+    /// A card was activated. Carries the product slug for Rust to resolve.
+    callback open-requested(string);
+
+    background: transparent;
+
+    HorizontalLayout {
+        spacing: Spacing.lg;
+
+        for entry in root.products: ProductCard {
+            width: root.card-width;
+
+            title: entry.title;
+            subtitle: entry.subtitle;
+            description: entry.description;
+            badge: entry.badge;
+            identity-label: entry.identity-label;
+            key-sequence: entry.key-sequence;
+            meta-1: entry.meta-1;
+            meta-2: entry.meta-2;
+            meta-3: entry.meta-3;
+            cta: entry.cta;
+            accent: Accents.resolve(entry.accent);
+            identity-accent: Accents.resolve(entry.identity-accent);
+
+            open-requested => {
+                root.open-requested(entry.slug);
+            }
+        }
+    }
+}

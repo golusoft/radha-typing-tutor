@@ -1,0 +1,121 @@
+// ============================================================================
+// ExerciseStubScreen — placeholder for Screen 2 of the four-screen flow
+// ============================================================================
+//
+// PLACEHOLDER. The real Exercise screen (exercise list, preview pane, timer
+// selection) is Phase 5 work per TASK.MD Section 8, and the dedicated variants for
+// Typing Flow and the three Hindi Learn experiences come later still.
+//
+// It exists now so navigation is *real* rather than faked: clicking a Home card
+// genuinely transitions screens and carries the selected product through, which is
+// what makes the Phase 2 navigation state testable end to end. Replacing this with
+// the real screen later requires no change to the navigation wiring.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius } from "../theme/metrics.slint";
+import { AppHeader } from "../components/app_header.slint";
+import { RadhaButton, ButtonVariant } from "../components/button.slint";
+
+export component ExerciseStubScreen inherits Rectangle {
+    /// Display name of the product that was opened, supplied by Rust.
+    in property <string> product-name;
+    /// Product slug, shown so the navigation payload is visible while developing.
+    in property <string> product-slug;
+
+    callback back-requested();
+
+    background: Theme.bg-base;
+
+    VerticalLayout {
+        AppHeader {
+            RadhaButton {
+                text: "← Back to Home";
+                variant: ButtonVariant.Ghost;
+                compact: true;
+                y: (parent.height - self.height) / 2;
+                clicked => {
+                    root.back-requested();
+                }
+            }
+        }
+
+        // Body
+        VerticalLayout {
+            padding: Spacing.xxxl;
+            spacing: Spacing.lg;
+            alignment: center;
+
+            Text {
+                text: root.product-name;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-h1;
+                font-weight: Typography.weight-semibold;
+                letter-spacing: Typography.tracking-tight;
+                color: Theme.text-primary;
+                horizontal-alignment: center;
+            }
+
+            Text {
+                text: "Exercise screen — coming in Phase 5";
+                font-family: Typography.family-ui;
+                font-size: Typography.size-body;
+                color: Theme.text-secondary;
+                horizontal-alignment: center;
+            }
+
+            Rectangle {
+                height: Spacing.sm;
+                background: transparent;
+            }
+
+            // Shows the slug that crossed the Rust/Slint boundary, which is the
+            // detail worth seeing while the real screen does not exist yet.
+            //
+            // Centred by a wrapping layout rather than by binding this pill's width
+            // to its own content: sizing an element from a descendant's
+            // `preferred-*` is an unresolvable cycle in Slint and silently collapses
+            // the element to zero. A layout supplies the size instead.
+            HorizontalLayout {
+                alignment: center;
+
+                Rectangle {
+                    height: 32px;
+                    background: Theme.bg-sunken;
+                    border-radius: Radius.pill;
+
+                    HorizontalLayout {
+                        padding-left: Spacing.lg;
+                        padding-right: Spacing.lg;
+                        spacing: Spacing.sm;
+                        alignment: center;
+
+                        Text {
+                            text: "product:";
+                            font-family: Typography.family-ui;
+                            font-size: Typography.size-caption;
+                            color: Theme.text-tertiary;
+                            vertical-alignment: center;
+                        }
+                        Text {
+                            text: root.product-slug;
+                            font-family: Typography.family-mono;
+                            font-size: Typography.size-caption;
+                            color: Theme.text-secondary;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+
+            Text {
+                text: "Press Escape, or use Back to Home, to return.";
+                font-family: Typography.family-ui;
+                font-size: Typography.size-body-sm;
+                color: Theme.text-tertiary;
+                horizontal-alignment: center;
+            }
+        }
+    }
+}

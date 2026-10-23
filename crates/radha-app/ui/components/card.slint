@@ -1,0 +1,79 @@
+// ============================================================================
+// RadhaCard
+// ============================================================================
+//
+// Elevated surface container. The structural primitive behind Home product
+// cards, exercise rows, and result panels.
+//
+// Per DESIGN.md Section 6, the card *shell* is shared by every experience —
+// only its accent colour changes. That is why `accent` is an input here rather
+// than being read from a per-experience theme: one component, many identities.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Spacing, Radius, Elevation, Motion, Stroke } from "../theme/metrics.slint";
+
+export component RadhaCard inherits Rectangle {
+    // Respond to hover. Off for static containers so they do not appear
+    // clickable when they are not.
+    in property <bool> interactive: false;
+    // Draw a 4px accent stripe down the leading edge — used for the selected
+    // exercise row.
+    in property <bool> selected: false;
+    // Per-experience accent. Defaults to the brand rose.
+    in property <color> accent: Theme.primary;
+    in property <length> content-padding: Spacing.lg;
+
+    callback clicked();
+
+    background: interactive && touch.has-hover ? Theme.bg-raised : Theme.bg-surface;
+    border-radius: Radius.lg;
+    border-width: Stroke.hairline;
+    border-color: root.selected ? root.accent : Theme.border-soft;
+
+    // Shadow lifts on hover to signal interactivity without moving the card,
+    // which would reflow neighbours.
+    drop-shadow-blur: interactive && touch.has-hover ? Elevation.raised-blur : Elevation.card-blur;
+    drop-shadow-offset-y: interactive && touch.has-hover ? Elevation.raised-offset-y : Elevation.card-offset-y;
+    drop-shadow-color: Theme.shadow.with-alpha(
+        interactive && touch.has-hover ? Elevation.raised-opacity : Elevation.card-opacity
+    );
+
+    animate background { duration: Motion.fast; }
+    animate border-color { duration: Motion.fast; }
+    animate drop-shadow-blur { duration: Motion.fast; }
+
+    // Leading accent stripe, shown only when selected.
+    if root.selected: Rectangle {
+        x: 0;
+        y: 0;
+        width: Stroke.accent-stripe;
+        height: root.height;
+        background: root.accent;
+        // Match the card's rounding so the stripe does not poke past the corner.
+        border-top-left-radius: Radius.lg;
+        border-bottom-left-radius: Radius.lg;
+    }
+
+    // Children are placed by the consumer inside this padded area.
+    content := VerticalLayout {
+        padding: root.content-padding;
+        // Leave room for the stripe so text does not sit under it.
+        padding-left: root.selected
+            ? root.content-padding + Stroke.accent-stripe
+            : root.content-padding;
+        spacing: Spacing.sm;
+
+        @children
+    }
+
+    touch := TouchArea {
+        // A non-interactive card must not swallow clicks meant for elements
+        // layered above it.
+        enabled: root.interactive;
+        mouse-cursor: root.interactive ? MouseCursor.pointer : MouseCursor.default;
+        clicked => {
+            root.clicked();
+        }
+    }
+}

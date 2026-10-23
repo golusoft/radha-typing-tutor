@@ -1,0 +1,102 @@
+// ============================================================================
+// RadhaButton
+// ============================================================================
+//
+// Three variants, four states each.
+//
+//   Primary    Rose fill        The one affirmative action on a screen
+//   Secondary  Plum outline     Alternative actions
+//   Ghost      No fill          Low-emphasis / tertiary actions
+//
+// States: default, hover, pressed, disabled.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Motion, Stroke } from "../theme/metrics.slint";
+
+export enum ButtonVariant {
+    Primary,
+    Secondary,
+    Ghost,
+}
+
+export component RadhaButton inherits Rectangle {
+    in property <string> text;
+    in property <ButtonVariant> variant: ButtonVariant.Primary;
+    in property <bool> enabled: true;
+    // Reduced padding, for dense rows such as toolbars.
+    in property <bool> compact: false;
+    // Stretch to fill the parent rather than hugging the label.
+    in property <bool> full-width: false;
+
+    callback clicked();
+
+    // --- Geometry -----------------------------------------------------------
+    height: compact ? 32px : 40px;
+    min-width: compact ? 64px : 96px;
+    horizontal-stretch: full-width ? 1 : 0;
+    border-radius: Radius.md;
+
+    // --- Fill ---------------------------------------------------------------
+    // Disabled is checked first so it always wins over hover/press.
+    background: !enabled
+        ? (variant == ButtonVariant.Primary ? Theme.border-soft : transparent)
+        : variant == ButtonVariant.Primary
+            ? (touch.pressed ? Theme.primary-pressed
+                : touch.has-hover ? Theme.primary-hover
+                : Theme.primary)
+            : variant == ButtonVariant.Secondary
+                ? (touch.pressed ? Theme.secondary-subtle
+                    : touch.has-hover ? Theme.secondary-subtle
+                    : transparent)
+                : (touch.pressed ? Theme.primary-subtle
+                    : touch.has-hover ? Theme.primary-subtle
+                    : transparent);
+
+    // --- Border -------------------------------------------------------------
+    // Only Secondary is outlined; Primary reads as a solid fill and Ghost as
+    // bare text.
+    border-width: variant == ButtonVariant.Secondary ? Stroke.regular : 0px;
+    border-color: !enabled
+        ? Theme.border-soft
+        : touch.has-hover ? Theme.secondary-hover : Theme.secondary;
+
+    animate background { duration: Motion.fast; }
+    animate border-color { duration: Motion.fast; }
+
+    HorizontalLayout {
+        padding-left: root.compact ? Spacing.md : Spacing.lg;
+        padding-right: root.compact ? Spacing.md : Spacing.lg;
+        alignment: center;
+
+        label := Text {
+            text: root.text;
+            font-family: Typography.family-ui;
+            font-size: root.compact ? Typography.size-body-sm : Typography.size-body;
+            font-weight: Typography.weight-medium;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+
+            color: !root.enabled
+                ? Theme.text-disabled
+                : root.variant == ButtonVariant.Primary
+                    ? Theme.text-on-primary
+                    : root.variant == ButtonVariant.Secondary
+                        ? Theme.secondary
+                        : Theme.primary;
+
+            animate color { duration: Motion.fast; }
+        }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        // Communicates interactivity before the click, and correctly shows the
+        // button as inert when disabled.
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.not-allowed;
+        clicked => {
+            root.clicked();
+        }
+    }
+}

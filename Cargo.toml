@@ -1,0 +1,95 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/radha-app",
+    "crates/radha-core",
+    "crates/radha-layouts",
+    "crates/radha-content",
+    "crates/radha-db",
+    "crates/radha-analytics",
+]
+
+# ---------------------------------------------------------------------------
+# Shared package metadata — inherited by every crate via `x.workspace = true`
+# ---------------------------------------------------------------------------
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+authors = ["Radha Typing Tutor"]
+license = "Proprietary"
+publish = false
+
+# ---------------------------------------------------------------------------
+# Shared dependency versions — single source of truth for the whole workspace
+# ---------------------------------------------------------------------------
+[workspace.dependencies]
+# Internal crates
+radha-core = { path = "crates/radha-core" }
+radha-layouts = { path = "crates/radha-layouts" }
+radha-content = { path = "crates/radha-content" }
+radha-db = { path = "crates/radha-db" }
+radha-analytics = { path = "crates/radha-analytics" }
+
+# Error handling (Task 3)
+thiserror = "1.0.69"
+anyhow = "1.0.95"
+
+# Logging (Task 2)
+log = "0.4.25"
+env_logger = "0.11.6"
+
+# Settings / serialization (Task 4)
+serde = { version = "1.0.217", features = ["derive"] }
+toml = "0.8.19"
+
+# Database (Task 5)
+rusqlite = { version = "0.32.1", features = ["bundled"] }
+
+# Platform paths (Tasks 2, 4, 5)
+directories = "5.0.1"
+
+# UI (Tasks 6-11)
+slint = "1.9.2"
+slint-build = "1.9.2"
+
+# Dev/test
+tempfile = "3.15.0"
+
+# ---------------------------------------------------------------------------
+# Build profiles (Task 2)
+# Tuned for low-end Windows PCs per PRD.md Section 3:
+# 2GB RAM, dual-core 1.5GHz, integrated graphics, <20MB binary, <2s startup.
+# ---------------------------------------------------------------------------
+
+[profile.dev]
+# Keep debug builds fast to iterate on. Debug info is kept for the workspace
+# but dependencies are lightly optimised so the UI stays usable when testing.
+opt-level = 0
+debug = true
+incremental = true
+codegen-units = 256
+
+[profile.dev.package."*"]
+# Optimise third-party deps even in debug: Slint's renderer is unusably slow
+# at opt-level 0, which would make design-system work impossible to evaluate.
+opt-level = 2
+
+[profile.release]
+# `opt-level = 3` is chosen over `"s"` deliberately: the PRD's hard constraint
+# is <1ms keystroke latency and 60fps on integrated graphics, so runtime speed
+# outranks raw binary size. `lto` + `strip` + `codegen-units = 1` recover most
+# of the size difference, keeping us within the <20MB budget.
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
+debug = false
+incremental = false
+
+[profile.release-debuginfo]
+# Release-speed build that keeps symbols, for profiling on low-end hardware.
+inherits = "release"
+strip = false
+debug = 1

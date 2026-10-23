@@ -1,0 +1,388 @@
+// ============================================================================
+// HomeScreen — Screen 1 of the four-screen flow
+// ============================================================================
+//
+// The product dashboard. Structure per PRD.md Section 6 and STRUCTURE.MD Section
+// 01: header, three product sections of three cards each, footer.
+//
+// Composition
+// -----------
+// This file assembles components; it does not define visuals. Cards come from
+// ProductCard via ProductGrid, headings from SectionHeader, and the content itself
+// from the `Products` data global — so the nine cards are nine data entries, not
+// nine blocks of markup.
+//
+// Layout architecture
+// -------------------
+//   AppHeader        fixed height, stays put
+//   ScrollView       everything else, including the footer
+//     page container centred, max-width capped
+//
+// Two decisions worth stating:
+//
+//   * The footer is INSIDE the scroll area. As a fixed band it covered the bottom
+//     row of cards on a 768px-tall window, which is the minimum this product
+//     supports. Inside the flow it cannot overlap anything, and the last card is
+//     always reachable.
+//
+//   * The page content is capped at `WindowMetrics.content-max-width` and centred.
+//     On a 1920px display, cards stretched edge to edge become uncomfortably wide
+//     for their amount of text; capping keeps the reading measure sane while still
+//     using the space on a 1366px window.
+// ============================================================================
+
+import { ScrollView } from "std-widgets.slint";
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke, WindowMetrics } from "../theme/metrics.slint";
+import { Products } from "../data/products.slint";
+import { AppHeader } from "../components/app_header.slint";
+import { AppFooter } from "../components/app_footer.slint";
+import { SectionHeader } from "../components/section_header.slint";
+import { ProductGrid } from "../components/product_grid.slint";
+import { WelcomePanel } from "../components/welcome_panel.slint";
+import { NavAction } from "../components/nav_action.slint";
+import { ThemeToggle } from "../components/theme_toggle.slint";
+import { RadhaButton, ButtonVariant } from "../components/button.slint";
+import { RadhaModal } from "../components/modal.slint";
+
+export component HomeScreen inherits Rectangle {
+    /// A product card was activated. Carries the product slug.
+    callback open-product-requested(string);
+    callback theme-toggle-requested();
+
+    /// Placeholder contact details — listed in the end-of-phase report for
+    /// replacement. Properties rather than literals so real values can be supplied
+    /// without editing this file.
+    in property <string> contact-number: "+91 00000 00000";
+    in property <string> website-url: "radhatyping.example";
+
+    /// Flips the welcome panel from its empty state to real figures once the
+    /// progress system exists (Phase 31).
+    in property <bool> has-progress-data: false;
+
+    // Which utility modal is open: "", "settings", "profile" or "analytics".
+    private property <string> open-modal: "";
+
+    // --- Page measure -------------------------------------------------------
+    // Allowance for the vertical scrollbar, so content never sits under it.
+    private property <length> scrollbar-allowance: 16px;
+    private property <length> content-width: root.width - scrollbar-allowance;
+
+    // Inset from the content edge. Grows beyond the minimum on wide displays,
+    // which is what caps and centres the measure.
+    private property <length> page-gutter: Math.max(
+        Spacing.xl,
+        (root.content-width - WindowMetrics.content-max-width) / 2
+    );
+
+    // Width available to a row of cards.
+    //
+    // Passed explicitly to each ProductGrid rather than left to the layout. Relying
+    // on propagation, the grid ended up wider than its container and clipped the
+    // third card: the container's declared width did not constrain it, because a
+    // sibling's intrinsic width had already grown the parent. Computing the row
+    // width from `root.width` — a value that comes from outside and cannot be
+    // influenced by content — makes the result deterministic.
+    private property <length> row-width: root.content-width - root.page-gutter * 2;
+
+    // Exact width of one card in a three-column row.
+    //
+    // Computed here, not inside ProductGrid, because `root.width` is a genuine
+    // external input — it comes from the window. Computing it inside the grid meant
+    // reading the grid's own width, which is itself derived from its children: a
+    // cycle that Slint resolves by ignoring the explicit width entirely, leaving
+    // every row 1.25x too wide and the third card clipped.
+    private property <length> card-width: (root.row-width - Spacing.lg * 2) / 3;
+
+    background: Theme.bg-base;
+
+    VerticalLayout {
+        // ===================================================================
+        // Header
+        // ===================================================================
+        // AppHeader spaces every direct child, so content is grouped into exactly
+        // two: a stretching left group and a right group. Passing every item
+        // individually spent ~144px on spacing alone and pushed the right-hand
+        // controls off the edge at the 1024px minimum width.
+        AppHeader {
+            // --- Brand and contact ------------------------------------------
+            // Stretch 1: this group absorbs the slack, so the right group always
+            // gets its full width at the trailing edge.
+            HorizontalLayout {
+                horizontal-stretch: 1;
+                spacing: Spacing.lg;
+                alignment: start;
+
+                HorizontalLayout {
+                    spacing: Spacing.sm;
+
+                    Image {
+                        source: @image-url("../../../../assets/icons/brand-mark.svg");
+                        width: 30px;
+                        height: 30px;
+                        y: (parent.height - self.height) / 2;
+                    }
+
+                    VerticalLayout {
+                        spacing: 0px;
+                        alignment: center;
+
+                        Text {
+                            text: "RADHA TYPING TUTOR";
+                            font-family: Typography.family-ui;
+                            font-size: Typography.size-h3;
+                            font-weight: Typography.weight-bold;
+                            letter-spacing: Typography.tracking-wide;
+                            color: Theme.text-primary;
+                        }
+
+                        Text {
+                            text: "Typing • Practice • Mastery";
+                            font-family: Typography.family-ui;
+                            font-size: Typography.size-micro;
+                            color: Theme.text-tertiary;
+                        }
+                    }
+                }
+
+            }
+
+            // --- Utility actions --------------------------------------------
+            // Overlays, not screens — RULES.MD Rule 21 keeps the core flow at four
+            // screens. Stretch 0 so this group is never squeezed or displaced.
+            HorizontalLayout {
+                horizontal-stretch: 0;
+                spacing: Spacing.xs;
+                alignment: end;
+
+                NavAction {
+                    label: "Analytics";
+                    icon: @image-url("../../../../assets/icons/analytics.svg");
+                    y: (parent.height - self.height) / 2;
+                    triggered => {
+                        root.open-modal = "analytics";
+                    }
+                }
+
+                NavAction {
+                    label: "Profile";
+                    icon: @image-url("../../../../assets/icons/profile.svg");
+                    y: (parent.height - self.height) / 2;
+                    triggered => {
+                        root.open-modal = "profile";
+                    }
+                }
+
+                NavAction {
+                    label: "Settings";
+                    icon: @image-url("../../../../assets/icons/settings.svg");
+                    y: (parent.height - self.height) / 2;
+                    triggered => {
+                        root.open-modal = "settings";
+                    }
+                }
+
+                ThemeToggle {
+                    y: (parent.height - self.height) / 2;
+                    toggle-requested => {
+                        root.theme-toggle-requested();
+                    }
+                }
+            }
+        }
+
+        // ===================================================================
+        // Scrollable body — includes the footer
+        // ===================================================================
+        ScrollView {
+            vertical-stretch: 1;
+
+            VerticalLayout {
+                // Width comes from `root.width` — the screen's own width, set by
+                // the window — NOT from the ScrollView's `visible-width`.
+                //
+                // Binding to `visible-width` from inside the scroll area is a
+                // cycle: the viewport is sized from its content while the content
+                // is sized from the viewport. Slint resolves it to something wider
+                // than the window, and the third card in each row gets clipped.
+                // Depending only on an outside-in value avoids that entirely.
+                //
+                // `page-gutter` both insets the content and caps its measure: on a
+                // wide display the extra width becomes padding, which centres the
+                // content and keeps the reading measure comfortable instead of
+                // stretching cards edge to edge.
+                width: root.content-width;
+                padding-left: root.page-gutter;
+                padding-right: root.page-gutter;
+                padding-top: Spacing.xl;
+                padding-bottom: Spacing.lg;
+                spacing: Spacing.xl;
+                alignment: start;
+
+                    WelcomePanel {
+                        width: root.row-width;
+                        has-data: root.has-progress-data;
+                    }
+
+                    // --- English Typing Mastery ---------------------------
+                    SectionHeader {
+                        width: root.row-width;
+                        title: "ENGLISH TYPING MASTERY";
+                        tagline: "Learn • Practice • Compete • Master";
+                        accent: Theme.primary;
+                        status: root.has-progress-data ? "" : "Not started yet";
+                    }
+
+                    ProductGrid {
+                        card-width: root.card-width;
+                        products: Products.english;
+                        open-requested(slug) => {
+                            root.open-product-requested(slug);
+                        }
+                    }
+
+                    // --- Hindi Typing Mastery -----------------------------
+                    SectionHeader {
+                        width: root.row-width;
+                        title: "HINDI TYPING MASTERY";
+                        tagline: "Learn • Practice • Compete • Master";
+                        accent: Theme.secondary;
+                        status: root.has-progress-data ? "" : "Not started yet";
+                    }
+
+                    ProductGrid {
+                        card-width: root.card-width;
+                        products: Products.hindi-mastery;
+                        open-requested(slug) => {
+                            root.open-product-requested(slug);
+                        }
+                    }
+
+                    // --- Hindi Learn (Beginner) ---------------------------
+                    // Title only: PRD.md Section 6.4's wireframe shows no tagline
+                    // row for this section.
+                    SectionHeader {
+                        width: root.row-width;
+                        title: "HINDI LEARN (BEGINNER)";
+                        tagline: "New to Hindi typing? Start here.";
+                        accent: Theme.success;
+                    }
+
+                    ProductGrid {
+                        card-width: root.card-width;
+                        products: Products.hindi-learn;
+                        open-requested(slug) => {
+                            root.open-product-requested(slug);
+                        }
+                    }
+
+                    // Contact details and social links live here rather than in the
+                    // header: together they cost ~320px, which pushed the header
+                    // past the 1024px minimum width and clipped the navigation.
+                    AppFooter {
+                        width: root.row-width;
+                        contact-number: root.contact-number;
+                        website-url: root.website-url;
+                    }
+                }
+            }
+        }
+
+    // =====================================================================
+    // Utility modals
+    // =====================================================================
+    // One RadhaModal per surface, reusing the existing component unchanged.
+    // Explicit geometry rather than `100%`, and `visible` rather than `if`, for the
+    // reasons documented in main.slint.
+    RadhaModal {
+        width: root.width;
+        height: root.height;
+        visible: root.open-modal == "settings";
+        open: root.open-modal == "settings";
+        title: "Settings";
+        dismissed => {
+            root.open-modal = "";
+        }
+
+        Text {
+            text: "Appearance, theme, sound, font, typing, keyboard and guide preferences — coming in Phase 13.";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-body;
+            color: Theme.text-secondary;
+            wrap: word-wrap;
+        }
+
+        HorizontalLayout {
+            alignment: end;
+            RadhaButton {
+                text: "Close";
+                variant: ButtonVariant.Secondary;
+                clicked => {
+                    root.open-modal = "";
+                }
+            }
+        }
+    }
+
+    RadhaModal {
+        width: root.width;
+        height: root.height;
+        visible: root.open-modal == "profile";
+        open: root.open-modal == "profile";
+        title: "Profile";
+        dismissed => {
+            root.open-modal = "";
+        }
+
+        Text {
+            text: "Name, typing level, total practice, personal bests and achievements — coming in Phase 13.";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-body;
+            color: Theme.text-secondary;
+            wrap: word-wrap;
+        }
+
+        HorizontalLayout {
+            alignment: end;
+            RadhaButton {
+                text: "Close";
+                variant: ButtonVariant.Secondary;
+                clicked => {
+                    root.open-modal = "";
+                }
+            }
+        }
+    }
+
+    RadhaModal {
+        width: root.width;
+        height: root.height;
+        visible: root.open-modal == "analytics";
+        open: root.open-modal == "analytics";
+        title: "Analytics";
+        dismissed => {
+            root.open-modal = "";
+        }
+
+        Text {
+            text: "Overall WPM, accuracy, practice time, weak keys and per-layout progress — coming in Phase 12.";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-body;
+            color: Theme.text-secondary;
+            wrap: word-wrap;
+        }
+
+        HorizontalLayout {
+            alignment: end;
+            RadhaButton {
+                text: "Close";
+                variant: ButtonVariant.Secondary;
+                clicked => {
+                    root.open-modal = "";
+                }
+            }
+        }
+    }
+}

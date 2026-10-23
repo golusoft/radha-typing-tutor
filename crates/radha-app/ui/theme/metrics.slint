@@ -1,0 +1,113 @@
+// ============================================================================
+// Radha Typing Tutor — Spacing, radius, elevation, motion
+// ============================================================================
+//
+// Non-colour design tokens. Mode-independent: light and dark share identical
+// geometry, so switching themes never reflows the layout.
+// ============================================================================
+
+// ---------------------------------------------------------------------------
+// Spacing — 4px base unit
+// ---------------------------------------------------------------------------
+// A single base unit keeps every gap on a shared rhythm. Using arbitrary values
+// (13px here, 19px there) is what makes a UI look subtly untidy without any one
+// thing being obviously wrong.
+export global Spacing {
+    out property <length> xxs: 2px;
+    out property <length> xs: 4px;
+    out property <length> sm: 8px;
+    out property <length> md: 12px;
+    out property <length> lg: 16px;
+    out property <length> xl: 24px;
+    out property <length> xxl: 32px;
+    out property <length> xxxl: 48px;
+}
+
+// ---------------------------------------------------------------------------
+// Corner radius
+// ---------------------------------------------------------------------------
+export global Radius {
+    out property <length> sm: 6px;      // Chips, badges
+    out property <length> md: 10px;     // Buttons, inputs
+    out property <length> lg: 16px;     // Cards
+    out property <length> xl: 24px;     // Modals
+    out property <length> pill: 999px;  // Fully rounded
+}
+
+// ---------------------------------------------------------------------------
+// Elevation
+// ---------------------------------------------------------------------------
+// Blur radii are deliberately small. DESIGN.md Section 16 caps shadow blur at
+// 8px because large blurs are expensive to rasterise on the integrated graphics
+// of the 2GB-RAM target machine — a soft shadow is not worth dropped frames
+// while someone is typing.
+//
+// Opacity is applied by components via the shadow colour's alpha.
+export global Elevation {
+    // Resting card.
+    out property <length> card-blur: 6px;
+    out property <length> card-offset-y: 2px;
+    out property <float> card-opacity: 0.10;
+
+    // Hovered/raised card.
+    out property <length> raised-blur: 8px;
+    out property <length> raised-offset-y: 3px;
+    out property <float> raised-opacity: 0.14;
+
+    // Modal / dialog — the deepest level in the product.
+    out property <length> modal-blur: 8px;
+    out property <length> modal-offset-y: 4px;
+    out property <float> modal-opacity: 0.22;
+
+    // Tooltip / toast — small floating surfaces.
+    out property <length> floating-blur: 6px;
+    out property <length> floating-offset-y: 2px;
+    out property <float> floating-opacity: 0.18;
+}
+
+// ---------------------------------------------------------------------------
+// Motion
+// ---------------------------------------------------------------------------
+// DESIGN.md Section 14: animation never competes with typing. These durations
+// are short by design, and `enabled` lets Settings switch every transition off
+// wholesale on slower machines.
+export global Motion {
+    // Set from Rust; when false, components should use 0ms durations.
+    in-out property <bool> enabled: true;
+
+    out property <duration> instant: enabled ? 80ms : 0ms;   // Press feedback
+    out property <duration> fast: enabled ? 150ms : 0ms;     // Hover, toggle
+    out property <duration> standard: enabled ? 250ms : 0ms; // Transitions
+    out property <duration> slow: enabled ? 400ms : 0ms;     // Modal, reveal
+}
+
+// ---------------------------------------------------------------------------
+// Window metrics
+// ---------------------------------------------------------------------------
+// The minimum window size the layouts are designed against, per PRD.md Section
+// 3.1 (1024x768 minimum supported display).
+//
+// These MUST stay in step with `MIN_WINDOW_WIDTH` / `MIN_WINDOW_HEIGHT` in
+// `src/settings.rs`, which clamps the persisted geometry. Two copies exist because
+// Slint needs the value at UI-declaration time while Rust needs it when validating
+// settings.toml — neither can read the other's. `settings.rs` carries a matching
+// note.
+export global WindowMetrics {
+    out property <length> min-width: 1024px;
+    out property <length> min-height: 768px;
+
+    // Content wider than this inside a scroll area indicates a layout bug: at the
+    // minimum window size nothing may overflow horizontally. Used by screens to
+    // pin content width to the viewport.
+    out property <length> content-max-width: 1600px;
+}
+
+// ---------------------------------------------------------------------------
+// Border widths
+// ---------------------------------------------------------------------------
+export global Stroke {
+    out property <length> hairline: 1px;
+    out property <length> regular: 1.5px;
+    out property <length> thick: 2px;
+    out property <length> accent-stripe: 4px; // Selected-row indicator
+}

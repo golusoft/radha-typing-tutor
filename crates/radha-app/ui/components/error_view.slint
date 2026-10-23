@@ -1,0 +1,123 @@
+// ============================================================================
+// AppErrorView — full-window unrecoverable error state
+// ============================================================================
+//
+// Replaces the Phase 0 behaviour where an unrecoverable startup failure only
+// reached a log line and stderr. A user launching from Explorer sees neither, so
+// the app appeared to simply not start.
+//
+// RULES.MD Rule 23 requires graceful failure. Graceful means the user is *told*
+// what happened and where to look, not merely that the process avoided a panic.
+//
+// Built entirely from existing tokens and the existing RadhaCard/RadhaButton
+// components. It is a full-window view rather than a RadhaModal because a modal
+// implies something behind it to return to — after a failed database open there is
+// no working app underneath, and offering a dismiss would be a lie.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius } from "../theme/metrics.slint";
+import { RadhaCard } from "card.slint";
+import { RadhaButton, ButtonVariant } from "button.slint";
+import { RadhaBadge, BadgeTone } from "badge.slint";
+
+export component AppErrorView inherits Rectangle {
+    in property <string> title: "Something went wrong";
+    in property <string> detail;
+    /// Where the log lives, so the user can find it without being told separately.
+    in property <string> log-hint;
+
+    callback quit-requested();
+
+    background: Theme.bg-base;
+
+    // Absorb clicks: there is nothing usable behind this view.
+    TouchArea { }
+
+    HorizontalLayout {
+        alignment: center;
+
+        VerticalLayout {
+            alignment: center;
+            spacing: Spacing.xl;
+            // Keep the card a readable measure rather than stretching to a wide
+            // window.
+            width: 560px;
+
+            RadhaCard {
+                accent: Theme.error;
+                content-padding: Spacing.xxl;
+
+                RadhaBadge {
+                    text: "Startup failed";
+                    tone: BadgeTone.Error;
+                }
+
+                Text {
+                    text: root.title;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-h1;
+                    font-weight: Typography.weight-semibold;
+                    letter-spacing: Typography.tracking-tight;
+                    color: Theme.text-primary;
+                    wrap: word-wrap;
+                }
+
+                if root.detail != "": Text {
+                    text: root.detail;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-body;
+                    color: Theme.text-secondary;
+                    wrap: word-wrap;
+                }
+
+                if root.log-hint != "": Rectangle {
+                    height: Spacing.xs;
+                    background: transparent;
+                }
+
+                if root.log-hint != "": Rectangle {
+                    background: Theme.bg-sunken;
+                    border-radius: Radius.md;
+
+                    VerticalLayout {
+                        padding: Spacing.md;
+                        spacing: Spacing.xxs;
+
+                        Text {
+                            text: "Details were written to the log:";
+                            font-family: Typography.family-ui;
+                            font-size: Typography.size-caption;
+                            color: Theme.text-tertiary;
+                        }
+                        Text {
+                            text: root.log-hint;
+                            font-family: Typography.family-mono;
+                            font-size: Typography.size-caption;
+                            color: Theme.text-secondary;
+                            wrap: word-wrap;
+                        }
+                    }
+                }
+
+                Rectangle {
+                    height: Spacing.sm;
+                    background: transparent;
+                }
+
+                HorizontalLayout {
+                    alignment: end;
+
+                    RadhaButton {
+                        text: "Close";
+                        variant: ButtonVariant.Primary;
+                        clicked => {
+                            root.quit-requested();
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

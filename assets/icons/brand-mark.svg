@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Radha Typing Tutor">
+  <!-- Rounded key cap, echoing a keyboard key: the product's core subject. -->
+  <rect x="2" y="3" width="20" height="18" rx="5" fill="#C84B73"/>
+  <!-- Letter R, cut out of the cap so the mark reads at small sizes. -->
+  <path d="M9 7.5h4.1c2 0 3.4 1.2 3.4 3 0 1.4-.8 2.4-2.1 2.8L16.8 17h-2.4l-2.2-3.4h-1v3.4H9V7.5zm2.2 4.3h1.7c.9 0 1.4-.5 1.4-1.2s-.5-1.2-1.4-1.2h-1.7v2.4z" fill="#FFFDF8"/>
+</svg>

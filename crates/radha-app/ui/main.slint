@@ -1,0 +1,181 @@
+// ============================================================================
+// AppWindow — the application shell
+// ============================================================================
+//
+// Owns the window, the screen switch, and the app-level state overlays
+// (loading / error). It holds no navigation logic: Rust decides which screen is
+// active and writes the answer here.
+//
+// Theme wiring
+// ------------
+// The active theme lives in the `Theme` global, which Rust writes directly via
+// `window.global::<Theme>().set_dark(..)`. Components read `Theme` and re-render.
+//
+// An earlier version mirrored the mode into a window property and copied it into
+// the global from a `changed` handler. That silently failed: the handler does not
+// run for the value Rust sets between `AppWindow::new()` and `run()`, so the
+// startup theme from settings.toml was ignored and the window always opened
+// light. Writing the global directly removes the extra hop and the failure mode
+// with it — the same reason `active-screen` below is a plain property Rust sets
+// rather than anything derived.
+// ============================================================================
+
+import { Theme } from "theme/palette.slint";
+import { Motion, WindowMetrics } from "theme/metrics.slint";
+import { HomeScreen } from "screens/home.slint";
+import { ExerciseStubScreen } from "screens/exercise_stub.slint";
+import { AppErrorView } from "components/error_view.slint";
+import { AppLoadingView } from "components/loading_view.slint";
+
+// Re-export the globals Rust needs to write. Slint only generates Rust accessors
+// for globals exported from the entry file, so without this the
+// `window.global::<Theme>()` call has nothing to bind to.
+export { Theme, Motion }
+
+export component AppWindow inherits Window {
+    title: "Radha Typing Tutor";
+    icon: @image-url("../../../assets/icons/brand-mark.svg");
+
+    background: Theme.bg-base;
+
+    // --- Size constraints ---------------------------------------------------
+    //
+    // PRD.md Section 3.1 sets 1024x768 as the minimum supported display, so the
+    // window must never shrink below the resolution the layouts are designed for.
+    // Slint forwards these to the OS as the window's minimum size hint, so the
+    // window manager itself resists the drag — there is nothing to reimplement.
+    //
+    // Maximize, restore, double-click-titlebar, and snap are all native window
+    // manager behaviour. The window uses standard OS chrome (no custom titlebar),
+    // so those work by default and must stay that way: replacing the chrome would
+    // mean reimplementing all of it.
+    min-width: WindowMetrics.min-width;
+    min-height: WindowMetrics.min-height;
+
+    // Restored from settings.toml at startup. `Math.max` is a second line of
+    // defence behind the clamp in settings.rs: a hand-edited or stale config must
+    // never open the window smaller than the layouts support.
+    in-out property <length> initial-width: WindowMetrics.min-width;
+    in-out property <length> initial-height: WindowMetrics.min-height;
+    preferred-width: Math.max(initial-width, WindowMetrics.min-width);
+    preferred-height: Math.max(initial-height, WindowMetrics.min-height);
+
+    // --- App state (Task 2.5) ----------------------------------------------
+    /// One of "loading", "ready", "error". Written by Rust from its `AppState`.
+    in-out property <string> app-state: "ready";
+    /// Headline shown by the error view.
+    in-out property <string> error-title;
+    /// Detail shown by the error view.
+    in-out property <string> error-detail;
+    /// Log file path, so the error view can point the user at it.
+    in-out property <string> error-log-hint;
+
+    // --- Navigation (Task 2.2) ---------------------------------------------
+    /// Active screen slug, written by Rust: "home" or "exercise".
+    in-out property <string> active-screen: "home";
+    /// Display name of the product the Exercise screen is showing.
+    in-out property <string> active-product-name;
+    /// Slug of that product.
+    in-out property <string> active-product-slug;
+
+    /// A Home card was activated. Carries the product slug; Rust resolves it.
+    callback navigate-requested(string);
+    /// Back one navigation level. Rust decides whether that is possible.
+    callback back-requested();
+    /// Theme switch requested.
+    ///
+    /// Deliberately a *request* with no payload rather than a "theme changed"
+    /// notification: Rust owns the current mode, computes the next one, and writes
+    /// it to the `Theme` global. Keeping the state transition out of the UI is
+    /// RULES.MD Rule 16, and it means the UI can never display a mode that Rust
+    /// has not recorded for saving.
+    callback theme-toggle-requested();
+    /// Exit after an unrecoverable error.
+    callback quit-requested();
+
+    // --- Keyboard shortcuts (Task 2.4) -------------------------------------
+    //
+    // Escape goes back one level. Rust ignores it on Home, so the key is safe to
+    // press anywhere — it never closes the app.
+    //
+    // A single FocusScope wrapping all screens means shortcuts are defined once at
+    // the shell rather than repeated per screen. The typing-screen shortcuts from
+    // TASK.MD (Ctrl+R restart, Ctrl+P pause, F11 focus mode) attach here in Phase 5
+    // when the screens they act on exist.
+    keys := FocusScope {
+        key-pressed(event) => {
+            if (event.text == Key.Escape) {
+                root.back-requested();
+                return EventResult.accept;
+            }
+            return EventResult.reject;
+        }
+
+        // --- Screens --------------------------------------------------------
+        //
+        // Both screens are always instantiated and switched with `visible`, rather
+        // than conditionally created with `if`.
+        //
+        // `if` builds its subtree when the element tree is constructed, so a value
+        // Rust writes between `AppWindow::new()` and `run()` does not re-evaluate
+        // the condition — the window would open on whatever the declared default
+        // was and ignore the real state. That is the same class of bug that made
+        // the startup theme silently fail in Phase 1. A `visible` binding updates
+        // reactively, so the switch always reflects what Rust recorded.
+        //
+        // The cost is that every screen stays resident. With a handful of screens
+        // that is negligible, and it will be worth re-examining only if a screen
+        // ever holds something expensive.
+        HomeScreen {
+            width: root.width;
+            height: root.height;
+            visible: root.active-screen == "home";
+            open-product-requested(slug) => {
+                root.navigate-requested(slug);
+            }
+            theme-toggle-requested => {
+                root.theme-toggle-requested();
+            }
+        }
+
+        ExerciseStubScreen {
+            width: root.width;
+            height: root.height;
+            visible: root.active-screen == "exercise";
+            product-name: root.active-product-name;
+            product-slug: root.active-product-slug;
+            back-requested => {
+                root.back-requested();
+            }
+        }
+    }
+
+    // --- App-state overlays -------------------------------------------------
+    // Declared after the screens so they paint above them. Explicit geometry
+    // rather than `100%`: a percentage resolves against a parent whose size is not
+    // settled when these siblings are measured, which leaves the overlay
+    // zero-sized and invisible.
+    AppLoadingView {
+        width: root.width;
+        height: root.height;
+        visible: root.app-state == "loading";
+    }
+
+    AppErrorView {
+        width: root.width;
+        height: root.height;
+        visible: root.app-state == "error";
+        title: root.error-title;
+        detail: root.error-detail;
+        log-hint: root.error-log-hint;
+        quit-requested => {
+            root.quit-requested();
+        }
+    }
+
+    // Give the shortcut scope focus on startup, otherwise Escape is not delivered
+    // until the user happens to click something focusable.
+    init => {
+        keys.focus();
+    }
+}

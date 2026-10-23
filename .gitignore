@@ -1,0 +1,42 @@
+# Rust build output
+/target
+**/*.rs.bk
+*.pdb
+
+# Local databases and logs
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+*.log
+
+# Other build/dependency output
+node_modules/
+dist/
+/build/
+
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+*.jks
+*.keystore
+*.snk
+secrets.*
+credentials.*
+
+# Temporary files and local tooling
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+Thumbs.db
+.DS_Store
+/click.ps1
+/shot.ps1
+/shot*.png

@@ -1,0 +1,93 @@
+// ============================================================================
+// NavAction — a header navigation control
+// ============================================================================
+//
+// Icon plus label, with real hover, pressed and keyboard-focus states.
+//
+// Replaces the plain text buttons the header used before, which read as web links
+// rather than application controls — the labels were the only affordance, with no
+// hit area to speak of. This has a proper surface, a comfortable target, and a
+// visible focus ring for keyboard users.
+//
+// Sizing is explicit rather than derived from the label, because these sit in a
+// tight header row where an unexpectedly wide control pushes its neighbours off
+// the edge.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Motion, Stroke } from "../theme/metrics.slint";
+
+export component NavAction inherits Rectangle {
+    in property <string> label;
+    in property <image> icon;
+    /// Emphasised treatment, for the one action that should read as primary.
+    in property <bool> prominent: false;
+
+    callback triggered();
+
+    height: 36px;
+    border-radius: Radius.md;
+
+    background: touch.pressed
+        ? Theme.primary-subtle
+        : (touch.has-hover || focus.has-focus)
+            ? Theme.bg-sunken
+            : transparent;
+
+    // Focus ring. Accessibility requirement: keyboard users need to see where they
+    // are, and hover alone does not serve them.
+    border-width: focus.has-focus ? Stroke.thick : 0px;
+    border-color: Theme.primary;
+
+    animate background { duration: Motion.fast; }
+
+    HorizontalLayout {
+        padding-left: Spacing.md;
+        padding-right: Spacing.md;
+        spacing: Spacing.sm;
+        alignment: center;
+
+        Image {
+            source: root.icon;
+            width: 17px;
+            height: 17px;
+            y: (parent.height - self.height) / 2;
+            colorize: root.prominent || touch.has-hover
+                ? Theme.primary
+                : Theme.text-secondary;
+        }
+
+        Text {
+            text: root.label;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-body-sm;
+            font-weight: Typography.weight-medium;
+            color: root.prominent || touch.has-hover
+                ? Theme.primary
+                : Theme.text-secondary;
+            vertical-alignment: center;
+
+            animate color { duration: Motion.fast; }
+        }
+    }
+
+    focus := FocusScope {
+        key-pressed(event) => {
+            // Space and Enter activate, matching platform button behaviour.
+            if (event.text == " " || event.text == "\n") {
+                root.triggered();
+                return EventResult.accept;
+            }
+            return EventResult.reject;
+        }
+    }
+
+    touch := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => {
+            focus.focus();
+            root.triggered();
+        }
+    }
+}

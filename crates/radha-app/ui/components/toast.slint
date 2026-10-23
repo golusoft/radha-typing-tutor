@@ -1,0 +1,133 @@
+// ============================================================================
+// RadhaToast
+// ============================================================================
+//
+// Transient notification that auto-dismisses.
+//
+// Shows one message at a time by design. A stack of toasts competing for
+// attention is the opposite of what Radha needs — RULES.MD Rule 19 keeps the
+// user's attention on typing, so a second message replaces the first rather than
+// piling up beside it.
+//
+// Usage from Slint:
+//
+//   toast := RadhaToast { }
+//   ...
+//   toast.show("Settings saved", ToastTone.Success);
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Elevation, Motion, Stroke } from "../theme/metrics.slint";
+
+export enum ToastTone {
+    Info,
+    Success,
+    Warning,
+    Error,
+}
+
+export component RadhaToast inherits Rectangle {
+    in property <duration> dwell: 3s;
+
+    // Driven by `show()`; not inputs, since callers should use the function so the
+    // dismiss timer is always started.
+    private property <string> message;
+    private property <ToastTone> tone: ToastTone.Info;
+    private property <bool> shown: false;
+
+    // Accent bar and icon colour by tone. Semantic colours only, per DESIGN.md
+    // Section 6 — toasts are never themed per experience.
+    property <color> tone-color:
+        tone == ToastTone.Success ? Theme.success
+        : tone == ToastTone.Warning ? Theme.warning
+        : tone == ToastTone.Error ? Theme.error
+        : Theme.primary;
+
+    /// Display `text`, replacing any visible message, and restart the timer.
+    public function show(text: string, kind: ToastTone) {
+        self.message = text;
+        self.tone = kind;
+        self.shown = true;
+        // Restarting rather than leaving it running gives the new message its
+        // own full dwell time instead of inheriting the old one's remainder.
+        dismiss-timer.running = false;
+        dismiss-timer.running = true;
+    }
+
+    /// Hide immediately.
+    public function dismiss() {
+        self.shown = false;
+        dismiss-timer.running = false;
+    }
+
+    // Width is fixed; height is left for Slint to compute from the row inside.
+    // Binding `height` to `row.preferred-height` would be a cycle (an element
+    // sizing itself from its own descendant) and collapses the toast to zero.
+    // `visible` alone is enough to hide it.
+    width: 320px;
+    visible: shown;
+    opacity: shown ? 1.0 : 0.0;
+
+    background: Theme.bg-surface;
+    border-radius: Radius.md;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-soft;
+    drop-shadow-blur: Elevation.floating-blur;
+    drop-shadow-offset-y: Elevation.floating-offset-y;
+    drop-shadow-color: Theme.shadow.with-alpha(Elevation.floating-opacity);
+
+    animate opacity { duration: Motion.standard; }
+
+    dismiss-timer := Timer {
+        interval: root.dwell;
+        running: false;
+        triggered => {
+            root.shown = false;
+            self.running = false;
+        }
+    }
+
+    row := HorizontalLayout {
+        padding: Spacing.md;
+        spacing: Spacing.md;
+        alignment: start;
+
+        // Tone stripe: conveys severity without relying on text colour alone.
+        Rectangle {
+            width: 4px;
+            border-radius: 2px;
+            background: root.tone-color;
+        }
+
+        Text {
+            text: root.message;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-body-sm;
+            color: Theme.text-primary;
+            vertical-alignment: center;
+            wrap: word-wrap;
+            horizontal-stretch: 1;
+        }
+
+        // Manual dismiss, so a user is never forced to wait out the timer.
+        close-touch := TouchArea {
+            width: 20px;
+            height: 20px;
+            mouse-cursor: MouseCursor.pointer;
+            clicked => {
+                root.dismiss();
+            }
+
+            Text {
+                text: "✕";
+                font-size: Typography.size-caption;
+                color: close-touch.has-hover ? Theme.text-primary : Theme.text-tertiary;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+}

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Light theme">
+  <circle cx="12" cy="12" r="4.2" fill="#D9902F"/>
+  <g fill="#D9902F">
+    <rect x="11.1" y="1.6" width="1.8" height="3.6" rx=".9"/>
+    <rect x="11.1" y="18.8" width="1.8" height="3.6" rx=".9"/>
+    <rect x="1.6" y="11.1" width="3.6" height="1.8" rx=".9"/>
+    <rect x="18.8" y="11.1" width="3.6" height="1.8" rx=".9"/>
+    <rect x="4.2" y="4.9" width="1.8" height="3.4" rx=".9" transform="rotate(-45 5.1 6.6)"/>
+    <rect x="18" y="15.7" width="1.8" height="3.4" rx=".9" transform="rotate(-45 18.9 17.4)"/>
+    <rect x="4.2" y="15.7" width="1.8" height="3.4" rx=".9" transform="rotate(45 5.1 17.4)"/>
+    <rect x="18" y="4.9" width="1.8" height="3.4" rx=".9" transform="rotate(45 18.9 6.6)"/>
+  </g>
+</svg>

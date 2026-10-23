@@ -1,0 +1,68 @@
+// ============================================================================
+// AppLoadingView — brief startup placeholder
+// ============================================================================
+//
+// Shown only while settings and the database initialise, which on the target
+// hardware is tens of milliseconds. Deliberately minimal: a skeleton loader would
+// be more machinery than a flash of content justifies, and PRD.md Section 3.2
+// budgets under two seconds for the entire startup.
+//
+// The ring animates via a repeating `animate` on its progress value rather than a
+// timer, keeping it to one continuously-animating element — the cap DESIGN.md
+// Section 16 sets for the integrated graphics on the low-end target.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing } from "../theme/metrics.slint";
+import { RadhaProgressRing } from "progress.slint";
+
+export component AppLoadingView inherits Rectangle {
+    in property <string> message: "Starting Radha Typing Tutor…";
+
+    background: Theme.bg-base;
+
+    // Absorb clicks so controls underneath cannot be operated before the app is
+    // ready.
+    TouchArea { }
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Spacing.xl;
+
+        HorizontalLayout {
+            alignment: center;
+
+            // Indeterminate: the sweep loops rather than tracking real work,
+            // because startup has no meaningful percentage to report.
+            //
+            // `progress` is animated instead of rotating the ring, because
+            // `rotation-angle` is not available on a custom component and wrapping
+            // the ring in a `Rotate` would add an element for no visual gain.
+            RadhaProgressRing {
+                diameter: 64px;
+                thickness: 6px;
+                fill-color: Theme.primary;
+                progress: sweep;
+
+                property <float> sweep: 0.0;
+                animate sweep {
+                    duration: 1400ms;
+                    iteration-count: -1;
+                    easing: ease-in-out;
+                }
+                init => {
+                    self.sweep = 1.0;
+                }
+            }
+        }
+
+        Text {
+            text: root.message;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-body-sm;
+            color: Theme.text-secondary;
+            horizontal-alignment: center;
+        }
+    }
+}

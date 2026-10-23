@@ -1,0 +1,176 @@
+// ============================================================================
+// AppFooter — branding, contact details and social links
+// ============================================================================
+//
+// NOT a fixed overlay. It sits at the end of the scrollable content, so it can
+// never cover a card. An earlier version was a permanent 92px band outside the
+// scroll area, which ate a ninth of the window on a 768px-tall display and hid the
+// bottom row of the beginner section.
+//
+// Why contact details live here rather than in the header
+// ------------------------------------------------------
+// They started in the header. Together with the social icons they cost roughly
+// 320px, which pushed the header's intrinsic width past the 1024px minimum window
+// size and clipped the navigation controls on the right.
+//
+// Moving them here serves the requirement better on both counts: PRD.md Section 6.1
+// asks for contact details to stay subtle and not compete with the product name,
+// and the footer has the slack to render the social icons at a usable size instead
+// of squeezing them to 16px in a crowded row.
+//
+// Everything is tertiary text: this is a signature, not a navigation surface.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Motion, Stroke } from "../theme/metrics.slint";
+
+// A social link with a real hover state and a tooltip-sized hit area.
+component SocialLink inherits Rectangle {
+    in property <image> icon;
+    in property <string> label;
+
+    width: 30px;
+    height: 30px;
+    border-radius: Radius.sm;
+    background: touch.has-hover ? Theme.primary-subtle : transparent;
+
+    animate background { duration: Motion.fast; }
+
+    Image {
+        source: root.icon;
+        width: 17px;
+        height: 17px;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        colorize: touch.has-hover ? Theme.primary : Theme.text-tertiary;
+    }
+
+    touch := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+    }
+}
+
+component FooterInfo inherits HorizontalLayout {
+    in property <string> text;
+    in property <image> icon;
+
+    spacing: Spacing.xs;
+
+    Image {
+        source: root.icon;
+        width: 14px;
+        height: 14px;
+        y: (parent.height - self.height) / 2;
+        colorize: Theme.text-disabled;
+    }
+
+    Text {
+        text: root.text;
+        font-family: Typography.family-ui;
+        font-size: Typography.size-caption;
+        color: Theme.text-tertiary;
+        vertical-alignment: center;
+    }
+}
+
+export component AppFooter inherits Rectangle {
+    in property <string> tagline: "Master Typing. Master Success.";
+    in property <string> copyright: "© 2026 Radha Typing Tutor. All rights reserved.";
+    in property <string> contact-number;
+    in property <string> website-url;
+
+    height: 84px;
+    background: transparent;
+
+    // Top hairline, separating it from the last section.
+    Rectangle {
+        y: 0;
+        width: 100%;
+        height: Stroke.hairline;
+        background: Theme.border-soft;
+    }
+
+    VerticalLayout {
+        padding-top: Spacing.lg;
+        spacing: Spacing.sm;
+
+        // --- Row 1: brand, contact, social ----------------------------------
+        HorizontalLayout {
+            spacing: Spacing.lg;
+            alignment: start;
+
+            Text {
+                text: "RADHA TYPING TUTOR";
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                font-weight: Typography.weight-semibold;
+                letter-spacing: Typography.tracking-wide;
+                color: Theme.text-secondary;
+                vertical-alignment: center;
+            }
+
+            if root.contact-number != "": FooterInfo {
+                text: root.contact-number;
+                icon: @image-url("../../../../assets/icons/profile.svg");
+                y: (parent.height - self.height) / 2;
+            }
+
+            if root.website-url != "": FooterInfo {
+                text: root.website-url;
+                icon: @image-url("../../../../assets/icons/analytics.svg");
+                y: (parent.height - self.height) / 2;
+            }
+
+            Rectangle {
+                horizontal-stretch: 1;
+                background: transparent;
+            }
+
+            HorizontalLayout {
+                spacing: Spacing.xxs;
+                y: (parent.height - self.height) / 2;
+
+                SocialLink {
+                    icon: @image-url("../../../../assets/icons/facebook.svg");
+                    label: "Facebook";
+                }
+                SocialLink {
+                    icon: @image-url("../../../../assets/icons/instagram.svg");
+                    label: "Instagram";
+                }
+                SocialLink {
+                    icon: @image-url("../../../../assets/icons/youtube.svg");
+                    label: "YouTube";
+                }
+            }
+        }
+
+        // --- Row 2: tagline and copyright -----------------------------------
+        HorizontalLayout {
+            spacing: Spacing.sm;
+            alignment: start;
+
+            Text {
+                text: root.tagline;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                color: Theme.text-tertiary;
+                vertical-alignment: center;
+            }
+
+            Rectangle {
+                horizontal-stretch: 1;
+                background: transparent;
+            }
+
+            Text {
+                text: root.copyright;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                color: Theme.text-disabled;
+                vertical-alignment: center;
+            }
+        }
+    }
+}

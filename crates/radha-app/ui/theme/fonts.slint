@@ -1,0 +1,62 @@
+// ============================================================================
+// Radha Typing Tutor — Bundled font registration
+// ============================================================================
+//
+// Slint registers custom fonts at COMPILE time, by importing the font file from
+// a `.slint` file. The font is then embedded in the binary and available to any
+// `font-family` that names it.
+//
+// This is the mechanism Slint recommends, and it suits Radha well: the Windows
+// installer stays self-contained, and a user cannot break text rendering by
+// deleting a file. (Slint 1.18 removed the older runtime
+// `register_font_from_path` in favour of this.)
+//
+// ---------------------------------------------------------------------------
+// HOW TO ADD THE FONTS
+// ---------------------------------------------------------------------------
+// 1. Drop the `.ttf` / `.otf` files into `assets/fonts/`.
+// 2. Uncomment the matching import below.
+// 3. Rebuild. The family names in `typography.slint` then resolve to the bundled
+//    files instead of falling back to a system font.
+//
+// Nothing else needs to change — `typography.slint` already names these families.
+//
+// ---------------------------------------------------------------------------
+// WHY THEY ARE NOT BUNDLED YET
+// ---------------------------------------------------------------------------
+// Three of the four are SIL OFL 1.1 and freely redistributable. Kruti Dev is not
+// — its licensing has to be confirmed before it can ship (PRD.md Section 12.5),
+// and it is the one font with no safe fallback: a machine without it renders
+// Kruti Dev text as meaningless Latin characters rather than Devanagari.
+//
+// Bundling licensed binaries is deliberately left as an explicit step rather than
+// something this scaffold does silently.
+// ---------------------------------------------------------------------------
+
+// --- Latin UI text (Inter, SIL OFL 1.1) ---
+// import "../../../../assets/fonts/Inter-Regular.ttf";
+// import "../../../../assets/fonts/Inter-Medium.ttf";
+// import "../../../../assets/fonts/Inter-SemiBold.ttf";
+// import "../../../../assets/fonts/Inter-Bold.ttf";
+
+// --- Typing target / input (JetBrains Mono, SIL OFL 1.1) ---
+// Monospace is required for per-character highlight alignment.
+// import "../../../../assets/fonts/JetBrainsMono-Regular.ttf";
+
+// --- Hindi GAIL / CBI (Noto Sans Devanagari, SIL OFL 1.1) ---
+// import "../../../../assets/fonts/NotoSansDevanagari-Regular.ttf";
+
+// --- Hindi Kruti Dev (licensing to be confirmed) ---
+// import "../../../../assets/fonts/KrutiDev010.ttf";
+
+// A `.slint` file must export something to be importable. This carries the
+// bundling status so the UI can surface it, and so the gallery can show at a
+// glance whether it is rendering with bundled fonts or system fallbacks.
+export global Fonts {
+    // Flip to true in the same commit that uncomments the imports above.
+    out property <bool> bundled: false;
+
+    out property <string> status: bundled
+        ? "Bundled fonts active"
+        : "Using system font fallbacks — see assets/README.md";
+}

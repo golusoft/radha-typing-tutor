@@ -1,0 +1,72 @@
+// ============================================================================
+// Radha Typing Tutor — Typography
+// ============================================================================
+//
+// Font families are resolved by name. The binaries are registered at startup by
+// `ui.rs::register_fonts` from `assets/fonts/`; until those are bundled (see
+// assets/README.md) the listed fallbacks apply, so the UI is never unstyled.
+// ============================================================================
+
+export global Typography {
+    // --- Families ---
+
+    // UI text. Inter once bundled; Segoe UI is present on every supported
+    // Windows version, so the fallback is safe rather than theoretical.
+    out property <string> family-ui: "Inter, Segoe UI, sans-serif";
+
+    // Typing target and user input.
+    //
+    // Monospace is a correctness requirement, not a style choice: PRD.md
+    // Section 8.3 highlights per-character correctness by drawing the target row
+    // above the typed row, and those rows only align if every glyph has the same
+    // advance width. A proportional font would misalign the highlight.
+    out property <string> family-mono: "JetBrains Mono, Cascadia Mono, Consolas, monospace";
+
+    // Hindi (GAIL / CBI) — Unicode Devanagari.
+    out property <string> family-devanagari: "Noto Sans Devanagari, Mangal, sans-serif";
+
+    // Hindi (Kruti Dev) — legacy font encoding. Must be bundled; unlike the
+    // others there is no safe system fallback, because a machine without the
+    // font renders Kruti Dev text as meaningless Latin characters.
+    out property <string> family-krutidev: "Kruti Dev 010, Kruti Dev";
+
+    // --- Size scale ---
+    out property <length> size-display: 32px;  // Result hero figures
+    out property <length> size-h1: 24px;       // Screen titles
+    out property <length> size-h2: 20px;       // Section headers
+    out property <length> size-h3: 18px;       // Card titles
+    out property <length> size-body: 16px;     // Default
+    out property <length> size-body-sm: 14px;  // Secondary text
+    out property <length> size-caption: 12px;  // Chips, timestamps
+    out property <length> size-micro: 11px;    // Dense metadata
+
+    // Typing text. Larger than body because the user reads it continuously at
+    // arm's length; overridable from Settings in a later phase.
+    out property <length> size-typing: 22px;
+
+    // --- Weights ---
+    out property <int> weight-regular: 400;
+    out property <int> weight-medium: 500;
+    out property <int> weight-semibold: 600;
+    out property <int> weight-bold: 700;
+
+    // --- Line heights ---
+    // Expressed as absolute lengths since Slint has no unitless multiplier.
+    out property <length> line-display: 40px;
+    out property <length> line-h1: 32px;
+    out property <length> line-h2: 28px;
+    out property <length> line-body: 24px;
+    out property <length> line-body-sm: 20px;
+    out property <length> line-caption: 16px;
+
+    // Generous leading for typing text: PRD.md Section 8 requires comfortable
+    // multi-line reading with auto-scroll.
+    out property <length> line-typing: 36px;
+
+    // --- Letter spacing ---
+    // Slight negative tracking on large sizes; headings set tighter than body
+    // is a standard optical correction.
+    out property <length> tracking-tight: -0.4px;
+    out property <length> tracking-normal: 0px;
+    out property <length> tracking-wide: 0.4px;  // All-caps labels
+}

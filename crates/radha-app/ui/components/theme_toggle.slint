@@ -1,0 +1,116 @@
+// ============================================================================
+// ThemeToggle — a segmented light/dark control
+// ============================================================================
+//
+// A two-segment control showing both options with the active one selected, rather
+// than a button labelled with the mode you are not in. A plain "Dark" button is
+// ambiguous: it is not clear whether it describes the current state or the action.
+// Showing both removes the guess.
+//
+// Both segments stay visible, so the control also communicates that a light/dark
+// choice exists at all.
+//
+// Note on dark mode: DESIGN.md Section 2 bans black and blue in *both* themes, so
+// the dark variant is deep plum rather than neutral dark grey. This control only
+// requests the switch; the palette handles the rest.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Motion, Stroke } from "../theme/metrics.slint";
+
+component Segment inherits Rectangle {
+    in property <string> label;
+    in property <bool> selected;
+
+    callback picked();
+
+    height: 28px;
+    border-radius: Radius.md - 2px;
+
+    background: root.selected
+        ? Theme.bg-surface
+        : (touch.has-hover ? Theme.bg-raised : transparent);
+
+    // The selected segment is lifted very slightly so selection reads without
+    // relying on colour alone.
+    drop-shadow-blur: root.selected ? 4px : 0px;
+    drop-shadow-offset-y: root.selected ? 1px : 0px;
+    drop-shadow-color: Theme.shadow.with-alpha(root.selected ? 0.12 : 0.0);
+
+    animate background { duration: Motion.fast; }
+
+    HorizontalLayout {
+        padding-left: Spacing.md;
+        padding-right: Spacing.md;
+        alignment: center;
+
+        Text {
+            text: root.label;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            font-weight: root.selected
+                ? Typography.weight-semibold
+                : Typography.weight-medium;
+            color: root.selected ? Theme.primary : Theme.text-tertiary;
+            vertical-alignment: center;
+        }
+    }
+
+    touch := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => {
+            root.picked();
+        }
+    }
+}
+
+export component ThemeToggle inherits Rectangle {
+    /// Raised when the user picks the mode that is not currently active.
+    callback toggle-requested();
+
+    height: 36px;
+    border-radius: Radius.md;
+    background: Theme.bg-sunken;
+    border-width: Stroke.hairline;
+    border-color: focus.has-focus ? Theme.primary : Theme.border-soft;
+
+    focus := FocusScope {
+        key-pressed(event) => {
+            if (event.text == " " || event.text == "\n") {
+                root.toggle-requested();
+                return EventResult.accept;
+            }
+            return EventResult.reject;
+        }
+    }
+
+    HorizontalLayout {
+        padding: 4px;
+        spacing: 2px;
+
+        Segment {
+            label: "Light";
+            selected: !Theme.dark;
+            picked => {
+                // Only request a change when picking the inactive side, so
+                // clicking the current mode is a no-op rather than a flicker.
+                if (Theme.dark) {
+                    focus.focus();
+                    root.toggle-requested();
+                }
+            }
+        }
+
+        Segment {
+            label: "Dark";
+            selected: Theme.dark;
+            picked => {
+                if (!Theme.dark) {
+                    focus.focus();
+                    root.toggle-requested();
+                }
+            }
+        }
+    }
+}
