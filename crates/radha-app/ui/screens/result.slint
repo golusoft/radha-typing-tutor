@@ -1,0 +1,1035 @@
+// ============================================================================
+// ResultScreen v2 — Screen 4 of the four-screen flow (PRD 17.6, DESIGN 20.8)
+// ============================================================================
+//
+// Structure follows design-reference/04-result.html (layout reference only),
+// practice-honest:
+//
+//   row 1  verdict card (certification pill, no fake qualification) ·
+//          minute-by-minute curve (WPM | KDPH) · penalty audit (accuracy
+//          ring, raw / exempted / penalised, the session policy's formula)
+//   row 2  eight KPI tiles (gross, net, KDPH, words, full, half, error %,
+//          backspaces + peak streak)
+//   row 3  diff inspector (annotated / mistakes only / table) · keyboard
+//          heatmap of weak keys
+//   row 4  weak keys + recovery drill · session details
+//   dock   Retry · Next · Exercise List · Home
+//
+// Every value comes from `ResultView`, written once by Rust after the
+// session was saved. Exam-rule formulas are not shown (P09).
+// ============================================================================
+
+import { ListView } from "std-widgets.slint";
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke } from "../theme/metrics.slint";
+import { RadhaButton, ButtonVariant } from "../components/button.slint";
+import { SegmentedToggle } from "../components/segmented_toggle.slint";
+import { SparklineChart } from "../components/sparkline_chart.slint";
+import { VerificationBadge } from "../components/verification_badge.slint";
+import { ResultView } from "../data/practice.slint";
+import { UtilityView } from "../data/utility.slint";
+import { TextField } from "../components/text_field.slint";
+
+component Card inherits Rectangle {
+    border-radius: Radius.lg;
+    background: Theme.bg-surface;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-soft;
+    clip: true;
+}
+
+component Eyebrow inherits Text {
+    font-family: Typography.family-ui;
+    font-size: Typography.size-micro;
+    font-weight: Typography.weight-semibold;
+    letter-spacing: Typography.tracking-wide;
+    color: Theme.text-tertiary;
+}
+
+component Kpi inherits Rectangle {
+    in property <string> label;
+    in property <string> value;
+    in property <string> note;
+    in property <color> tone: Theme.text-primary;
+    border-radius: Radius.md;
+    background: Theme.bg-surface;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-soft;
+
+    VerticalLayout {
+        padding: Spacing.sm;
+        spacing: 2px;
+        alignment: center;
+        Text {
+            text: root.label;
+            font-family: Typography.family-ui;
+            font-size: 10px;
+            font-weight: Typography.weight-semibold;
+            letter-spacing: Typography.tracking-wide;
+            color: Theme.text-tertiary;
+            overflow: elide;
+        }
+
+        Text {
+            text: root.value;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-h2;
+            font-weight: Typography.weight-bold;
+            color: root.tone;
+            overflow: elide;
+        }
+
+        Text {
+            text: root.note;
+            font-family: Typography.family-ui;
+            font-size: 10px;
+            color: Theme.text-tertiary;
+            overflow: elide;
+        }
+    }
+}
+
+export component ResultScreen inherits Rectangle {
+    callback back-requested();
+
+    property <length> pad: root.width < 1100px ? Spacing.lg : Spacing.xl;
+    property <length> gap: Spacing.md;
+    property <length> head-h: 56px;
+    property <length> dock-h: 60px;
+    property <length> inner: root.width - 2 * root.pad;
+    property <length> gauge-w: 290px;
+    property <length> verdict-w: root.inner * 0.37;
+    property <length> chart-w: root.inner - root.verdict-w - root.gauge-w - 2 * root.gap;
+    property <length> row1-h: 220px;
+    property <length> kpi-w: (root.inner - 7 * root.gap) / 8;
+    property <length> kpi-h: 84px;
+    property <length> diff-w: root.inner * 0.56;
+    property <length> heat-w: root.inner - root.diff-w - root.gap;
+    property <length> row3-h: 380px;
+    property <length> row4-h: 176px;
+    // Capped so the four key rows always end above the inspector line.
+    property <length> hk: Math.min(34px, (root.heat-w - 2 * Spacing.md - 12 * 3px) / 13.5);
+    property <length> content-h: root.row1-h + root.kpi-h + root.row3-h + root.row4-h + 5 * root.gap;
+
+    background: Theme.bg-base;
+
+    // --- Header ---------------------------------------------------------------
+    Rectangle {
+        x: 0px;
+        y: 0px;
+        width: root.width;
+        height: root.head-h;
+        background: Theme.bg-surface;
+
+        Rectangle {
+            x: 0px;
+            y: parent.height - 1px;
+            width: parent.width;
+            height: 1px;
+            background: Theme.border-soft;
+        }
+
+        HorizontalLayout {
+            padding-left: root.pad;
+            padding-right: root.pad;
+            spacing: Spacing.md;
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "← Exercises";
+                    variant: ButtonVariant.Ghost;
+                    compact: true;
+                    clicked => {
+                        root.back-requested();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                horizontal-stretch: 1;
+                Text {
+                    text: ResultView.title;
+                    font-family: Typography.family-devanagari;
+                    font-size: Typography.size-body-sm;
+                    font-weight: Typography.weight-semibold;
+                    color: Theme.text-primary;
+                    overflow: elide;
+                }
+
+                Text {
+                    text: ResultView.subtitle + " · " + ResultView.save-status;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-caption;
+                    color: Theme.text-secondary;
+                    overflow: elide;
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                VerificationBadge {
+                    level: ResultView.cert-level;
+                }
+            }
+        }
+    }
+
+    // --- Scrolling body ---------------------------------------------------------
+    // On a 768-800 px window the lower rows (finger balance, recovery
+    // drill) sit below the action dock. The body scrolls (wheel, drag) and
+    // the scroll thumb drawn after it says there is more.
+    body := Flickable {
+        x: 0px;
+        y: root.head-h;
+        width: root.width;
+        height: root.height - root.head-h - root.dock-h;
+        content-height: root.content-h + 2 * root.gap;
+
+        // Row 1: verdict card (RS-01).
+        Rectangle {
+            x: root.pad;
+            y: root.gap;
+            width: root.verdict-w;
+            height: root.row1-h;
+            border-radius: Radius.lg;
+            background: ResultView.good
+                ? @linear-gradient(135deg, Theme.primary 0%, Theme.secondary 100%)
+                : @linear-gradient(135deg, Theme.accent 0%, Theme.secondary 100%);
+
+            VerticalLayout {
+                padding: Spacing.lg;
+                spacing: Spacing.xs;
+
+                HorizontalLayout {
+                    spacing: Spacing.sm;
+                    Rectangle {
+                        height: 22px;
+                        border-radius: Radius.pill;
+                        background: Theme.bg-surface.with-alpha(0.22);
+                        HorizontalLayout {
+                            padding-left: Spacing.sm;
+                            padding-right: Spacing.sm;
+                            Text {
+                                text: ResultView.cert-pill;
+                                font-family: Typography.family-ui;
+                                font-size: Typography.size-micro;
+                                font-weight: Typography.weight-semibold;
+                                color: Theme.text-on-primary;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+
+                    if ResultView.new-best: Rectangle {
+                        height: 22px;
+                        border-radius: Radius.pill;
+                        background: Theme.bg-surface.with-alpha(0.22);
+                        HorizontalLayout {
+                            padding-left: Spacing.sm;
+                            padding-right: Spacing.sm;
+                            Text {
+                                text: "New personal best";
+                                font-family: Typography.family-ui;
+                                font-size: Typography.size-micro;
+                                font-weight: Typography.weight-semibold;
+                                color: Theme.text-on-primary;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        horizontal-stretch: 1;
+                    }
+                }
+
+                Text {
+                    text: ResultView.headline;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-h1;
+                    font-weight: Typography.weight-bold;
+                    color: Theme.text-on-primary;
+                    overflow: elide;
+                }
+
+                Text {
+                    width: root.verdict-w - 2 * Spacing.lg;
+                    text: ResultView.verdict-detail;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-caption;
+                    color: Theme.text-on-primary;
+                    wrap: word-wrap;
+                }
+
+                // Candidate row (RS-10): only when the candidate entered it.
+                if ResultView.candidate != "": Text {
+                    text: ResultView.candidate;
+                    font-family: Typography.family-devanagari;
+                    font-size: Typography.size-caption;
+                    font-weight: Typography.weight-semibold;
+                    color: Theme.text-on-primary;
+                    overflow: elide;
+                }
+
+                Rectangle {
+                    vertical-stretch: 1;
+                }
+
+                HorizontalLayout {
+                    spacing: Spacing.lg;
+                    for m in [
+                        { l: "NET WPM", v: ResultView.net-wpm },
+                        { l: "ACCURACY", v: ResultView.accuracy },
+                        { l: "TIME", v: ResultView.time },
+                    ]: VerticalLayout {
+                        Text {
+                            text: m.l;
+                            font-family: Typography.family-ui;
+                            font-size: 10px;
+                            font-weight: Typography.weight-semibold;
+                            color: Theme.text-on-primary;
+                        }
+
+                        Text {
+                            text: m.v;
+                            font-family: Typography.family-mono;
+                            font-size: Typography.size-display;
+                            font-weight: Typography.weight-bold;
+                            color: Theme.text-on-primary;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Row 1: minute-by-minute curve (RS-02).
+        SparklineChart {
+            x: root.pad + root.verdict-w + root.gap;
+            y: root.gap;
+            width: root.chart-w;
+            height: root.row1-h;
+            title: ResultView.chart-title;
+            value-text: ResultView.chart-value;
+            line-commands: ResultView.chart-line;
+            area-commands: ResultView.chart-area;
+            peak-x: ResultView.chart-peak-x;
+            peak-y: ResultView.chart-peak-y;
+            has-data: ResultView.chart-has-data;
+            empty-text: "Not enough typing for a curve";
+            footer-left: ResultView.chart-footer;
+            footer-right: "";
+            chart-height: root.row1-h - 110px;
+            options: [{ id: "wpm", label: "WPM" }, { id: "kdph", label: "KDPH" }];
+            range: ResultView.chart-view;
+            range-requested(id) => {
+                ResultView.chart-view-selected(id);
+            }
+        }
+
+        // Row 1: penalty audit (RS-03) — accuracy ring, raw / exempted /
+        // penalised errors and the formula of the session's scoring policy.
+        Card {
+            x: root.pad + root.inner - root.gauge-w;
+            y: root.gap;
+            width: root.gauge-w;
+            height: root.row1-h;
+
+            Eyebrow {
+                x: Spacing.md;
+                y: Spacing.md;
+                text: "PENALTY AUDIT";
+            }
+
+            for a[i] in [
+                { l: "Raw errors", v: ResultView.audit-raw },
+                { l: "Exempted", v: ResultView.audit-exempted },
+                { l: "Penalised", v: ResultView.audit-penalised },
+            ]: HorizontalLayout {
+                x: 96px;
+                y: 34px + i * 20px;
+                width: root.gauge-w - 96px - Spacing.md;
+                height: 20px;
+                Text {
+                    horizontal-stretch: 1;
+                    text: a.l;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-caption;
+                    color: Theme.text-secondary;
+                }
+
+                Text {
+                    text: a.v;
+                    font-family: Typography.family-mono;
+                    font-size: Typography.size-caption;
+                    font-weight: Typography.weight-bold;
+                    color: i == 2 ? Theme.error : Theme.text-primary;
+                }
+            }
+
+            Text {
+                x: Spacing.md;
+                y: 106px;
+                width: root.gauge-w - 2 * Spacing.md;
+                text: ResultView.audit-formula;
+                font-family: Typography.family-mono;
+                font-size: 10px;
+                color: Theme.text-primary;
+                wrap: word-wrap;
+            }
+
+            Text {
+                x: Spacing.md;
+                y: 136px;
+                width: root.gauge-w - 2 * Spacing.md;
+                text: ResultView.audit-worked;
+                font-family: Typography.family-mono;
+                font-size: Typography.size-caption;
+                font-weight: Typography.weight-bold;
+                color: Theme.primary;
+                overflow: elide;
+            }
+
+            Text {
+                x: Spacing.md;
+                y: 156px;
+                width: root.gauge-w - 2 * Spacing.md;
+                height: root.row1-h - 160px;
+                text: ResultView.audit-note;
+                font-family: Typography.family-ui;
+                font-size: 10px;
+                color: Theme.text-secondary;
+                wrap: word-wrap;
+                overflow: elide;
+            }
+
+            Path {
+                x: Spacing.md;
+                y: 32px;
+                width: 68px;
+                height: 68px;
+                viewbox-width: 36;
+                viewbox-height: 36;
+                commands: "M 18 3 A 15 15 0 1 1 18 33 A 15 15 0 1 1 18 3";
+                fill: transparent;
+                stroke: Theme.border-soft;
+                stroke-width: 6px;
+            }
+
+            Path {
+                x: Spacing.md;
+                y: 32px;
+                width: 68px;
+                height: 68px;
+                viewbox-width: 36;
+                viewbox-height: 36;
+                commands: ResultView.accuracy-arc;
+                fill: transparent;
+                stroke: ResultView.accuracy-value >= 95 ? Theme.success
+                    : ResultView.accuracy-value >= 85 ? Theme.warning : Theme.error;
+                stroke-width: 6px;
+                stroke-line-cap: round;
+            }
+
+            Text {
+                x: Spacing.md;
+                y: 32px;
+                width: 68px;
+                height: 68px;
+                text: ResultView.accuracy;
+                font-family: Typography.family-mono;
+                font-size: Typography.size-caption;
+                font-weight: Typography.weight-bold;
+                color: Theme.text-primary;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+
+        // Row 2: eight KPI tiles (RS-04).
+        for k[i] in [
+            { l: "GROSS WPM", v: ResultView.wpm, n: "all keys / 5", t: 0 },
+            { l: "NET WPM", v: ResultView.net-wpm, n: "after errors", t: 1 },
+            { l: "KDPH", v: ResultView.kdph, n: "key depressions / h", t: 2 },
+            { l: "WORDS", v: ResultView.words, n: "correct / typed", t: 0 },
+            { l: "FULL MISTAKES", v: ResultView.full-mistakes, n: "omissions", t: 3 },
+            { l: "HALF MISTAKES", v: ResultView.half-mistakes, n: "case, spacing, spelling", t: 4 },
+            { l: "ERROR %", v: ResultView.error-pct, n: ResultView.errors + " units", t: 3 },
+            { l: "BACKSPACES", v: ResultView.backspaces, n: "peak streak " + ResultView.peak-streak, t: 0 },
+        ]: Kpi {
+            x: root.pad + i * (root.kpi-w + root.gap);
+            y: root.gap * 2 + root.row1-h;
+            width: root.kpi-w;
+            height: root.kpi-h;
+            label: k.l;
+            value: k.v;
+            note: k.n;
+            tone: k.t == 1 ? Theme.primary : k.t == 2 ? Theme.secondary
+                : k.t == 3 ? Theme.error : k.t == 4 ? Theme.accent : Theme.text-primary;
+        }
+
+        // Row 3: diff inspector (RS-05).
+        Card {
+            x: root.pad;
+            y: root.gap * 3 + root.row1-h + root.kpi-h;
+            width: root.diff-w;
+            height: root.row3-h;
+
+            HorizontalLayout {
+                x: Spacing.md;
+                y: Spacing.sm;
+                width: root.diff-w - 2 * Spacing.md;
+                height: 32px;
+                spacing: Spacing.sm;
+
+                VerticalLayout {
+                    alignment: center;
+                    horizontal-stretch: 1;
+                    Eyebrow {
+                        text: "WORD BY WORD · " + ResultView.diff-summary;
+                        overflow: elide;
+                    }
+                }
+
+                SegmentedToggle {
+                    compact: true;
+                    options: [
+                        { id: "annotated", label: "Annotated" },
+                        { id: "mistakes", label: "Mistakes" },
+                        { id: "table", label: "Table" },
+                    ];
+                    current: ResultView.diff-view;
+                    selected(id) => {
+                        ResultView.diff-view-selected(id);
+                    }
+                }
+            }
+
+            if ResultView.diff-view != "table": ListView {
+                x: Spacing.sm;
+                y: 48px;
+                width: root.diff-w - 2 * Spacing.sm;
+                height: root.row3-h - 56px;
+
+                for line in ResultView.diff-lines: HorizontalLayout {
+                    height: 34px;
+                    spacing: 4px;
+                    padding-left: Spacing.xs;
+                    alignment: start;
+
+                    for w in line.words: Rectangle {
+                        y: 4px;
+                        height: 26px;
+                        border-radius: 4px;
+                        background: w.kind == 2 ? Theme.error-subtle
+                            : w.kind == 1 ? Theme.accent-subtle
+                            : w.kind == 3 ? Theme.secondary-subtle : transparent;
+                        border-width: w.kind == 3 ? Stroke.regular : 0px;
+                        border-color: Theme.secondary;
+
+                        HorizontalLayout {
+                            padding-left: 4px;
+                            padding-right: 4px;
+                            spacing: 3px;
+                            Text {
+                                text: w.kind == 0 ? w.expected
+                                    : w.kind == 3 ? "(" + w.expected + ")"
+                                    : w.typed + " → " + w.expected;
+                                font-family: ResultView.devanagari ? Typography.family-devanagari : Typography.family-mono;
+                                font-size: Typography.size-body-sm;
+                                color: w.kind == 0 ? Theme.success
+                                    : w.kind == 1 ? Theme.text-primary
+                                    : w.kind == 2 ? Theme.error : Theme.secondary;
+                                vertical-alignment: center;
+                            }
+
+                            if w.kind == 1: Text {
+                                text: "½";
+                                font-family: Typography.family-ui;
+                                font-size: Typography.size-micro;
+                                font-weight: Typography.weight-bold;
+                                color: Theme.accent;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ResultView.diff-view == "table": ListView {
+                x: Spacing.sm;
+                y: 48px;
+                width: root.diff-w - 2 * Spacing.sm;
+                height: root.row3-h - 56px;
+
+                for row in ResultView.diff-rows: HorizontalLayout {
+                    height: 28px;
+                    spacing: Spacing.sm;
+                    padding-left: Spacing.xs;
+
+                    Text {
+                        width: (root.diff-w - 60px) * 0.32;
+                        text: row.expected;
+                        font-family: ResultView.devanagari ? Typography.family-devanagari : Typography.family-mono;
+                        font-size: Typography.size-body-sm;
+                        color: Theme.text-primary;
+                        vertical-alignment: center;
+                        overflow: elide;
+                    }
+
+                    Text {
+                        width: (root.diff-w - 60px) * 0.32;
+                        text: row.kind == 3 ? "—" : row.typed;
+                        font-family: ResultView.devanagari ? Typography.family-devanagari : Typography.family-mono;
+                        font-size: Typography.size-body-sm;
+                        color: row.kind == 0 ? Theme.success : Theme.error;
+                        vertical-alignment: center;
+                        overflow: elide;
+                    }
+
+                    Text {
+                        width: (root.diff-w - 60px) * 0.24;
+                        text: row.kind == 0 ? "correct" : row.label;
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-caption;
+                        color: Theme.text-secondary;
+                        vertical-alignment: center;
+                    }
+
+                    Text {
+                        text: row.kind == 0 ? "0" : row.kind == 1 ? "½" : "1";
+                        font-family: Typography.family-mono;
+                        font-size: Typography.size-caption;
+                        color: Theme.text-secondary;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+        // Row 3: keyboard heatmap (RS-06).
+        Card {
+            x: root.pad + root.diff-w + root.gap;
+            y: root.gap * 3 + root.row1-h + root.kpi-h;
+            width: root.heat-w;
+            height: root.row3-h;
+
+            Eyebrow {
+                x: Spacing.md;
+                y: Spacing.md;
+                text: "KEYBOARD HEATMAP · accuracy per key";
+            }
+
+            for row[r] in ResultView.heat-rows: Rectangle {
+                x: Spacing.md + (r == 0 ? 0px : r == 1 ? root.hk * 0.5 : r == 2 ? root.hk * 0.75 : root.hk * 1.25);
+                y: 40px + r * (root.hk * 1.1 + 6px);
+                width: root.heat-w;
+                height: root.hk * 1.1;
+
+                for key[k] in row.keys: Rectangle {
+                    x: k * (root.hk + 3px);
+                    width: root.hk;
+                    height: parent.height;
+                    border-radius: 4px;
+                    background: key.cls == 1 ? Theme.success-subtle
+                        : key.cls == 2 ? Theme.warning-subtle
+                        : key.cls == 3 ? Theme.error-subtle : Theme.bg-sunken;
+                    property <bool> picked: key.detail != "" && key.detail == ResultView.heat-detail;
+                    border-width: self.picked ? Stroke.thick : key.cls == 3 ? Stroke.regular : Stroke.hairline;
+                    border-color: self.picked ? Theme.primary : key.cls == 3 ? Theme.error : Theme.border-soft;
+
+                    // Selected-key inspector: a click shows this key's figures.
+                    TouchArea {
+                        mouse-cursor: MouseCursor.pointer;
+                        clicked => {
+                            ResultView.heat-detail = key.detail;
+                        }
+                    }
+
+                    VerticalLayout {
+                        alignment: center;
+                        Text {
+                            text: key.glyph != "" ? key.glyph : key.legend;
+                            font-family: ResultView.devanagari ? Typography.family-devanagari : Typography.family-mono;
+                            font-size: Typography.size-caption;
+                            color: key.cls == 0 ? Theme.text-disabled : Theme.text-primary;
+                            horizontal-alignment: center;
+                        }
+
+                        Text {
+                            text: key.pct;
+                            font-family: Typography.family-mono;
+                            font-size: 8px;
+                            color: key.cls == 3 ? Theme.error : Theme.text-secondary;
+                            horizontal-alignment: center;
+                        }
+                    }
+                }
+            }
+
+            Text {
+                x: Spacing.md;
+                y: 220px;
+                width: root.heat-w - 2 * Spacing.md;
+                text: ResultView.heat-detail != "" ? ResultView.heat-detail : "Click a key to inspect it.";
+                font-family: ResultView.devanagari ? Typography.family-devanagari : Typography.family-ui;
+                font-size: Typography.size-caption;
+                font-weight: Typography.weight-semibold;
+                color: ResultView.heat-detail != "" ? Theme.primary : Theme.text-tertiary;
+                overflow: elide;
+            }
+
+            Text {
+                x: Spacing.md;
+                y: 240px;
+                width: root.heat-w - 2 * Spacing.md;
+                height: 34px;
+                text: ResultView.heat-note;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-micro;
+                color: Theme.text-secondary;
+                wrap: word-wrap;
+                overflow: elide;
+            }
+
+            // Finger balance: share of presses per finger (bar) and accuracy.
+            Eyebrow {
+                x: Spacing.md;
+                y: 280px;
+                text: "FINGER BALANCE · share of presses, accuracy";
+            }
+
+            for f[i] in ResultView.fingers: Rectangle {
+                x: Spacing.md + i * ((root.heat-w - 2 * Spacing.md) / 9);
+                y: 298px;
+                width: (root.heat-w - 2 * Spacing.md) / 9 - 4px;
+                height: 74px;
+
+                Rectangle {
+                    x: (parent.width - 14px) / 2;
+                    y: 0px;
+                    width: 14px;
+                    height: 40px;
+                    border-radius: 3px;
+                    background: Theme.bg-sunken;
+                }
+
+                Rectangle {
+                    x: (parent.width - 14px) / 2;
+                    y: 40px * (1 - f.level);
+                    width: 14px;
+                    height: 40px * f.level;
+                    border-radius: 3px;
+                    background: f.cls == 1 ? Theme.success
+                        : f.cls == 2 ? Theme.warning
+                        : f.cls == 3 ? Theme.error : Theme.border-strong;
+                }
+
+                Text {
+                    x: 0px;
+                    y: 44px;
+                    width: parent.width;
+                    text: f.label;
+                    font-family: Typography.family-ui;
+                    font-size: 9px;
+                    color: Theme.text-secondary;
+                    horizontal-alignment: center;
+                    overflow: elide;
+                }
+
+                Text {
+                    x: 0px;
+                    y: 58px;
+                    width: parent.width;
+                    text: f.pct;
+                    font-family: Typography.family-mono;
+                    font-size: 9px;
+                    color: f.cls == 3 ? Theme.error : Theme.text-tertiary;
+                    horizontal-alignment: center;
+                }
+            }
+        }
+
+        // Row 4: weak keys + recovery drill (RS-07).
+        Card {
+            x: root.pad;
+            y: root.gap * 4 + root.row1-h + root.kpi-h + root.row3-h;
+            width: root.diff-w;
+            height: root.row4-h;
+
+            VerticalLayout {
+                padding: Spacing.md;
+                spacing: 2px;
+                alignment: start;
+
+                Eyebrow {
+                    text: ResultView.weak-keys.length == 0 ? "WEAK KEYS · none this time" : "WEAK KEYS";
+                }
+
+                for k in ResultView.weak-keys: HorizontalLayout {
+                    height: 22px;
+                    spacing: Spacing.lg;
+                    Text {
+                        width: 56px;
+                        text: k.unit;
+                        font-family: ResultView.devanagari ? Typography.family-devanagari : Typography.family-mono;
+                        font-size: Typography.size-body-sm;
+                        font-weight: Typography.weight-bold;
+                        color: Theme.error;
+                        vertical-alignment: center;
+                    }
+
+                    Text {
+                        width: root.diff-w * 0.4;
+                        text: k.keys;
+                        font-family: Typography.family-mono;
+                        font-size: Typography.size-caption;
+                        color: Theme.text-primary;
+                        vertical-alignment: center;
+                        overflow: elide;
+                    }
+
+                    Text {
+                        text: k.detail;
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-caption;
+                        color: Theme.text-secondary;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+
+            RadhaButton {
+                x: parent.width - self.width - Spacing.md;
+                y: Spacing.sm;
+                text: "Recovery drill (~2 min)";
+                compact: true;
+                variant: ButtonVariant.Secondary;
+                enabled: ResultView.drill-available;
+                clicked => {
+                    ResultView.drill();
+                }
+            }
+        }
+
+        // Row 4: session details.
+        Card {
+            x: root.pad + root.diff-w + root.gap;
+            y: root.gap * 4 + root.row1-h + root.kpi-h + root.row3-h;
+            width: root.heat-w;
+            height: root.row4-h;
+
+            VerticalLayout {
+                padding: Spacing.md;
+                spacing: Spacing.xs;
+                alignment: start;
+
+                Eyebrow {
+                    text: "SESSION";
+                }
+
+                for d in [
+                    { l: "Time", v: ResultView.time },
+                    { l: "Consistency", v: ResultView.consistency },
+                    { l: "Word accuracy", v: ResultView.word-accuracy },
+                    { l: "Uncorrected errors", v: ResultView.errors },
+                ]: HorizontalLayout {
+                    Text {
+                        horizontal-stretch: 1;
+                        text: d.l;
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-caption;
+                        color: Theme.text-secondary;
+                    }
+
+                    Text {
+                        text: d.v;
+                        font-family: Typography.family-mono;
+                        font-size: Typography.size-caption;
+                        font-weight: Typography.weight-bold;
+                        color: Theme.text-primary;
+                    }
+                }
+
+                Text {
+                    width: root.heat-w - 2 * Spacing.md;
+                    text: ResultView.drill-preview;
+                    font-family: ResultView.devanagari ? Typography.family-devanagari : Typography.family-mono;
+                    font-size: Typography.size-micro;
+                    color: Theme.text-tertiary;
+                    overflow: elide;
+                }
+            }
+        }
+    }
+
+    // Scroll thumb: where the view is in the report, and that there is more.
+    Rectangle {
+        property <length> track: body.height - 8px;
+        property <float> shown: Math.min(1, body.height / Math.max(1px, body.content-height));
+        visible: self.shown < 1;
+        x: root.width - 8px;
+        y: body.y + 4px + self.track * Math.max(0, Math.min(1 - self.shown, -body.content-y / Math.max(1px, body.content-height)));
+        width: 5px;
+        height: Math.max(24px, self.track * self.shown);
+        border-radius: 2.5px;
+        background: Theme.primary-light;
+    }
+
+    // --- Actions (RS-08) ----------------------------------------------------------
+    Rectangle {
+        x: 0px;
+        y: root.height - root.dock-h;
+        width: root.width;
+        height: root.dock-h;
+        background: Theme.bg-surface;
+
+        Rectangle {
+            x: 0px;
+            y: 0px;
+            width: parent.width;
+            height: 1px;
+            background: Theme.border-soft;
+        }
+
+        HorizontalLayout {
+            padding-left: root.pad;
+            padding-right: root.pad;
+            spacing: Spacing.md;
+            alignment: center;
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "Retry";
+                    clicked => {
+                        ResultView.retry();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: ResultView.next-label;
+                    variant: ButtonVariant.Secondary;
+                    enabled: ResultView.has-next;
+                    clicked => {
+                        ResultView.next();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "Exercise List";
+                    variant: ButtonVariant.Secondary;
+                    clicked => {
+                        ResultView.list();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "Home";
+                    variant: ButtonVariant.Ghost;
+                    clicked => {
+                        ResultView.home();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "Export scorecard";
+                    variant: ButtonVariant.Secondary;
+                    clicked => {
+                        ResultView.export-open = !ResultView.export-open;
+                    }
+                }
+            }
+        }
+    }
+
+    // --- Export scorecard (RS-09) ---------------------------------------------------
+    // A light, print-safe HTML file written by Rust to the path the user keeps
+    // or types. Titled "Practice scorecard" unless the rules are Official.
+    if ResultView.export-open: Rectangle {
+        x: root.width - self.width - root.pad;
+        y: root.height - root.dock-h - self.height - Spacing.sm;
+        width: Math.min(520px, root.width - 2 * root.pad);
+        height: 196px;
+        border-radius: Radius.lg;
+        background: Theme.bg-surface;
+        border-width: Stroke.hairline;
+        border-color: Theme.border-strong;
+        drop-shadow-blur: 8px;
+        drop-shadow-offset-y: 3px;
+        drop-shadow-color: Theme.shadow.with-alpha(0.18);
+
+        TouchArea { }
+
+        VerticalLayout {
+            padding: Spacing.md;
+            spacing: Spacing.sm;
+
+            Eyebrow {
+                text: "EXPORT · " + ResultView.scorecard-title + " (HTML)";
+            }
+
+            TextField {
+                width: Math.min(520px, root.width - 2 * root.pad) - 2 * Spacing.md;
+                text <=> ResultView.export-path;
+                mono: true;
+                placeholder: "Full path ending in .html";
+            }
+
+            HorizontalLayout {
+                spacing: Spacing.sm;
+                alignment: start;
+                RadhaButton {
+                    text: "Save HTML";
+                    compact: true;
+                    clicked => {
+                        ResultView.export-scorecard(ResultView.export-path);
+                    }
+                }
+
+                if ResultView.exam: RadhaButton {
+                    text: "Candidate info";
+                    compact: true;
+                    variant: ButtonVariant.Secondary;
+                    clicked => {
+                        UtilityView.open-requested("candidate");
+                    }
+                }
+
+                RadhaButton {
+                    text: "Close";
+                    compact: true;
+                    variant: ButtonVariant.Ghost;
+                    clicked => {
+                        ResultView.export-open = false;
+                    }
+                }
+            }
+
+            Text {
+                width: Math.min(520px, root.width - 2 * root.pad) - 2 * Spacing.md;
+                height: 34px;
+                text: ResultView.export-status;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                color: Theme.text-secondary;
+                wrap: word-wrap;
+                overflow: elide;
+            }
+        }
+    }
+}

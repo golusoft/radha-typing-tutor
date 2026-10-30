@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Text\\IsolatedMatraSegmentationTests.cs",
+    "sha256": "3ab3048f6d66f78bbc36f5fee263e6be511c0b4192ac4b8bc27c121508fce2f3",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "Isolated_Matras_Separated_By_Spaces_Are_Each_Their_Own_Cluster#anusvara",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "\u0902 \u0902 \u0902" },
+      "golu_expected": ["\u0902", " ", "\u0902", " ", "\u0902"],
+      "radha_expected": { "clusters": ["\u0902", " ", "\u0902", " ", "\u0902"] }
+    },
+    {
+      "name": "Isolated_Matras_Separated_By_Spaces_Are_Each_Their_Own_Cluster#e_matra",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "\u0947 \u0947" },
+      "golu_expected": ["\u0947", " ", "\u0947"],
+      "radha_expected": { "clusters": ["\u0947", " ", "\u0947"] }
+    },
+    {
+      "name": "Isolated_Matras_Separated_By_Spaces_Are_Each_Their_Own_Cluster#i_matra_ka",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "\u093F \u0915 \u093F" },
+      "golu_expected": ["\u093F", " ", "\u0915", " ", "\u093F"],
+      "radha_expected": { "clusters": ["\u093F", " ", "\u0915", " ", "\u093F"] }
+    },
+    {
+      "name": "An_Isolated_Half_Form_Does_Not_Swallow_The_Following_Space#sha",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "\u0936\u094D \u0936\u094D" },
+      "golu_expected": ["\u0936\u094D", " ", "\u0936\u094D"],
+      "radha_expected": { "clusters": ["\u0936\u094D", " ", "\u0936\u094D"] }
+    },
+    {
+      "name": "An_Isolated_Half_Form_Does_Not_Swallow_The_Following_Space#end_of_text",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "\u0915\u094D" },
+      "golu_expected": ["\u0915\u094D"],
+      "radha_expected": { "clusters": ["\u0915\u094D"] }
+    },
+    {
+      "name": "An_Isolated_Half_Form_Does_Not_Swallow_The_Following_Space#digit",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "\u0923\u094D\u09472" },
+      "golu_expected": ["\u0923\u094D\u0947", "2"],
+      "radha_expected": { "clusters": ["\u0923\u094D\u0947", "2"] }
+    },
+    {
+      "name": "The_Real_Cbi_HomeRow_Drill_Advances_One_Code_Point_Per_Cell",
+      "kind": "segment",
+      "tag": "must_match",
+      "reason": "Golu asserts properties (cells of length 1 or 2, 2-code-point cells are half forms, no space+mark cell, lossless); the explicit list below satisfies all of them.",
+      "input": { "text": "\u0902 \u0902 \u0902 \u0947 \u0947 \u0947 \u0915 \u0915 \u093F \u093F \u0936\u094D \u0936\u094D" },
+      "golu_expected": { "cell lengths": "1 or 2", "2-code-point cells": "consonant + virama only", "space + mark cells": "none", "lossless": true },
+      "radha_expected": { "clusters": ["\u0902", " ", "\u0902", " ", "\u0902", " ", "\u0947", " ", "\u0947", " ", "\u0947", " ", "\u0915", " ", "\u0915", " ", "\u093F", " ", "\u093F", " ", "\u0936\u094D", " ", "\u0936\u094D"] }
+    },
+    {
+      "name": "Real_Words_Keep_Their_Conjuncts_In_One_Cluster#namaste",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "\u0928\u092E\u0938\u094D\u0924\u0947" },
+      "golu_expected": { "cells": 3 },
+      "radha_expected": { "clusters": ["\u0928", "\u092E", "\u0938\u094D\u0924\u0947"] }
+    },
+    {
+      "name": "Real_Words_Keep_Their_Conjuncts_In_One_Cluster#kshetra",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "\u0915\u094D\u0937\u0947\u0924\u094D\u0930" },
+      "golu_expected": { "cells": 2 },
+      "radha_expected": { "clusters": ["\u0915\u094D\u0937\u0947", "\u0924\u094D\u0930"] }
+    },
+    {
+      "name": "Real_Words_Keep_Their_Conjuncts_In_One_Cluster#rashtriya",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "\u0930\u093E\u0937\u094D\u091F\u094D\u0930\u0940\u092F" },
+      "golu_expected": { "cells": 3 },
+      "radha_expected": { "clusters": ["\u0930\u093E", "\u0937\u094D\u091F\u094D\u0930\u0940", "\u092F"] }
+    },
+    {
+      "name": "Real_Words_Keep_Their_Conjuncts_In_One_Cluster#vidyalaya",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "\u0935\u093F\u0926\u094D\u092F\u093E\u0932\u092F" },
+      "golu_expected": { "cells": 4 },
+      "radha_expected": { "clusters": ["\u0935\u093F", "\u0926\u094D\u092F\u093E", "\u0932", "\u092F"] }
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+// BICC — Bihar Civil Courts clerical practice pool (fictional Kamalpur Civil Court Office)
+
+#BICC-001 | a district court filing counter register
+- The filing counter register records each document filed with a serial number, the case details and the filing party.
+- The time of filing is noted, since limitation may depend on the exact date.
+- Documents filed in a pending case are entered against that case number.
+- The register is closed at the end of the counter hours and signed by the filing clerk.
+
+#BICC-002 | receiving a petition and assigning a diary number
+- Every petition received is first given a diary number in the diary register.
+- The diary number links the petition to its later registration number.
+- The diary register shows the date, the nature of the petition and the advocate's name.
+- Petitions returned for defects keep their diary number when they are filed again.
+
+#BICC-003 | a court date and hearing schedule list
+- The hearing schedule lists the matters fixed before each court for every day of the week.
+- Each line shows the case number, the stage and the time slot if one is given.
+- Copies of the schedule are given to the reader of each court.
+- Changes are written in the schedule in red and initialled by the clerk.
+
+#BICC-004 | a summons dispatch and acknowledgement register
+- Each summons sent out is entered with the case number, the addressee and the date of dispatch.
+- Acknowledgements received from the post office are pasted or noted against the entry.
+- Summonses returned without service are entered with the reason given.
+- The register is checked before each hearing to see whether service is complete.
+
+#BICC-005 | the status of a certified copy request
+- A certified copy request moves through the stages of receipt, search, preparation and delivery.
+- The status register shows the current stage of each request.
+- Requests delayed because a record is with another section are marked with the section's name.
+- The applicant can ask for the status by quoting the request number.
+
+#BICC-006 | cause list preparation for a court day
+- The cause list for a court day is prepared from the case diary of each court.
+- Matters are listed in the order fixed by the presiding officer.
+- The list is typed, checked and displayed outside the courtroom before the court sits.
+- A copy is kept in the office as a record of the day's listing.
+
+#BICC-007 | document pagination and an annexure index
+- Every page of a case record is numbered in sequence before the record is bound.
+- The annexure index shows each annexure, its description and the pages it covers.
+- Loose papers are never left unnumbered inside a file.
+- The clerk certifies the total number of pages on the index.
+
+#BICC-008 | court fee and receipt details
+- Court fee paid on each document is recorded with the amount and the receipt number.
+- The fee is checked against the schedule that applies to the document.
+- Deficit fee is noted and the party is informed of the amount to be paid.
+- The fee register is balanced at the end of each month.
+
+#BICC-009 | a clerk's daily work summary
+- The daily work summary lists the filings received, the copies issued and the files moved.
+- It notes any work left pending and the reason.
+- The figures are taken from the registers of the day.
+- The summary is submitted to the head clerk before the office closes.
+
+#BICC-010 | moving a case file between sections
+- When a case file moves from one section to another, the movement is entered in the file movement register.
+- The receiving section signs for the file and notes the time of receipt.
+- The file cover shows the current section in pencil, updated at every move.
+- Lost files are traced through the movement register.
+
+#BICC-011 | a court visitor enquiry and direction note
+- Visitors at the enquiry counter are told which court their case is in and how to reach it.
+- The enquiry clerk checks the case number in the register before giving directions.
+- A simple map of the court building is kept at the counter.
+- Visitors are not given information about cases in which they are not parties.
+
+#BICC-012 | a record room file retrieval request
+- A retrieval request names the case number, the year and the reason for which the file is needed.
+- The record keeper finds the file using the record room index.
+- The file is issued against a signature, and the date of return is fixed.
+- Requests that cannot be met are answered with a note giving the reason.
+
+#BICC-013 | a witness attendance register
+- The witness attendance register records each witness who appears with the case number and the date.
+- The time of arrival and the time of release are noted.
+- Witnesses entitled to expenses are shown with the amount paid.
+- The register is signed by the reader of the court at the end of the day.
+
+#BICC-014 | a court holiday and working day notice
+- The notice lists the holidays of the civil courts for the year.
+- It mentions any working Saturdays and the arrangements for urgent matters.
+- The notice is displayed at the entrance and in the bar room.
+- Changes during the year are notified through a fresh notice.
+
+#BICC-015 | preparing a list of pending applications
+- The list shows every pending application with its number, the case it belongs to and the date of filing.
+- Applications are grouped by court and sorted by date.
+- The total number of pending applications is shown for each court.
+- The list is updated weekly and sent to the presiding officers.
+
+#BICC-016 | scanning and archiving old case files
+- Old case files are scanned in their original order, page by page.
+- Fragile pages are handled carefully and scanned without unfolding them by force.
+- Scanned files are named with the case number and year and stored on the court server.
+- The scanned record is checked against the paper file before the file is archived.
+
+#BICC-017 | civil court procedure in general
+- A civil case begins with the filing of a plaint and the payment of court fee.
+- The court issues summons to the defendant, who files a written statement.
+- The parties lead evidence, and the court hears arguments before deciding the case.
+- The decree is drawn up in accordance with the judgment.
+
+#BICC-018 | a formal letter to a government department
+- A letter from the court office to a government department refers to the case and the court's order.
+- It states clearly what the department is required to do or to send.
+- The letter gives the date by which a reply is expected.
+- A copy of the order is enclosed with the letter.
+
+#BICC-019 | maintaining order in the court registry
+- The registry follows a fixed arrangement for files, registers and counters.
+- Each clerk is responsible for a defined set of registers.
+- Registers are kept up to date every day, so that no backlog builds up.
+- Visitors are served in turn at the counters.
+
+#BICC-020 | updating case details in a digital register
+- Case details are updated in the digital register after every hearing.
+- The update includes the stage, the next date and a short note of the order.
+- The clerk checks the case number before saving the update.
+- The register is backed up at the end of each day.
+
+#BICC-021 | checking case numbers and party names
+- Each case number is checked against the institution register.
+- Party names are compared with the plaint, including initials and the order of names.
+- Spelling differences are noted and referred to the court if a correction is needed.
+- The checked list is signed by the clerk.
+
+#BICC-022 | preparing a daily dispatch statement
+- The daily dispatch statement lists every letter and summons sent out on the day.
+- It shows the dispatch number, the addressee and the mode of dispatch.
+- The total number of items and the postage spent are given at the end.
+- The statement is attached to the dispatch register.
+
+#BICC-023 | the confidentiality and proper handling of court documents
+- Court documents are handled only by staff who need them for their work.
+- Documents are never left on open counters where visitors can read them.
+- Sealed documents are kept in a separate locked cabinet.
+- Copies are issued only through the copying section.
+
+#BICC-024 | a short summary of court proceedings
+- The summary records the date, the court, the parties present and the order passed.
+- It is written in neutral and precise language.
+- The summary is checked against the order sheet.
+- It is placed on the file for future reference.
+
+#BICC-025 | a civil court clerical English practice simulation
+- This practice passage uses the language of civil court registers, notices and letters.
+- It contains case numbers, dates and fictional names of parties.
+- The passage is for general practice and is not linked to any official test rule.
+- The typist should aim for accuracy first and speed second.

@@ -1,0 +1,151 @@
+// CAPF — BSF / CAPF Head Constable (Ministerial) (fictional Border Wing Administrative Office)
+
+#CAPF-001 | updating and verifying a personnel record
+- A personnel record is updated only when an order or an approved document supports the change.
+- The clerk compares the new entry with the order line by line before saving it.
+- The date of the order and its number are entered alongside every change.
+- A printout of the updated record is checked by a second clerk before it is filed.
+
+#CAPF-002 | a unit administrative office notice
+- An office notice announces arrangements such as changed working hours or a new reporting procedure.
+- It names the date from which the arrangement applies and the sections affected.
+- The notice is short and avoids abbreviations that new staff might not know.
+- Copies are placed on every section's notice board and acknowledged by the section clerks.
+
+#CAPF-003 | a duty attendance and leave summary
+- The summary shows, for each section, the strength on the roll and the number present, on leave and on duty elsewhere.
+- The figures in each row add up to the strength on the roll.
+- Long leave and medical leave are shown separately from short leave.
+- The summary is prepared every Monday from the daily attendance sheets.
+
+#CAPF-004 | a training calendar and participant register
+- The training calendar lists courses for the year with their dates, venues and number of seats.
+- The participant register records each nominated member with the course and the date of joining.
+- Members who cannot attend are replaced from a waiting list, and the change is recorded.
+- The register shows whether each participant completed the course.
+
+#CAPF-005 | a stores inventory and equipment handover
+- At a handover, the outgoing store keeper and the incoming store keeper count every item together.
+- The handover list shows each item, the quantity in the ledger and the quantity found.
+- Differences are recorded on the list, which both store keepers sign.
+- The signed list is sent to the officer in charge, who approves the handover.
+
+#CAPF-006 | a vehicle maintenance and movement log
+- The movement log records each trip with the vehicle number, the driver, the destination and the odometer readings.
+- Distance is worked out from the two readings and checked against the route.
+- The maintenance section records services, repairs and tyre changes in the same log.
+- The log is closed every month and the total distance and fuel are summarised.
+
+#CAPF-007 | an official communication receipt register
+- Incoming communications are entered with the reference number, the date, the sender and a brief subject.
+- Each entry is marked to the section that will deal with it.
+- The section signs the register when it collects the communication.
+- A weekly check identifies communications that have not yet been answered.
+
+#CAPF-008 | a medical facility appointment schedule
+- The schedule lists appointment slots for each day at the unit medical facility.
+- Members book a slot through their section, and the booking is entered in the schedule.
+- Emergency cases are seen at once and recorded at the end of the day's list.
+- Missed appointments are noted so that they can be rebooked.
+
+#CAPF-009 | an accommodation request and allocation record
+- A request for accommodation records the member's name, number, family size and date of request.
+- Requests are placed on a waiting list in the order of their dates.
+- When a quarter falls vacant, it is allotted to the first eligible member on the list.
+- The allotment order and the date of occupation are entered in the record.
+
+#CAPF-010 | a welfare programme registration list
+- The registration list records members and family members who join a welfare programme.
+- It shows the programme name, the dates and the contact number of each participant.
+- The list is closed on the last date for registration and a copy goes to the organisers.
+- Attendance at each session is marked on a copy of the same list.
+
+#CAPF-011 | a summary of a community outreach event
+- The summary describes the purpose of the event, the place and the date.
+- It gives the number of people who attended and the activities held.
+- Feedback received from local residents is summarised in a few sentences.
+- The summary ends with suggestions for the next event.
+
+#CAPF-012 | a public safety awareness notice
+- The notice explains simple safety steps for people living near a camp or a range area.
+- It tells residents which areas they should not enter and why.
+- Contact numbers for help are printed in bold at the end.
+- The notice is issued in plain language and displayed in public places nearby.
+
+#CAPF-013 | a disaster relief material stock register
+- The register lists relief materials such as tents, blankets and water containers with their quantities.
+- Receipts and issues are entered with the date and the authority for each movement.
+- The balance of each item is worked out after every entry.
+- The register is checked before the monsoon season, and shortages are reported.
+
+#CAPF-014 | a weather advisory distribution record
+- When a weather advisory is received, it is entered with the time of receipt and the area it covers.
+- The advisory is passed to every post in the area, and the time of passing is recorded for each.
+- Posts acknowledge the advisory, and the time of acknowledgement is entered.
+- Posts that do not acknowledge are contacted again by another means.
+
+#CAPF-015 | an audit of a staff contact directory
+- The contact directory lists each officer and section with telephone numbers and extensions.
+- During the audit, every number is called once to confirm that it is working.
+- Entries for staff who have moved are removed, and new staff are added.
+- The audited directory is circulated with the date of the audit printed on the cover.
+
+#CAPF-016 | travel claim and allowance verification
+- A travel claim is checked against the movement order, the tickets and the dates of journey.
+- Daily allowance is worked out for the number of days the member was away on duty.
+- Claims without supporting documents are returned with a note explaining what is needed.
+- Verified claims are entered in the claims register before payment.
+
+#CAPF-017 | document control and file retention
+- Files are numbered according to the office filing scheme, so that related papers stay together.
+- Each file shows its opening date and, when closed, its closing date.
+- Closed files are kept for the period fixed for their class of records.
+- A list of files due for review is prepared every year.
+
+#CAPF-018 | monthly unit administration statistics
+- The monthly statistics give the number of letters received and sent, files opened and cases settled.
+- Each figure is compared with the previous month to show the trend.
+- The statistics are drawn from the registers and checked by the section heads.
+- A short note explains any figure that has changed sharply.
+
+#CAPF-019 | a procurement request and approval note
+- A procurement request states the item, the quantity, the estimated cost and the reason for purchase.
+- The note shows the budget head from which the cost will be met.
+- The competent authority approves the request in writing before the purchase process begins.
+- The approval number is quoted on every later paper relating to the purchase.
+
+#CAPF-020 | a training completion certificate register
+- The register records each certificate issued with its number, the member's details and the course.
+- Certificate numbers run in sequence, and spoiled certificates are recorded rather than discarded.
+- The register shows the date on which each certificate was handed over.
+- A duplicate certificate is issued only on a written request and is marked as a duplicate.
+
+#CAPF-021 | an emergency contact and assistance list
+- The assistance list gives the nearest hospital, fire station and police station for the unit area.
+- Each entry has a telephone number and the distance from the unit office.
+- The list is checked twice a year and updated when a number changes.
+- Copies are kept at the guard room and in every section office.
+
+#CAPF-022 | data confidentiality in personnel records
+- Personnel records contain personal details that are shared only for official purposes.
+- Access to the personnel database is limited to the staff who maintain it.
+- Paper records are kept in locked cabinets, and the keys are held by a named clerk.
+- Requests for information from outside the force are dealt with by the officer authorised to reply.
+
+#CAPF-023 | a report on public service coordination
+- The report describes how the unit worked with local offices during a public event or an emergency.
+- It lists the offices involved, the tasks shared and the time taken for each task.
+- Problems in coordination are described without blaming any individual.
+- The report ends with practical suggestions for better coordination.
+
+#CAPF-024 | an accuracy drill with names, dates and serial numbers
+- The accuracy drill contains many names, dates and serial numbers close together.
+- Serial numbers often differ by a single digit, so each one must be read carefully.
+- Dates are written in words and figures, and both forms must be copied as shown.
+- The aim of the drill is zero errors, even if the speed is slightly lower.
+
+#CAPF-025 | a timed ministerial typing passage
+- The timed passage resembles the routine office work of a ministerial clerk in a force headquarters.
+- It contains formal sentences, file numbers and short lists.
+- The typist should keep going steadily until the time is over.
+- The names, offices and numbers in the passage are fictional.

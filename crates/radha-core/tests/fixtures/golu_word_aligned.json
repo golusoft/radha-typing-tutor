@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Engine\\WordAlignedTypingTests.cs",
+    "sha256": "4dc168253b7d1ef06b4c560deea887e5f19ff8730e0d27435d35a5db22f7afd3",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "Extra_Letters_Are_Accepted_And_Shown_But_Take_No_Target_Slot",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "us which", "events": [ { "at_ms": 0, "type": "text", "text": "uss" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Position": 2, "OverflowChars": ["s"], "FullMistakes": 1 },
+      "radha_expected": { "cursor": 2, "extra": 1, "error_count": 1, "outcomes": "ccx", "typed_text": "uss" }
+    },
+    {
+      "name": "Nothing_Is_Blocked_However_Long_The_Overrun",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "like an exercise", "events": [ { "at_ms": 0, "type": "text", "text": "lieeeeeeeeeeee" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "OverflowChars.Count": 10, "Position": 4 },
+      "radha_expected": { "cursor": 4, "extra": 10, "wrong": 1, "outcomes": "ccwcxxxxxxxxxx" }
+    },
+    {
+      "name": "Space_Clears_The_Overflow_And_Realigns_On_The_Next_Word",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "us which", "events": [ { "at_ms": 0, "type": "text", "text": "uss " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "OverflowChars": [], "Position": 3, "TargetText[Position]": "w" },
+      "radha_expected": { "cursor": 3, "current_word": "which", "outcomes": "ccxc" }
+    },
+    {
+      "name": "An_Overrun_Word_Is_Marked_Wrong",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "us which", "events": [ { "at_ms": 0, "type": "text", "text": "uss " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CharStates.Take(2)": "all Wrong" },
+      "radha_expected": { "word_outcomes": "I", "word_states": "WWPPPPPP" }
+    },
+    {
+      "name": "Backspace_Takes_Back_The_Overflow_Letters_First",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "us which", "events": [ { "at_ms": 0, "type": "text", "text": "uss" }, { "at_ms": 0, "type": "backspace", "count": 1 } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "OverflowChars": [], "Position": 2, "FullMistakes": 0 },
+      "radha_expected": { "cursor": 2, "error_count": 0, "extra": 0, "backspaces": 1 }
+    },
+    {
+      "name": "Backspace_Past_The_Overflow_Then_Enters_The_Word",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "us which", "events": [ { "at_ms": 0, "type": "text", "text": "uss" }, { "at_ms": 0, "type": "backspace", "count": 2 } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Position": 1 },
+      "radha_expected": { "cursor": 1, "typed_text": "u" }
+    },
+    {
+      "name": "The_Reference_Scenario_Keeps_Every_Later_Word_Aligned",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "Practice is like an exercise and mantra for us which brings our physical", "events": [ { "at_ms": 0, "type": "text", "text": "hfdddkkfljghlgjhgljhfglfgjl is lieeeeeeeeeeee an exercise and majdf for uss which brings our " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "TargetText.Substring(Position)": "physical", "wrong words": ["Practice", "like", "mantra", "us"], "correct words": ["is", "an", "exercise", "and", "for", "which", "brings", "our"] },
+      "radha_expected": { "cursor": 64, "current_word": "physical", "word_outcomes": "ICICCCICICCC", "wrong": 12, "extra": 30, "missing": 1 }
+    },
+    {
+      "name": "The_Typed_Text_Is_Exactly_What_Was_Pressed",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "us which brings", "events": [ { "at_ms": 0, "type": "text", "text": "uss which " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Shown": "uss which " },
+      "radha_expected": { "typed_text": "uss which " }
+    },
+    {
+      "name": "An_Unfinished_Word_Does_Not_Grow_Letters_On_Screen",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "visited every", "events": [ { "at_ms": 0, "type": "text", "text": "visite every" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Shown": "visite every" },
+      "radha_expected": { "typed_text": "visite every", "missing": 1 }
+    },
+    {
+      "name": "Without_The_Flag_Typing_Is_Still_Purely_Positional",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "Radha has one matcher and it is word-aligned (locked design, matcher.rs module doc); there is no positional mode, so the third letter of \"uss\" is Extra and the caret stays at 2.",
+      "input": { "unit": "char", "target": "us which", "events": [ { "at_ms": 0, "type": "text", "text": "uss" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Position": 3, "OverflowChars": [] },
+      "radha_expected": { "cursor": 2, "extra": 1 }
+    },
+    {
+      "name": "A_Perfectly_Typed_Passage_Still_Scores_Perfectly",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "us which brings", "events": [ { "at_ms": 0, "type": "text", "text": "us which brings" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "IsComplete": true, "FullMistakes": 0, "HalfMistakes": 0, "AccuracyPercent": 100 },
+      "radha_expected": { "finished": true, "state": "Complete", "error_count": 0, "unit_half": 0, "unit_full": 0, "accuracy": 100.0 }
+    }
+  ]
+}

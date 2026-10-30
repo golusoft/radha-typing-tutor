@@ -1,0 +1,151 @@
+// CRPF — Head Constable (Ministerial) (fictional Thirty-Fourth Training Unit Office)
+
+#CRPF-001 | a unit office attendance and leave register
+- The attendance register lists every member of the unit office with a column for each day of the month.
+- Leave is entered with its type, such as earned leave or casual leave, and the sanction order number.
+- Members on temporary duty elsewhere are shown with a code and the name of the place of duty.
+- The register is closed and signed by the office in charge on the last working day of the month.
+
+#CRPF-002 | personnel service record verification
+- A service record is checked for the member's name, number, date of birth and date of enrolment.
+- Each posting, promotion and course is checked against the order that authorised it.
+- Gaps in the record are listed and referred to the office that holds the missing order.
+- The verified record is signed by the checking clerk and countersigned by the officer in charge.
+
+#CRPF-003 | a duty roster and shift handover note
+- The duty roster shows who is on duty at each post and for which hours.
+- The handover note lists pending tasks, messages received and any equipment issues.
+- The relieving member reads the handover note and signs it before the outgoing member leaves.
+- Copies of the roster are kept in the office so that changes can be traced later.
+
+#CRPF-004 | a training attendance and completion summary
+- The summary lists each trainee with the course name, the dates of attendance and the result.
+- Absences during training are recorded with the reason and the number of days missed.
+- Trainees who complete the course are shown with the certificate number issued to them.
+- The summary is sent to the personnel section for entry in the service records.
+
+#CRPF-005 | an equipment issue and return register
+- Each item issued is entered with its number, the name of the member who received it and the date of issue.
+- The member signs the register at the time of issue and again when the item is returned.
+- Items not returned by the due date are listed and followed up with the member's section.
+- The register is checked against the stock every month.
+
+#CRPF-006 | a vehicle logbook and maintenance entry
+- The logbook records each journey with the date, the purpose, the driver and the distance travelled.
+- Fuel drawn is entered with the quantity and the receipt number.
+- Maintenance entries record the work done, the workshop and the date on which the vehicle returned.
+- The logbook is inspected regularly, and the inspecting officer signs the page checked.
+
+#CRPF-007 | an official dispatch and receipt register
+- Every letter received is entered with its number, date, sender and subject before it is put up to an officer.
+- Every letter sent out is entered with its number, date, addressee and mode of dispatch.
+- Classified letters are entered in a separate register kept under lock.
+- Missing numbers in the dispatch series are investigated and explained in the register.
+
+#CRPF-008 | a medical appointment and referral record
+- The record lists each member who attends the medical inspection room with the date and time.
+- Referrals to a hospital are entered with the hospital name and the date of the appointment.
+- The record notes when the member returns to duty after treatment.
+- Medical details are kept confidential and shared only with those who need them.
+
+#CRPF-009 | pay and allowance details verification
+- Pay details are checked against the pay level and the date of the last increment.
+- Allowances are checked against the orders that make the member eligible for them.
+- Deductions such as fund contributions and loan recoveries are compared with the previous month.
+- Any difference is noted and referred to the accounts cell before the pay bill is passed.
+
+#CRPF-010 | a quarterly inventory of office supplies
+- The inventory lists each item of stationery and office supply with the opening stock for the quarter.
+- Receipts and issues during the quarter are added and subtracted to find the closing stock.
+- The closing stock is checked by a physical count, and any difference is explained.
+- Items below the minimum level are listed for fresh purchase.
+
+#CRPF-011 | preparing a unit office circular
+- The circular states its number, its date and the subject in the first lines.
+- Instructions are listed in numbered paragraphs, each with a single instruction.
+- The circular names the officer responsible for carrying out each instruction.
+- It is distributed to all sections, and each section acknowledges receipt.
+
+#CRPF-012 | the leave request and approval workflow
+- A leave request is submitted on the prescribed form with the dates and the address during leave.
+- The section in charge recommends the request and forwards it to the sanctioning officer.
+- The sanction order is issued with a number, and the leave is entered in the leave account.
+- The member reports back on the due date, and the date of rejoining is recorded.
+
+#CRPF-013 | an accommodation and facility maintenance request
+- A maintenance request names the building, the room and the defect, such as a leaking pipe or a broken window.
+- The request is entered in the maintenance register and passed to the works section.
+- The works section records the date of inspection and the date on which the repair was completed.
+- The occupant confirms in writing that the work has been done.
+
+#CRPF-014 | a training schedule and reporting instructions
+- The training schedule lists each session with the date, the time, the subject and the instructor.
+- Reporting instructions tell trainees where to report, what to bring and the time of arrival.
+- Any change to the schedule is notified at least a day in advance.
+- The schedule is displayed in the training hall and sent to every participating section.
+
+#CRPF-015 | a record room index for personnel files
+- Personnel files are arranged by the member's number, and the index lists each file with its location.
+- Files taken out of the record room are entered in a movement register with the borrower's name.
+- Returned files are checked for completeness before they are placed back on the shelf.
+- The index is updated whenever a file is opened, closed or transferred.
+
+#CRPF-016 | verification of an emergency contact list
+- The emergency contact list gives the name and telephone number of a person to contact for each member.
+- The list is checked every six months by asking each member to confirm the details.
+- Numbers that no longer work are replaced only with numbers given by the member in writing.
+- The list is kept in a sealed cover in the office and opened only in an emergency.
+
+#CRPF-017 | preparing a monthly administrative report
+- The monthly report covers strength, leave, training, discipline and welfare activities.
+- Figures in the report are taken from the registers and checked before they are typed.
+- Each heading has a short paragraph explaining any important change from the previous month.
+- The report is signed by the officer in charge and sent by the date fixed by the higher office.
+
+#CRPF-018 | a welfare notice for personnel families
+- The welfare notice informs families about medical camps, school admissions and welfare schemes.
+- It gives the dates, places and the names of the officers to contact.
+- The language of the notice is simple, so that every family member can understand it.
+- Copies are displayed in the family quarters and the welfare centre.
+
+#CRPF-019 | digitising historical service records
+- Old service records are scanned page by page and stored with the member's number as the file name.
+- Each scanned page is checked for clarity before the paper record is returned to the shelf.
+- An index of the scanned records is prepared so that a page can be found without opening every file.
+- The original paper records are preserved after scanning.
+
+#CRPF-020 | data accuracy in personnel information systems
+- Every change made in the personnel information system is supported by an order or a document.
+- Dates and numbers are entered with care, because pay and promotion depend on them.
+- Records are checked periodically against the paper service book.
+- Errors found are corrected through the proper channel, and the correction is logged.
+
+#CRPF-021 | a general safety and preparedness brief
+- The brief reminds staff where the fire extinguishers and first-aid boxes are kept.
+- It explains the alarm signal and the assembly point used in an evacuation.
+- Staff are asked to report unsafe wiring, blocked exits or damaged equipment at once.
+- A practice drill is held at regular intervals, and its result is recorded.
+
+#CRPF-022 | coordinating office logistics for a training event
+- Logistics for a training event include the hall, seating, projector, refreshments and stationery.
+- A checklist assigns each item to a named member with a deadline.
+- The office confirms the arrangements a day before the event and resolves any gaps.
+- After the event, the items used are returned and the expenditure is recorded.
+
+#CRPF-023 | a typed summary of administrative instructions
+- The summary condenses a long set of instructions into a few numbered points.
+- Each point keeps the meaning of the original instruction without adding anything new.
+- References to the original orders are given at the end of the summary.
+- The summary is checked by the officer who issued the instructions before it is circulated.
+
+#CRPF-024 | a drill on typing errors and a permitted-error ceiling
+- This drill explains how an error ceiling works in a typing test that allows a small share of mistakes.
+- The typist counts the errors in a practice passage and compares them with the words typed.
+- The exact ceiling and penalty depend on the notice for the cycle, so the app keeps them configurable.
+- Accuracy improves when the typist slows slightly at difficult words instead of rushing through them.
+
+#CRPF-025 | an English typing simulation for ministerial head constables
+- The simulation passage reflects the official letters, registers and reports handled by ministerial staff.
+- It mixes formal sentences with service numbers, dates and figures.
+- The typist should aim for steady speed and very few errors over the whole passage.
+- All names, units and numbers in the passage are fictional.

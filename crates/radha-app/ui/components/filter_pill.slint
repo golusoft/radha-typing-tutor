@@ -1,0 +1,135 @@
+// ============================================================================
+// FilterPill / TrackFilterBar — free-standing filter chips with counts
+// ============================================================================
+//
+// DESIGN.md Chapter 20.3. The v2 Home track filter ("All tracks 9 · English 3 ·
+// Hindi 3 · …") as separate pills instead of one segmented bar. Each pill can
+// carry a small count chip; the count is text, never a colour cue.
+//
+// States:
+//   idle    bg-surface, hairline border-soft, text-secondary
+//   hover   bg-raised
+//   active  primary fill, text-on-primary, semibold
+//   focus   2 px ring (primary; text-on-primary on the active fill).
+//           Tab reaches every pill; Space / Enter activates it.
+//
+// FilterPill raises `clicked()`, TrackFilterBar raises `selected(id)`; the owner
+// holds `current` (RULES.MD Rule 16). PillBar stays as it is until Home migrates
+// in P05.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Motion, Stroke } from "../theme/metrics.slint";
+
+/// One pill of a TrackFilterBar. An empty `count-text` hides the count chip.
+export struct FilterPillItem {
+    id: string,
+    label: string,
+    count-text: string,
+}
+
+export component FilterPill inherits Rectangle {
+    /// Pill text.
+    in property <string> label;
+    /// Count shown in a small chip after the label; empty hides the chip.
+    in property <string> count-text;
+    /// Whether this pill is the current filter.
+    in property <bool> active: false;
+
+    /// The pill was clicked.
+    callback clicked();
+
+    height: 30px;
+    horizontal-stretch: 0;
+    border-radius: Radius.pill;
+    background: root.active
+        ? Theme.primary
+        : (touch.has-hover ? Theme.bg-raised : Theme.bg-surface);
+    // Focus ring wins over the idle hairline; keyboard users get no hover cue.
+    border-width: focus.has-focus ? Stroke.thick : (root.active ? 0px : Stroke.hairline);
+    border-color: focus.has-focus
+        ? (root.active ? Theme.text-on-primary : Theme.primary)
+        : Theme.border-soft;
+
+    animate background { duration: Motion.fast; }
+
+    HorizontalLayout {
+        padding-left: Spacing.md;
+        padding-right: root.count-text == "" ? Spacing.md : Spacing.xs + 2px;
+        spacing: Spacing.xs + 2px;
+        alignment: center;
+
+        Text {
+            text: root.label;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            font-weight: root.active ? Typography.weight-semibold : Typography.weight-medium;
+            color: root.active ? Theme.text-on-primary : Theme.text-secondary;
+            vertical-alignment: center;
+        }
+
+        if root.count-text != "": Rectangle {
+            height: 20px;
+            y: (parent.height - self.height) / 2;
+            border-radius: Radius.pill;
+            background: root.active ? Theme.text-on-primary.with-alpha(0.2) : Theme.bg-sunken;
+
+            HorizontalLayout {
+                padding-left: Spacing.xs + 2px;
+                padding-right: Spacing.xs + 2px;
+                alignment: center;
+
+                Text {
+                    text: root.count-text;
+                    font-family: Typography.family-mono;
+                    font-size: Typography.size-micro;
+                    font-weight: Typography.weight-semibold;
+                    color: root.active ? Theme.text-on-primary : Theme.text-tertiary;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+
+    focus := FocusScope {
+        key-pressed(event) => {
+            // Space and Enter activate, matching platform button behaviour.
+            if (event.text == " " || event.text == "\n") {
+                root.clicked();
+                return EventResult.accept;
+            }
+            return EventResult.reject;
+        }
+    }
+
+    touch := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => {
+            focus.focus();
+            root.clicked();
+        }
+    }
+}
+
+export component TrackFilterBar inherits HorizontalLayout {
+    /// The filters, left to right.
+    in property <[FilterPillItem]> items;
+    /// Id of the active filter.
+    in property <string> current;
+
+    /// A pill was clicked. Carries its id.
+    callback selected(string);
+
+    spacing: Spacing.sm;
+    alignment: start;
+
+    for item in root.items: FilterPill {
+        label: item.label;
+        count-text: item.count-text;
+        active: item.id == root.current;
+        clicked => {
+            root.selected(item.id);
+        }
+    }
+}

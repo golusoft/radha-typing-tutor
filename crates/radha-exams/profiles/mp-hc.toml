@@ -1,0 +1,28 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "mp-hc"
+profile_version = 1
+display_name = "MP High Court — JJA & AG-3"
+body = "High Court of Madhya Pradesh"
+
+[notice]
+title = "Junior Judicial Assistant and Assistant Grade-3 — typing"
+note = "Primary notification not read in Radha; rules are unknown."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "Separate English and Hindi typing matter for JJA 2024"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://portal.mphc.gov.in/recruitment-result"
+
+[[reference_claims]]
+claim = "English 35 WPM · Hindi 30 WPM · 10 Min · Court Matter · Backspace allowed · Remington GAIL Unicode"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

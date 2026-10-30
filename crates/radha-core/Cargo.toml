@@ -11,3 +11,15 @@ publish.workspace = true
 [dependencies]
 thiserror.workspace = true
 log.workspace = true
+# Exact pins (P01 rule: new crates pin exact versions; no lock churn).
+# Grapheme clusters for akshar-aware Hindi matching (RULES.MD Rule 35):
+# 1.13.x implements Unicode 17 incl. the GB9c conjunct rule.
+unicode-segmentation = "=1.13.3"
+# NFC, so both spellings of a nukta letter (U+0958 vs U+0915 U+093C) compare
+# equal, and combining-mark detection for the Indic post-rule.
+unicode-normalization = "=0.1.25"
+
+[dev-dependencies]
+# Golden-vector fixtures are JSON (tests/fixtures/*.json).
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.151"

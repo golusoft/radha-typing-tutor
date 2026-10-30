@@ -33,8 +33,14 @@
 //! Those fall back to stderr, which is the honest limit of what is possible that
 //! early.
 
+use std::cell::RefCell;
+use std::path::Path;
+use std::rc::Rc;
+
 use anyhow::Context;
-use radha_content::ExerciseRepository;
+use radha_content::codec::sha256_hex;
+use radha_content::import::{find_bundle_file, parse_bundle_bytes, validate_target_bundle};
+use radha_content::{ContentTarget, ExerciseRepository};
 
 use crate::paths::AppPaths;
 use crate::settings::Settings;
@@ -86,11 +92,80 @@ pub fn init_environment() -> anyhow::Result<Environment> {
 pub struct App {
     pub paths: AppPaths,
     pub settings: Settings,
-    pub database: radha_db::Database,
+    /// The write connection. Shared with the UI, which writes a completed
+    /// session through it once (`Database::save_session`).
+    pub database: Rc<RefCell<radha_db::Database>>,
     /// Read access to exercise content, over its own connection to the same
-    /// database file (see `radha_db::repository` for why). Consumed by the
-    /// Exercise screen in Phase 5.
-    pub repository: radha_db::SqliteRepository,
+    /// database file (see `radha_db::repository` for why). Shared with the
+    /// Exercise and Result screens.
+    pub repository: Rc<radha_db::SqliteRepository>,
+    /// The local profile sessions are recorded under (created on first run).
+    pub profile_id: i64,
+}
+
+/// Seed every product and exam pool whose shipped bundle in `dir`
+/// (`<slug>.json.z`, or a legacy `<slug>.json`) differs from the one last
+/// imported, all in one transaction. A missing or broken bundle is logged
+/// and skipped: that product shows its "content coming" state and the app
+/// still starts (`RULES.MD` Rule 23). Returns how many passages were written.
+fn seed_content(database: &mut radha_db::Database, dir: &Path) -> usize {
+    let mut pending = Vec::new();
+    for target in ContentTarget::all() {
+        let Some(path) = find_bundle_file(dir, target) else {
+            // Number + Punctuation until Golu supplies it: honest empty state.
+            log::info!(
+                "No content bundle for {} in {}",
+                target.slug(),
+                dir.display()
+            );
+            continue;
+        };
+        let bytes = match std::fs::read(&path) {
+            Ok(bytes) => bytes,
+            Err(err) => {
+                log::warn!("Could not read {} ({err})", path.display());
+                continue;
+            }
+        };
+        let sha = sha256_hex(&bytes);
+        match radha_db::content_import::imported_bundle_sha(database, target) {
+            Ok(Some(done)) if done == sha => continue,
+            Ok(_) => {}
+            Err(err) => {
+                log::warn!("Could not check imports of {}: {err}", target.slug());
+                continue;
+            }
+        }
+        match parse_bundle_bytes(&path, &bytes).and_then(|b| {
+            validate_target_bundle(&b)?;
+            Ok(b)
+        }) {
+            Ok(bundle) => pending.push((path, bundle, sha)),
+            Err(err) => log::error!("Skipping content bundle {}: {err}", path.display()),
+        }
+    }
+    if pending.is_empty() {
+        return 0;
+    }
+    let batch: Vec<(&radha_content::import::ContentBundle, String)> =
+        pending.iter().map(|(_, b, sha)| (b, sha.clone())).collect();
+    match radha_db::import_bundles(database, &batch) {
+        Ok(report) => {
+            for (path, bundle, _) in &pending {
+                log::info!(
+                    "Seeded {} ({} passages) from {}",
+                    bundle.product,
+                    bundle.exercises.len(),
+                    path.display()
+                );
+            }
+            report.inserted + report.updated
+        }
+        Err(err) => {
+            log::error!("Content import rolled back: {err}");
+            0
+        }
+    }
 }
 
 impl App {
@@ -121,12 +196,21 @@ impl App {
 
         // --- Database -----------------------------------------------------
         let database_path = Self::database_path(&paths);
-        let database = radha_db::Database::open(&database_path).with_context(|| {
+        let mut database = radha_db::Database::open(&database_path).with_context(|| {
             format!(
                 "could not open the Radha database at {}",
                 database_path.display()
             )
         })?;
+
+        // --- Content and profile -------------------------------------------
+        let seeded = seed_content(&mut database, paths.content_dir());
+        if seeded > 0 {
+            log::info!("Imported {seeded} exercises on this launch");
+        }
+        let profile_id = database
+            .ensure_default_profile()
+            .context("could not create the local profile")?;
         log::info!(
             "Database ready at {} (schema version {})",
             database_path.display(),
@@ -150,8 +234,9 @@ impl App {
         let app = App {
             paths,
             settings,
-            database,
-            repository,
+            database: Rc::new(RefCell::new(database)),
+            repository: Rc::new(repository),
+            profile_id,
         };
         app.log_content_summary()?;
         Ok(app)
@@ -212,7 +297,7 @@ impl App {
         // Record the schema version the session ran against. Cheap, and it makes
         // "which schema was this user on when it broke?" answerable from a log
         // alone.
-        match self.database.schema_version() {
+        match self.database.borrow().schema_version() {
             Ok(version) => log::debug!("Closing database at schema version {version}"),
             Err(err) => log::warn!("Could not read schema version on exit: {err}"),
         }
@@ -223,7 +308,9 @@ impl App {
     /// Honour [`SIMULATE_FATAL_ENV`] in debug builds.
     fn check_simulated_fatal() -> anyhow::Result<()> {
         if cfg!(debug_assertions) && std::env::var_os(SIMULATE_FATAL_ENV).is_some() {
-            log::error!("{SIMULATE_FATAL_ENV} is set — simulating an unrecoverable startup failure");
+            log::error!(
+                "{SIMULATE_FATAL_ENV} is set — simulating an unrecoverable startup failure"
+            );
             anyhow::bail!(
                 "simulated fatal error ({SIMULATE_FATAL_ENV} was set). \
                  This verifies the top-level error boundary."
@@ -264,6 +351,77 @@ mod tests {
                 .expect("the repository should answer queries");
             assert!(exercises.is_empty(), "no content has been imported yet");
         }
+    }
+
+    #[test]
+    fn bootstrap_seeds_shipped_bundles_once_and_creates_a_profile() {
+        if std::env::var_os(SIMULATE_FATAL_ENV).is_some()
+            || std::env::var_os(SIMULATE_DB_FAILURE_ENV).is_some()
+        {
+            return;
+        }
+        use radha_content::import::{bundle_to_json, ContentBundle, ImportedExercise};
+
+        let temp = tempfile::tempdir().unwrap();
+        let paths = AppPaths::rooted_at(temp.path());
+        paths.ensure_exist().unwrap();
+        std::fs::create_dir_all(paths.content_dir()).unwrap();
+        let bundle = ContentBundle {
+            format: radha_content::import::BUNDLE_FORMAT,
+            product: "english-classic".into(),
+            source: "test".into(),
+            provisional: false,
+            exercises: (1..=3)
+                .map(|n| ImportedExercise {
+                    number: n,
+                    title: format!("Placeholder {n}"),
+                    category: None,
+                    difficulty: Some(1),
+                    content: format!("placeholder text {n}"),
+                    source_id: String::new(),
+                    ..ImportedExercise::default()
+                })
+                .collect(),
+        };
+        std::fs::write(
+            paths.content_dir().join("english-classic.json"),
+            bundle_to_json(&bundle).unwrap(),
+        )
+        .unwrap();
+        // A broken bundle for another product is skipped, not fatal.
+        std::fs::write(paths.content_dir().join("hindi-mastery-gail.json"), "{oops").unwrap();
+
+        let start = |paths: &AppPaths| {
+            App::bootstrap_services(Environment {
+                log_file: paths.log_file(),
+                paths: paths.clone(),
+            })
+            .expect("services start")
+        };
+        let app = start(&paths);
+        let english = app
+            .repository
+            .list_for_product(radha_content::ProductId::EnglishClassic)
+            .unwrap();
+        assert_eq!(english.len(), 3);
+        assert!(english.iter().all(|e| e.content.is_empty()), "lazy list");
+        let gail = radha_content::ProductId::HindiMastery(radha_layouts::LayoutId::RemingtonGail);
+        assert!(app.repository.list_for_product(gail).unwrap().is_empty());
+        assert!(app.profile_id > 0);
+        let first_profile = app.profile_id;
+        drop(app);
+
+        // A second launch neither duplicates content nor profiles.
+        let again = start(&paths);
+        assert_eq!(again.profile_id, first_profile);
+        assert_eq!(
+            again
+                .repository
+                .list_for_product(radha_content::ProductId::EnglishClassic)
+                .unwrap()
+                .len(),
+            3
+        );
     }
 
     #[test]
@@ -327,10 +485,13 @@ mod tests {
 
         let mut app = App {
             settings: Settings::first_run(),
-            database: radha_db::Database::open(paths.database_file()).unwrap(),
-            repository: radha_db::SqliteRepository::new(
+            database: Rc::new(RefCell::new(
                 radha_db::Database::open(paths.database_file()).unwrap(),
-            ),
+            )),
+            repository: Rc::new(radha_db::SqliteRepository::new(
+                radha_db::Database::open(paths.database_file()).unwrap(),
+            )),
+            profile_id: 1,
             paths: paths.clone(),
         };
         assert!(app.settings.first_launch);

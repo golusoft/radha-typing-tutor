@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Engine\\ClockArmingTests.cs",
+    "sha256": "4f3118508287c0452804b360af2873165ac682ce7f532ec17b34a23d34feef49",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "Elapsed_Is_Zero_Before_The_First_Keystroke_However_Long_The_User_Reads",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "abcdef", "events": [], "snapshot_at_ms": 120000 },
+      "golu_expected": { "Elapsed": 0, "GrossWpm": 0 },
+      "radha_expected": { "elapsed_seconds": 0.0, "wpm": 0.0 }
+    },
+    {
+      "name": "The_Clock_Starts_From_The_First_Keystrokes_Own_Timestamp",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "abcdef", "events": [ { "at_ms": 45000, "type": "text", "text": "a" } ], "snapshot_at_ms": 55000 },
+      "golu_expected": { "Elapsed": "00:00:10" },
+      "radha_expected": { "elapsed_seconds": 10.0 }
+    },
+    {
+      "name": "Only_A_Caret_Advancing_Keystroke_Arms_The_Clock",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "abcdef", "events": [ { "at_ms": 0, "type": "backspace" }, { "at_ms": 5000, "type": "text", "text": "a" } ], "snapshot_at_ms": 8000 },
+      "golu_expected": { "Elapsed after backspace": 0, "Elapsed": "00:00:03" },
+      "radha_expected": { "elapsed_seconds": 3.0, "backspaces": 0 }
+    },
+    {
+      "name": "Arming_Is_A_One_Time_Event_Later_Keystrokes_Do_Not_Restart_It",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "abcdef", "events": [ { "at_ms": 0, "type": "text", "text": "a" }, { "at_ms": 4000, "type": "text", "text": "b" }, { "at_ms": 8000, "type": "text", "text": "c" } ], "snapshot_at_ms": 8000 },
+      "golu_expected": { "Elapsed": "00:00:08" },
+      "radha_expected": { "elapsed_seconds": 8.0 }
+    },
+    {
+      "name": "A_Pause_Taken_Before_Typing_Does_Not_Corrupt_Elapsed",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "Pausing or resuming a session that has not started is a typed CoreError::InvalidSessionState in Radha (session.rs, RULES 23: errors not silent no-ops). The elapsed time agrees with Golu (6 s).",
+      "input": { "unit": "char", "target": "abcdef", "events": [ { "at_ms": 0, "type": "pause" }, { "at_ms": 30000, "type": "resume" }, { "at_ms": 30000, "type": "text", "text": "a" } ], "snapshot_at_ms": 36000 },
+      "golu_expected": { "Pause/Resume": "accepted silently", "Elapsed": "00:00:06" },
+      "radha_expected": { "elapsed_seconds": 6.0, "pause_error": true }
+    },
+    {
+      "name": "Restarting_Re_Arms_The_Clock",
+      "kind": "session",
+      "tag": "must_match",
+      "reason": "A restart in Radha is a new TypingSession, which starts idle.",
+      "input": { "unit": "char", "target": "abcdef", "events": [], "snapshot_at_ms": 60000 },
+      "golu_expected": { "Elapsed after restart": 0 },
+      "radha_expected": { "elapsed_seconds": 0.0 }
+    },
+    {
+      "name": "Completing_An_Untouched_Armed_Session_Reports_Zero_Elapsed_Without_Throwing",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "abcdef", "events": [ { "at_ms": 30000, "type": "complete" } ], "snapshot_at_ms": 30000 },
+      "golu_expected": { "Elapsed": 0, "State": "Completed" },
+      "radha_expected": { "elapsed_seconds": 0.0, "state": "Complete", "completion": "Submitted" }
+    },
+    {
+      "name": "Diagnostics_Report_Zero_Elapsed_While_Armed",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "abcdef", "events": [], "snapshot_at_ms": 15000 },
+      "golu_expected": { "ElapsedSeconds": 0 },
+      "radha_expected": { "elapsed_seconds": 0.0 }
+    },
+    {
+      "name": "A_Caller_That_Does_Not_Opt_In_Is_Completely_Unaffected",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "RULES 30: the timer always starts on the first keystroke; Radha has no start-on-Start clock. Reading time is never charged.",
+      "input": { "unit": "char", "target": "abcdef", "events": [], "snapshot_at_ms": 30000 },
+      "golu_expected": { "Elapsed": "00:00:30" },
+      "radha_expected": { "elapsed_seconds": 0.0, "state": "Idle" }
+    },
+    {
+      "name": "An_Explicitly_Proctored_Policy_Starts_Timing_Immediately",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "RULES 30: even a 600 s countdown starts on the first keystroke. A proctored clock that burns during reading is exam policy (P09 exam profiles), not engine behaviour.",
+      "input": { "unit": "char", "target": "abcdef", "timer": { "mode": "countdown", "seconds": 600 }, "events": [], "snapshot_at_ms": 25000 },
+      "golu_expected": { "Elapsed": "00:00:25" },
+      "radha_expected": { "elapsed_seconds": 0.0, "remaining_seconds": 600.0 }
+    }
+  ]
+}

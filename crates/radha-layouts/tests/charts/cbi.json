@@ -1,0 +1,1541 @@
+{
+  "schema_version": 1,
+  "layout": "cbi",
+  "value_field": "output",
+  "references": [
+    {
+      "id": "complete_ref_unicode",
+      "role": "primary",
+      "path": "docs\\HINDI-KEYBOARD-LAYOUTS-COMPLETE-REFERENCE.md",
+      "region": "Layout 4 Unicode lines",
+      "sha256": "0f43766a24a1ff0d23ba0d9f10276926a5f67762971a3694261ced8cf87ea168"
+    },
+    {
+      "id": "code_keycaps",
+      "role": "code",
+      "path": "src\\Core\\Golu.PlatformServices\\Plugins\\BuiltIn\\RemingtonCbiLayoutPlugin.cs",
+      "region": "BuildKeyCaps, BuildShiftKeyCaps, BuildAltGrKeyCaps, AddAt AltGr lines",
+      "sha256": "acc0f104b8c8da2c726d8adff94eaecc77ec4dffeb1f2e53e98897dcbc5b695c"
+    },
+    {
+      "id": "book",
+      "role": "book",
+      "path": "03_Remington_CBI_Keyboard_Reference.pdf",
+      "region": "Chapter 11 master table / Chapter 23 test suite (single-key rows)",
+      "sha256": "7091e708da7003f8c2b1d684fc80d7a901f0b2318171c45cca2d66259aa3060b"
+    }
+  ],
+  "entries": [
+    {
+      "key": "`",
+      "layer": "base",
+      "value": "़",
+      "refs": {
+        "complete_ref_unicode": "ञ",
+        "code_keycaps": "ञ",
+        "book": "़"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "book 03 verified value"
+    },
+    {
+      "key": "1",
+      "layer": "base",
+      "value": "1",
+      "refs": {
+        "complete_ref_unicode": "१",
+        "code_keycaps": "१",
+        "book": "1"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "book 03 verified value"
+    },
+    {
+      "key": "2",
+      "layer": "base",
+      "value": "2",
+      "refs": {
+        "complete_ref_unicode": "२",
+        "code_keycaps": "२",
+        "book": "2"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "book 03 verified value"
+    },
+    {
+      "key": "3",
+      "layer": "base",
+      "value": "3",
+      "refs": {
+        "complete_ref_unicode": "३",
+        "code_keycaps": "३",
+        "book": "3"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "book 03 verified value"
+    },
+    {
+      "key": "4",
+      "layer": "base",
+      "value": "4",
+      "refs": {
+        "complete_ref_unicode": "४",
+        "code_keycaps": "४",
+        "book": "4"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "book 03 verified value"
+    },
+    {
+      "key": "5",
+      "layer": "base",
+      "value": "5",
+      "refs": {
+        "complete_ref_unicode": "५",
+        "code_keycaps": "५",
+        "book": "5"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "book 03 verified value"
+    },
+    {
+      "key": "6",
+      "layer": "base",
+      "value": "6",
+      "refs": {
+        "complete_ref_unicode": "६",
+        "code_keycaps": "६",
+        "book": "6"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "book 03 verified value"
+    },
+    {
+      "key": "7",
+      "layer": "base",
+      "value": "7",
+      "refs": {
+        "complete_ref_unicode": "७",
+        "code_keycaps": "७",
+        "book": "7"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "book 03 verified value"
+    },
+    {
+      "key": "8",
+      "layer": "base",
+      "value": "8",
+      "refs": {
+        "complete_ref_unicode": "८",
+        "code_keycaps": "८",
+        "book": "8"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "book 03 verified value"
+    },
+    {
+      "key": "9",
+      "layer": "base",
+      "value": "9",
+      "refs": {
+        "complete_ref_unicode": "९",
+        "code_keycaps": "९",
+        "book": "9"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "book 03 verified value"
+    },
+    {
+      "key": "0",
+      "layer": "base",
+      "value": "0",
+      "refs": {
+        "complete_ref_unicode": "०",
+        "code_keycaps": "०",
+        "book": "0"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "book 03 verified value"
+    },
+    {
+      "key": "-",
+      "layer": "base",
+      "value": ";",
+      "refs": {
+        "complete_ref_unicode": ";",
+        "code_keycaps": ";",
+        "book": ";"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "=",
+      "layer": "base",
+      "value": "ृ",
+      "refs": {
+        "complete_ref_unicode": "ृ",
+        "code_keycaps": "ृ",
+        "book": "ृ"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "`",
+      "layer": "shift",
+      "value": "द्य",
+      "refs": {
+        "complete_ref_unicode": "॰",
+        "code_keycaps": "॰",
+        "book": "द्य"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "book 03 verified value"
+    },
+    {
+      "key": "1",
+      "layer": "shift",
+      "value": "।",
+      "refs": {
+        "complete_ref_unicode": "!",
+        "code_keycaps": "!",
+        "book": "।"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "book 03 verified value"
+    },
+    {
+      "key": "2",
+      "layer": "shift",
+      "value": "/",
+      "refs": {
+        "complete_ref_unicode": "/",
+        "code_keycaps": "/",
+        "book": "/"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "3",
+      "layer": "shift",
+      "value": "ः",
+      "refs": {
+        "complete_ref_unicode": "ः",
+        "code_keycaps": "ः",
+        "book": "ः"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "4",
+      "layer": "shift",
+      "value": "*",
+      "refs": {
+        "complete_ref_unicode": "*",
+        "code_keycaps": "*",
+        "book": "*"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "5",
+      "layer": "shift",
+      "value": "-",
+      "refs": {
+        "complete_ref_unicode": "-",
+        "code_keycaps": "-",
+        "book": "-"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "6",
+      "layer": "shift",
+      "value": "‘",
+      "refs": {
+        "complete_ref_unicode": "‘",
+        "code_keycaps": "‘",
+        "book": "‘"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "7",
+      "layer": "shift",
+      "value": "’",
+      "refs": {
+        "complete_ref_unicode": "’",
+        "code_keycaps": "’",
+        "book": "’"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "8",
+      "layer": "shift",
+      "value": "द्ध",
+      "refs": {
+        "complete_ref_unicode": "द्ध",
+        "code_keycaps": "द्ध",
+        "book": "द्ध"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "9",
+      "layer": "shift",
+      "value": "त्र",
+      "refs": {
+        "complete_ref_unicode": "त्र",
+        "code_keycaps": "त्र",
+        "book": "त्र"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "0",
+      "layer": "shift",
+      "value": "ऋ",
+      "refs": {
+        "complete_ref_unicode": "ऋ",
+        "code_keycaps": "ऋ",
+        "book": "ऋ"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "-",
+      "layer": "shift",
+      "value": ".",
+      "refs": {
+        "complete_ref_unicode": ".",
+        "code_keycaps": ".",
+        "book": "."
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "=",
+      "layer": "shift",
+      "value": "्",
+      "refs": {
+        "complete_ref_unicode": "्",
+        "code_keycaps": "्",
+        "book": "्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "q",
+      "layer": "base",
+      "value": "ु",
+      "refs": {
+        "complete_ref_unicode": "ु",
+        "code_keycaps": "ु",
+        "book": "ु"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "w",
+      "layer": "base",
+      "value": "ू",
+      "refs": {
+        "complete_ref_unicode": "ू",
+        "code_keycaps": "ू",
+        "book": "ू"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "e",
+      "layer": "base",
+      "value": "म",
+      "refs": {
+        "complete_ref_unicode": "म",
+        "code_keycaps": "म",
+        "book": "म"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "r",
+      "layer": "base",
+      "value": "त",
+      "refs": {
+        "complete_ref_unicode": "त",
+        "code_keycaps": "त",
+        "book": "त"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "t",
+      "layer": "base",
+      "value": "ज",
+      "refs": {
+        "complete_ref_unicode": "ज",
+        "code_keycaps": "ज",
+        "book": "ज"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "y",
+      "layer": "base",
+      "value": "ल",
+      "refs": {
+        "complete_ref_unicode": "ल",
+        "code_keycaps": "ल",
+        "book": "ल"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "u",
+      "layer": "base",
+      "value": "न",
+      "refs": {
+        "complete_ref_unicode": "न",
+        "code_keycaps": "न",
+        "book": "न"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "i",
+      "layer": "base",
+      "value": "प",
+      "refs": {
+        "complete_ref_unicode": "प",
+        "code_keycaps": "प",
+        "book": "प"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "o",
+      "layer": "base",
+      "value": "व",
+      "refs": {
+        "complete_ref_unicode": "व",
+        "code_keycaps": "व",
+        "book": "व"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "p",
+      "layer": "base",
+      "value": "च",
+      "refs": {
+        "complete_ref_unicode": "च",
+        "code_keycaps": "च",
+        "book": "च"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "[",
+      "layer": "base",
+      "value": "ख्",
+      "refs": {
+        "complete_ref_unicode": "ख्",
+        "code_keycaps": "ख्",
+        "book": "ख्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "]",
+      "layer": "base",
+      "value": ",",
+      "refs": {
+        "complete_ref_unicode": ",",
+        "code_keycaps": ",",
+        "book": ","
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "\\",
+      "layer": "base",
+      "value": "(",
+      "refs": {
+        "complete_ref_unicode": "(",
+        "code_keycaps": "(",
+        "book": "("
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "q",
+      "layer": "shift",
+      "value": "फ",
+      "refs": {
+        "complete_ref_unicode": "फ",
+        "code_keycaps": "फ",
+        "book": "फ"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "w",
+      "layer": "shift",
+      "value": "ॅ",
+      "refs": {
+        "complete_ref_unicode": "ॅ",
+        "code_keycaps": "ॅ",
+        "book": "ॅ"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "e",
+      "layer": "shift",
+      "value": "म्",
+      "refs": {
+        "complete_ref_unicode": "म्",
+        "code_keycaps": "म्",
+        "book": "म्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "r",
+      "layer": "shift",
+      "value": "त्",
+      "refs": {
+        "complete_ref_unicode": "त्",
+        "code_keycaps": "त्",
+        "book": "त्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "t",
+      "layer": "shift",
+      "value": "ज्",
+      "refs": {
+        "complete_ref_unicode": "ज्",
+        "code_keycaps": "ज्",
+        "book": "ज्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "y",
+      "layer": "shift",
+      "value": "ल्",
+      "refs": {
+        "complete_ref_unicode": "ल्",
+        "code_keycaps": "ल्",
+        "book": "ल्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "u",
+      "layer": "shift",
+      "value": "न्",
+      "refs": {
+        "complete_ref_unicode": "न्",
+        "code_keycaps": "न्",
+        "book": "न्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "i",
+      "layer": "shift",
+      "value": "प्",
+      "refs": {
+        "complete_ref_unicode": "प्",
+        "code_keycaps": "प्",
+        "book": "प्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "o",
+      "layer": "shift",
+      "value": "व्",
+      "refs": {
+        "complete_ref_unicode": "व्",
+        "code_keycaps": "व्",
+        "book": "व्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "p",
+      "layer": "shift",
+      "value": "च्",
+      "refs": {
+        "complete_ref_unicode": "च्",
+        "code_keycaps": "च्",
+        "book": "च्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "[",
+      "layer": "shift",
+      "value": "क्ष्",
+      "refs": {
+        "complete_ref_unicode": "क्ष्",
+        "code_keycaps": "क्ष्",
+        "book": "क्ष्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "]",
+      "layer": "shift",
+      "value": "द्व",
+      "refs": {
+        "complete_ref_unicode": "द्व",
+        "code_keycaps": "द्व",
+        "book": "द्व"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "\\",
+      "layer": "shift",
+      "value": ")",
+      "refs": {
+        "complete_ref_unicode": ")",
+        "code_keycaps": ")",
+        "book": ")"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "a",
+      "layer": "base",
+      "value": "ं",
+      "refs": {
+        "complete_ref_unicode": "ं",
+        "code_keycaps": "ं",
+        "book": "ं"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "s",
+      "layer": "base",
+      "value": "े",
+      "refs": {
+        "complete_ref_unicode": "े",
+        "code_keycaps": "े",
+        "book": "े"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "d",
+      "layer": "base",
+      "value": "क",
+      "refs": {
+        "complete_ref_unicode": "क",
+        "code_keycaps": "क",
+        "book": "क"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "f",
+      "layer": "base",
+      "value": "ि",
+      "refs": {
+        "complete_ref_unicode": "ि",
+        "code_keycaps": "ि",
+        "book": "ि"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "g",
+      "layer": "base",
+      "value": "ह",
+      "refs": {
+        "complete_ref_unicode": "ह",
+        "code_keycaps": "ह",
+        "book": "ह"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "h",
+      "layer": "base",
+      "value": "ी",
+      "refs": {
+        "complete_ref_unicode": "ी",
+        "code_keycaps": "ी",
+        "book": "ी"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "j",
+      "layer": "base",
+      "value": "र",
+      "refs": {
+        "complete_ref_unicode": "र",
+        "code_keycaps": "र",
+        "book": "र"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "k",
+      "layer": "base",
+      "value": "ा",
+      "refs": {
+        "complete_ref_unicode": "ा",
+        "code_keycaps": "ा",
+        "book": "ा"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "l",
+      "layer": "base",
+      "value": "स",
+      "refs": {
+        "complete_ref_unicode": "स",
+        "code_keycaps": "स",
+        "book": "स"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": ";",
+      "layer": "base",
+      "value": "य",
+      "refs": {
+        "complete_ref_unicode": "य",
+        "code_keycaps": "य",
+        "book": "य"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "'",
+      "layer": "base",
+      "value": "श्",
+      "refs": {
+        "complete_ref_unicode": "श्",
+        "code_keycaps": "श्",
+        "book": "श्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "a",
+      "layer": "shift",
+      "value": "ा",
+      "refs": {
+        "complete_ref_unicode": "ा",
+        "code_keycaps": "ा",
+        "book": "ा"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "s",
+      "layer": "shift",
+      "value": "ै",
+      "refs": {
+        "complete_ref_unicode": "ै",
+        "code_keycaps": "ै",
+        "book": "ै"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "d",
+      "layer": "shift",
+      "value": "क्",
+      "refs": {
+        "complete_ref_unicode": "क्",
+        "code_keycaps": "क्",
+        "book": "क्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "f",
+      "layer": "shift",
+      "value": "थ्",
+      "refs": {
+        "complete_ref_unicode": "थ्",
+        "code_keycaps": "थ्",
+        "book": "थ्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "g",
+      "layer": "shift",
+      "value": "ळ",
+      "refs": {
+        "complete_ref_unicode": "ळ",
+        "code_keycaps": "ळ",
+        "book": "ळ"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "h",
+      "layer": "shift",
+      "value": "भ्",
+      "refs": {
+        "complete_ref_unicode": "भ्",
+        "code_keycaps": "भ्",
+        "book": "भ्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "j",
+      "layer": "shift",
+      "value": "श्र",
+      "refs": {
+        "complete_ref_unicode": "श्र",
+        "code_keycaps": "श्र",
+        "book": "श्र"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "k",
+      "layer": "shift",
+      "value": "ज्ञ",
+      "refs": {
+        "complete_ref_unicode": "ज्ञ",
+        "code_keycaps": "ज्ञ",
+        "book": "ज्ञ"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "l",
+      "layer": "shift",
+      "value": "स्",
+      "refs": {
+        "complete_ref_unicode": "स्",
+        "code_keycaps": "स्",
+        "book": "स्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": ";",
+      "layer": "shift",
+      "value": "रू",
+      "refs": {
+        "complete_ref_unicode": "रू",
+        "code_keycaps": "रू",
+        "book": "रू"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "'",
+      "layer": "shift",
+      "value": "ष्",
+      "refs": {
+        "complete_ref_unicode": "ष्",
+        "code_keycaps": "ष्",
+        "book": "ष्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "z",
+      "layer": "base",
+      "value": "्र",
+      "refs": {
+        "complete_ref_unicode": "्र",
+        "code_keycaps": "्र",
+        "book": "्र"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "x",
+      "layer": "base",
+      "value": "ग",
+      "refs": {
+        "complete_ref_unicode": "ग",
+        "code_keycaps": "ग",
+        "book": "ग"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "c",
+      "layer": "base",
+      "value": "ब",
+      "refs": {
+        "complete_ref_unicode": "ब",
+        "code_keycaps": "ब",
+        "book": "ब"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "v",
+      "layer": "base",
+      "value": "अ",
+      "refs": {
+        "complete_ref_unicode": "अ",
+        "code_keycaps": "अ",
+        "book": "अ"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "b",
+      "layer": "base",
+      "value": "इ",
+      "refs": {
+        "complete_ref_unicode": "इ",
+        "code_keycaps": "इ",
+        "book": "इ"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "n",
+      "layer": "base",
+      "value": "द",
+      "refs": {
+        "complete_ref_unicode": "द",
+        "code_keycaps": "द",
+        "book": "द"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "m",
+      "layer": "base",
+      "value": "उ",
+      "refs": {
+        "complete_ref_unicode": "उ",
+        "code_keycaps": "उ",
+        "book": "उ"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": ",",
+      "layer": "base",
+      "value": "ए",
+      "refs": {
+        "complete_ref_unicode": "ए",
+        "code_keycaps": "ए",
+        "book": "ए"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": ".",
+      "layer": "base",
+      "value": "ण्",
+      "refs": {
+        "complete_ref_unicode": "ण्",
+        "code_keycaps": "ण्",
+        "book": "ण्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "/",
+      "layer": "base",
+      "value": "ध्",
+      "refs": {
+        "complete_ref_unicode": "ध्",
+        "code_keycaps": "ध्",
+        "book": "ध्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "z",
+      "layer": "shift",
+      "value": "र्",
+      "refs": {
+        "complete_ref_unicode": "र्",
+        "code_keycaps": "र्",
+        "book": "र्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "x",
+      "layer": "shift",
+      "value": "ग्",
+      "refs": {
+        "complete_ref_unicode": "ग्",
+        "code_keycaps": "ग्",
+        "book": "ग्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "c",
+      "layer": "shift",
+      "value": "ब्",
+      "refs": {
+        "complete_ref_unicode": "ब्",
+        "code_keycaps": "ब्",
+        "book": "ब्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "v",
+      "layer": "shift",
+      "value": "ट",
+      "refs": {
+        "complete_ref_unicode": "ट",
+        "code_keycaps": "ट",
+        "book": "ट"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "b",
+      "layer": "shift",
+      "value": "ठ",
+      "refs": {
+        "complete_ref_unicode": "ठ",
+        "code_keycaps": "ठ",
+        "book": "ठ"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "n",
+      "layer": "shift",
+      "value": "छ",
+      "refs": {
+        "complete_ref_unicode": "छ",
+        "code_keycaps": "छ",
+        "book": "छ"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "m",
+      "layer": "shift",
+      "value": "ड",
+      "refs": {
+        "complete_ref_unicode": "ड",
+        "code_keycaps": "ड",
+        "book": "ड"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": ",",
+      "layer": "shift",
+      "value": "ढ",
+      "refs": {
+        "complete_ref_unicode": "ष",
+        "code_keycaps": "ढ",
+        "book": "ढ"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "tie broken by code (keycaps + Build()); agreeing: code_keycaps"
+    },
+    {
+      "key": ".",
+      "layer": "shift",
+      "value": "झ",
+      "refs": {
+        "complete_ref_unicode": "ढ",
+        "code_keycaps": "झ",
+        "book": "झ"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "tie broken by code (keycaps + Build()); agreeing: code_keycaps"
+    },
+    {
+      "key": "/",
+      "layer": "shift",
+      "value": "घ्",
+      "refs": {
+        "complete_ref_unicode": "घ्",
+        "code_keycaps": "घ्",
+        "book": "घ्"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    }
+  ],
+  "summary": {
+    "entries": 94,
+    "no_flag": 79,
+    "conflict": 15,
+    "unverified": 0,
+    "primary_missing": 0
+  }
+}

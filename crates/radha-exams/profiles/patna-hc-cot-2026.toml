@@ -1,0 +1,66 @@
+# Patna High Court — Computer Operator-cum-Typist Recruitment Examination 2026.
+# Verified values come from the advertisement (Sec. 6-7, Annexure-I), read in
+# a mirror copy (S-03); matching it with the official host is pending (X-01).
+# The advertisement does not say how mistakes are counted or whether
+# Backspace may be used (G-12): those stay Configurable, so the profile is
+# Provisional, never Official.
+schema_version = 1
+id = "patna-hc"
+profile_version = 1
+display_name = "Patna High Court — COT 2026"
+body = "High Court of Judicature at Patna"
+
+[notice]
+title = "Computer Operator-cum-Typist Recruitment Examination 2026"
+reference = "Advertisement Sec. 6-7 and Annexure-I"
+sources = ["S-03"]
+note = "Notification date and post count are secondary (S-09) and are not rules."
+
+[[sources]]
+id = "S-03"
+kind = "primary_mirror"
+title = "Patna High Court COT 2026 advertisement, Sec. 6-7 + Annexure-I (mirror copy read; official host match pending, X-01)"
+url = "https://portal.indiaresults.org/Uploads/pdf/Patna-High-Court-Computer-Operator-cum-Typist-Syllabus-Exam-Pattern-2026-1580370259.pdf"
+read = true
+
+[[sources]]
+id = "S-09"
+kind = "secondary"
+title = "Testbook — Patna HC Computer Operator 2026"
+url = "https://testbook.com/patna-high-court-computer-operator"
+read = true
+
+[[tests]]
+language = "english"
+layouts = { status = "configurable", default = ["qwerty"], note = "the advertisement does not name the English keyboard" }
+font = { status = "configurable", default = "Arial", note = "not stated in S-03; Radha's English exam font" }
+word_count = { status = "verified", value = 400, sources = ["S-03"] }
+speed_wpm = { status = "verified", value = 40, sources = ["S-03"] }
+duration_seconds = { status = "verified", value = 600, sources = ["S-03"] }
+max_marks = { status = "verified", value = 100, sources = ["S-03"] }
+qualification = { status = "verified", value = { min_marks = 90.0 }, sources = ["S-03"] }
+scoring = "accuracy_as_marks"
+error_policy = { status = "configurable", note = "S-03 makes accuracy % the marks out of 100 but does not say how mistakes are counted (G-12)" }
+backspace = { status = "configurable", note = "not stated in S-03" }
+
+[[tests]]
+language = "hindi"
+layouts = { status = "verified", value = ["gail"], sources = ["S-03"] }
+font = { status = "verified", value = "Mangal", sources = ["S-03"] }
+word_count = { status = "verified", value = 300, sources = ["S-03"] }
+speed_wpm = { status = "verified", value = 30, sources = ["S-03"] }
+duration_seconds = { status = "verified", value = 600, sources = ["S-03"] }
+max_marks = { status = "verified", value = 100, sources = ["S-03"] }
+qualification = { status = "verified", value = { min_marks = 85.0 }, sources = ["S-03"] }
+scoring = "accuracy_as_marks"
+error_policy = { status = "configurable", note = "S-03 makes accuracy % the marks out of 100 but does not say how mistakes are counted (G-12)" }
+backspace = { status = "configurable", note = "not stated in S-03" }
+
+[[reference_claims]]
+claim = "2026 scheme: English typing 40 WPM, 400 words, 10 min; dual-language not established"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://patnahighcourt.bihar.gov.in/getfile/MTA1MDc%3D-m31Xuk1D5BQ%3D"
+
+[[reference_claims]]
+claim = "English 40 WPM · Hindi 30 WPM · 90% Acc. Required · 10 min · Backspace allowed · QWERTY · Remington GAIL"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

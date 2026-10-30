@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Engine\\KeyStatProjectionTests.cs",
+    "sha256": "321ec8880657fff1c0b4147b77669257bf0cadb336b57969ff07616f7c1c2e77",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "TotalCount_Is_Presses_Not_Errors",
+      "kind": "session",
+      "tag": "must_match",
+      "reason": "Golu builds the statistics by hand ('a' 10 presses / 2 errors, 'b' 5 / 0); here the same tallies come from a typed session.",
+      "input": { "unit": "char", "target": "aaaaaaaaaabbbbb", "events": [ { "at_ms": 0, "type": "text", "text": "aaxaaaaxaabbbbb" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "a": { "TotalCount": 10, "ErrorCount": 2 } },
+      "radha_expected": { "key_attempts": { "a": 10, "b": 5 }, "key_errors": { "a": 2 } }
+    },
+    {
+      "name": "A_Key_With_No_Errors_Still_Gets_A_Row",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "aaaaaaaaaabbbbb", "events": [ { "at_ms": 0, "type": "text", "text": "aaxaaaaxaabbbbb" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "b": { "TotalCount": 5, "ErrorCount": 0 }, "rows": ["a", "b"] },
+      "radha_expected": { "key_attempts": { "a": 10, "b": 5 } }
+    },
+    {
+      "name": "Control_And_Default_Characters_Are_Skipped",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "a\tb\nc", "events": [ { "at_ms": 0, "type": "text", "text": "a\tb\nc" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "rows": "no row for \\0, \\n or \\t" },
+      "radha_expected": { "key_attempts": { "a": 1, "b": 1, "c": 1 }, "finished": true }
+    },
+    {
+      "name": "An_Untouched_Session_Produces_No_Rows",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "abc", "events": [], "snapshot_at_ms": 0 },
+      "golu_expected": { "rows": [] },
+      "radha_expected": { "key_attempts": {} }
+    },
+    {
+      "name": "Saved_Rows_Record_Attempts_Separately_From_Errors",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "aaa", "events": [ { "at_ms": 0, "type": "text", "text": "axa" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "a": { "TotalCount": 3, "ErrorCount": 1 } },
+      "radha_expected": { "key_attempts": { "a": 3 }, "key_errors": { "a": 1 } }
+    },
+    {
+      "name": "A_Flawless_Session_Still_Records_Its_Keys",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "ab", "events": [ { "at_ms": 0, "type": "text", "text": "ab" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "rows": 2, "each": { "TotalCount": 1, "ErrorCount": 0 } },
+      "radha_expected": { "key_attempts": { "a": 1, "b": 1 }, "key_errors": {} }
+    }
+  ]
+}

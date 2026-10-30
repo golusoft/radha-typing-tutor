@@ -1,0 +1,151 @@
+// UPPCL — Executive Assistant / Clerk (fictional Kesar Nagar Electricity Distribution Division)
+
+#UPPCL-001 | electricity bill preparation and consumer details
+- An electricity bill shows the consumer number, the name, the address, the tariff category and the billing period.
+- Units consumed are worked out from the previous and present meter readings.
+- Fixed charges, energy charges and any arrears are listed as separate lines before the total.
+- The due date and the amount payable after the due date are printed clearly near the total.
+
+#UPPCL-002 | a meter reading record and the billing cycle
+- Meter readers record the reading, the date and the meter number for each connection on their route.
+- Readings are entered into the billing system before the cut-off date of the billing cycle.
+- A reading lower than the previous one is flagged, because it usually means a misread or a meter fault.
+- Premises found locked are marked so that a second visit can be arranged.
+
+#UPPCL-003 | consumer complaint registration and resolution
+- Each complaint is registered with the consumer number, the type of complaint and the date and time of receipt.
+- The complaint number is given to the consumer by message and on the printed slip.
+- Complaints are assigned to the field staff of the area, who record the action taken.
+- A complaint is closed only after the consumer is told what was done.
+
+#UPPCL-004 | a scheduled power shutdown notice
+- A shutdown notice gives the date, the start time, the expected end time and the areas affected.
+- It explains the reason for the shutdown, such as line maintenance or transformer replacement.
+- The notice is published in advance so that consumers can plan their work.
+- It ends with a contact number for enquiries during the shutdown.
+
+#UPPCL-005 | an outage report with time and area details
+- An outage report records the feeder, the area affected, the time supply failed and the time it was restored.
+- The duration of the outage is worked out in hours and minutes from the two times.
+- The cause, if known, is written in a short phrase.
+- Daily outage reports are added to give the monthly reliability figures.
+
+#UPPCL-006 | a new electricity connection application
+- A new connection application includes the applicant's identity proof, proof of ownership or occupancy and the load required.
+- The application is registered and given a number that the applicant can use to track progress.
+- A site inspection is arranged, and the inspection report is attached to the application.
+- After payment of the charges, the connection is released and the meter number is recorded.
+
+#UPPCL-007 | a meter replacement and inspection register
+- The register records each meter replaced with the old meter number, the new meter number and the final reading of the old meter.
+- The reason for replacement, such as a fault or an upgrade, is noted in each entry.
+- The consumer signs the register or the job card to confirm the replacement.
+- Old meters are sent for testing, and the test result is entered later.
+
+#UPPCL-008 | an energy consumption statement by month
+- The consumption statement shows the units consumed in each month of the year.
+- Monthly figures are added to give the yearly total and divided by twelve for the monthly average.
+- Months with unusually high consumption are marked so that the consumer can check them.
+- The statement is issued on request and helps consumers understand their bills.
+
+#UPPCL-009 | a payment receipt and arrears summary
+- A payment receipt shows the receipt number, the consumer number, the amount paid and the date.
+- The arrears summary lists unpaid amounts by billing month.
+- Payments are adjusted against the oldest arrears first, unless the rules provide otherwise.
+- The balance after adjustment is shown at the end of the summary.
+
+#UPPCL-010 | a transformer maintenance work order
+- A work order names the transformer, its location, the work to be done and the team assigned.
+- Safety steps, such as isolating the supply, are written at the top of the order.
+- The team records the start and finish times and the materials used.
+- The order is closed when the supervisor confirms that the transformer is back in service.
+
+#UPPCL-011 | a line inspection and repair request
+- A line inspection report notes damaged poles, sagging wires and trees touching the line.
+- Each defect is given a location reference so that the repair team can find it.
+- Repair requests are prioritised by risk, with dangerous defects attended first.
+- The repair date is recorded against each defect in the inspection report.
+
+#UPPCL-012 | a field visit report for a service complaint
+- The field visit report states the date and time of the visit and the name of the staff member who went.
+- It describes what was found at the site in plain words.
+- The action taken on the spot and any further work needed are listed separately.
+- The consumer's signature or remark is taken at the end of the report.
+
+#UPPCL-013 | a policy for registering electricity theft complaints
+- A complaint about suspected theft of electricity is registered without asking the complainant to reveal their identity publicly.
+- The complaint records the location and a description of what was observed.
+- The complaint is passed to the enforcement team for verification.
+- The register shows the date of verification and the outcome.
+
+#UPPCL-014 | a safety notice for electrical maintenance
+- The safety notice reminds staff to wear protective equipment before working on any line.
+- It explains that a line must be isolated and earthed before work begins.
+- Only authorised staff may issue a permit to work, and the permit number is recorded.
+- The notice warns the public to keep away from fallen wires and to report them at once.
+
+#UPPCL-015 | verification of customer contact details
+- Customer contact details are checked against the application form and the latest bill.
+- A mobile number is verified by sending a confirmation message to it.
+- Changes of address are made only after the consumer submits proof of the new address.
+- Updated details are used for bills, outage messages and payment reminders.
+
+#UPPCL-016 | a load forecast and peak demand summary
+- The load forecast estimates the demand on each feeder for the coming season.
+- The peak demand summary records the highest load reached on each feeder and the time it occurred.
+- Figures are given in kilowatts or megawatts, with the unit stated in each column heading.
+- Feeders close to their capacity are listed for strengthening.
+
+#UPPCL-017 | a rural feeder supply status report
+- The report shows the hours of supply given to each rural feeder on every day of the week.
+- The scheduled hours and the actual hours are shown side by side.
+- Shortfalls are explained with the cause, such as a fault or a planned shutdown.
+- The weekly average hours of supply are worked out for each feeder.
+
+#UPPCL-018 | an enquiry about a renewable energy connection
+- An enquiry about connecting rooftop solar panels is answered with the steps of the application process.
+- The reply lists the documents needed and the inspection that will follow.
+- It explains how energy fed into the grid is measured by a two-way meter.
+- The consumer is given the name of the office that handles such connections.
+
+#UPPCL-019 | an office assistant dispatch and diary register
+- The diary register records every incoming letter with a diary number and the date of receipt.
+- The dispatch register records every outgoing letter with a dispatch number and the mode of sending.
+- Letters are marked to sections, and the section initials appear in the register.
+- Both registers are checked at the end of the day for missing numbers.
+
+#UPPCL-020 | a contractor bill and work completion record
+- A contractor's bill is checked against the work order, the measurement book and the completion certificate.
+- Quantities in the bill must match the quantities recorded in the measurement book.
+- Deductions such as security deposit and taxes are worked out and shown on the bill.
+- The net amount payable is typed in figures and in words.
+
+#UPPCL-021 | material stock for electrical maintenance
+- The material stock register lists cables, insulators, meters and fuses with their quantities.
+- Materials issued to field teams are entered with the work order number.
+- Unused materials returned from the field are entered as returns.
+- The stock is counted every quarter, and differences are reported.
+
+#UPPCL-022 | an escalation note for an unresolved complaint
+- An escalation note is prepared when a complaint remains unresolved beyond the fixed time.
+- It summarises the complaint, the actions taken so far and the reason for delay.
+- The note is addressed to the next higher officer with a request for direction.
+- The consumer is informed that the complaint has been escalated.
+
+#UPPCL-023 | a notice on energy conservation
+- The notice gives simple tips for saving electricity at home and in offices.
+- It suggests switching off lights and fans in empty rooms and using efficient appliances.
+- The notice explains how saving electricity also reduces the monthly bill.
+- It is written in friendly language and printed on the back of bills.
+
+#UPPCL-024 | an English office typing passage for power utility offices
+- Although Hindi typing for this office uses a separate font and layout, this passage practises the English side of the work.
+- It covers letters, notices and registers commonly typed in a power utility office.
+- Technical words such as feeder, transformer and load are used in ordinary sentences.
+- All consumers, offices and numbers in the passage are fictional.
+
+#UPPCL-025 | an office typing test with bills, figures and records
+- This practice test brings together bill details, meter readings and record entries.
+- Figures appear with units such as kilowatt-hours and rupees, and each must be typed exactly.
+- The passage tests both speed and accuracy over a long stretch of mixed text.
+- Rules for an actual test must be taken from the notice for that recruitment cycle.

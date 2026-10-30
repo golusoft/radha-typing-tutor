@@ -23,6 +23,8 @@ export component NavAction inherits Rectangle {
     in property <image> icon;
     /// Emphasised treatment, for the one action that should read as primary.
     in property <bool> prominent: false;
+    /// Hide the label and show only the icon, for narrow windows (1024 px minimum).
+    in property <bool> icon-only: false;
 
     callback triggered();
 
@@ -58,7 +60,7 @@ export component NavAction inherits Rectangle {
                 : Theme.text-secondary;
         }
 
-        Text {
+        if !root.icon-only: Text {
             text: root.label;
             font-family: Typography.family-ui;
             font-size: Typography.size-body-sm;

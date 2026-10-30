@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Engine\\SessionEngineTests.cs",
+    "sha256": "d90a3a09267a659770b86fcba05465af8583f69f7c4c7bd742a788986fe521bb",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "Full_Correct_Flow_Is_100_Percent_Accurate",
+      "kind": "session",
+      "tag": "must_match",
+      "reason": "Timestamps adapted, values unchanged: Radha's clock starts on the first key and the session auto-completes on the last correct key, so the final 'x' is typed at 60 s instead of a separate Complete() at 60 s.",
+      "input": { "unit": "char", "target": "the quick brown fox", "events": [ { "at_ms": 0, "type": "text", "text": "the quick brown fo" }, { "at_ms": 60000, "type": "text", "text": "x" } ], "snapshot_at_ms": 60000 },
+      "golu_expected": { "AccuracyPercent": 100.0, "GrossWpm": 3.8, "NetWpm": 3.8, "State": "Completed" },
+      "radha_expected": { "accuracy": 100.0, "wpm": 3.8, "net_wpm": 3.8, "state": "Complete", "elapsed_seconds": 60.0 }
+    },
+    {
+      "name": "Wrong_Keystrokes_Populate_Mistakes_And_Weak_Keys",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "abc", "events": [ { "at_ms": 0, "type": "text", "text": "aXc" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "WrongKeystrokes": 1, "PerKeyErrors": { "b": "present" } },
+      "radha_expected": { "wrong": 1, "key_errors": { "b": 1 } }
+    },
+    {
+      "name": "Pause_Resume_Excludes_Paused_Time",
+      "kind": "session",
+      "tag": "must_match",
+      "reason": "Timestamps adapted, value unchanged: the last key is typed at 50 s (auto-complete) instead of a Complete() at 50 s; wall 50 s minus 30 s paused = 20 s.",
+      "input": { "unit": "char", "target": "abcde", "events": [ { "at_ms": 0, "type": "text", "text": "ab" }, { "at_ms": 10000, "type": "pause" }, { "at_ms": 40000, "type": "resume" }, { "at_ms": 40000, "type": "text", "text": "cd" }, { "at_ms": 50000, "type": "text", "text": "e" } ], "snapshot_at_ms": 50000 },
+      "golu_expected": { "Elapsed": "00:00:20" },
+      "radha_expected": { "elapsed_seconds": 20.0, "state": "Complete", "pause_error": false }
+    },
+    {
+      "name": "Backspace_Correction_Fixes_Counts",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "ab", "events": [ { "at_ms": 0, "type": "text", "text": "aX" }, { "at_ms": 0, "type": "backspace" }, { "at_ms": 0, "type": "text", "text": "b" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "AccuracyPercent": 100.0, "Statistics.WrongKeystrokes": 1, "FullMistakes": 0, "CorrectKeystrokes": 2 },
+      "radha_expected": { "accuracy": 100.0, "error_count": 0, "key_errors": { "b": 1 }, "key_attempts": { "a": 1, "b": 2 }, "backspaces": 1, "outcomes": "cc" }
+    }
+  ]
+}

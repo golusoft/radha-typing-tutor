@@ -1,0 +1,315 @@
+// ============================================================================
+// AnalyticsOverlay — real aggregates from saved sessions (RULES.MD 3, P08)
+// ============================================================================
+//
+// KPIs, speed and accuracy per day (7D / 30D), per-product and per-layout
+// performance, weak keys, error analysis and practice history. Rust fills
+// `UtilityView` when the overlay opens; nothing here is computed. A profile
+// with no sessions sees one honest empty state, never demo numbers.
+// ============================================================================
+
+import { ScrollView } from "std-widgets.slint";
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke } from "../theme/metrics.slint";
+import { OverlayPanel } from "../components/overlay_panel.slint";
+import { SparklineChart } from "../components/sparkline_chart.slint";
+import { UtilityView, StatLine, PerfRow, HistoryLine } from "../data/utility.slint";
+
+component Eyebrow inherits Text {
+    font-family: Typography.family-ui;
+    font-size: Typography.size-micro;
+    font-weight: Typography.weight-semibold;
+    letter-spacing: Typography.tracking-wide;
+    color: Theme.text-tertiary;
+}
+
+component Tile inherits Rectangle {
+    in property <StatLine> stat;
+    height: 72px;
+    border-radius: Radius.md;
+    background: Theme.bg-surface;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-soft;
+
+    VerticalLayout {
+        padding: Spacing.sm;
+        spacing: 2px;
+        alignment: center;
+        Text {
+            text: root.stat.label;
+            font-family: Typography.family-ui;
+            font-size: 10px;
+            font-weight: Typography.weight-semibold;
+            letter-spacing: Typography.tracking-wide;
+            color: Theme.text-tertiary;
+            overflow: elide;
+        }
+
+        Text {
+            text: root.stat.value;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-h3;
+            font-weight: Typography.weight-bold;
+            color: Theme.text-primary;
+            overflow: elide;
+        }
+
+        Text {
+            text: root.stat.note;
+            font-family: Typography.family-ui;
+            font-size: 10px;
+            color: Theme.text-tertiary;
+            overflow: elide;
+        }
+    }
+}
+
+component Cell inherits Text {
+    font-family: Typography.family-ui;
+    font-size: Typography.size-caption;
+    color: Theme.text-primary;
+    vertical-alignment: center;
+    overflow: elide;
+}
+
+/// A performance table. `w` is passed in from the overlay (outside-in).
+component PerfTable inherits VerticalLayout {
+    in property <[PerfRow]> rows;
+    in property <string> heading;
+    in property <length> w;
+    spacing: 2px;
+
+    Eyebrow {
+        text: root.heading;
+    }
+
+    HorizontalLayout {
+        height: 22px;
+        Cell { width: root.w * 0.34; text: "Name"; color: Theme.text-tertiary; }
+        Cell { width: root.w * 0.11; text: "Sessions"; color: Theme.text-tertiary; }
+        Cell { width: root.w * 0.13; text: "Avg net"; color: Theme.text-tertiary; }
+        Cell { width: root.w * 0.13; text: "Accuracy"; color: Theme.text-tertiary; }
+        Cell { width: root.w * 0.13; text: "Best net"; color: Theme.text-tertiary; }
+        Cell { width: root.w * 0.16; text: "Time"; color: Theme.text-tertiary; }
+    }
+
+    for row[i] in root.rows: Rectangle {
+        height: 26px;
+        border-radius: Radius.sm;
+        background: Math.mod(i, 2) == 0 ? Theme.bg-surface : transparent;
+
+        HorizontalLayout {
+            Cell {
+                width: root.w * 0.34;
+                text: row.detail == "" ? row.name : row.name + " · " + row.detail;
+                font-weight: Typography.weight-semibold;
+            }
+            Cell { width: root.w * 0.11; text: row.sessions; font-family: Typography.family-mono; }
+            Cell {
+                width: root.w * 0.13;
+                text: row.net;
+                font-family: Typography.family-mono;
+                color: row.has-data ? Theme.primary : Theme.text-disabled;
+            }
+            Cell {
+                width: root.w * 0.13;
+                text: row.accuracy;
+                font-family: Typography.family-mono;
+                color: row.has-data ? Theme.text-primary : Theme.text-disabled;
+            }
+            Cell {
+                width: root.w * 0.13;
+                text: row.best;
+                font-family: Typography.family-mono;
+                color: row.has-data ? Theme.text-primary : Theme.text-disabled;
+            }
+            Cell { width: root.w * 0.16; text: row.time; font-family: Typography.family-mono; }
+        }
+    }
+}
+
+component LineList inherits VerticalLayout {
+    in property <[StatLine]> lines;
+    in property <string> heading;
+    in property <string> empty;
+    in property <length> w;
+    spacing: 2px;
+
+    Eyebrow {
+        text: root.heading;
+    }
+
+    if root.lines.length == 0: Cell {
+        height: 26px;
+        text: root.empty;
+        color: Theme.text-tertiary;
+    }
+
+    for l in root.lines: HorizontalLayout {
+        height: 24px;
+        Cell {
+            width: root.w * 0.45;
+            text: l.label;
+            font-family: Typography.family-devanagari;
+            font-weight: Typography.weight-semibold;
+        }
+        Cell { width: root.w * 0.2; text: l.value; font-family: Typography.family-mono; }
+        Cell { width: root.w * 0.35; text: l.note; color: Theme.text-secondary; }
+    }
+}
+
+export component AnalyticsOverlay inherits Rectangle {
+    property <length> w: panel.body-w - 18px;
+    property <length> gap: Spacing.md;
+
+    panel := OverlayPanel {
+        width: root.width;
+        height: root.height;
+        title: "Analytics";
+        subtitle: "From your saved sessions on this PC. Computed when this panel opens.";
+        close => {
+            UtilityView.close();
+        }
+
+        if !UtilityView.an-has-data: Rectangle {
+            x: 0px;
+            y: 0px;
+            width: panel.body-w;
+            height: 160px;
+            border-radius: Radius.lg;
+            background: Theme.bg-sunken;
+
+            Text {
+                x: Spacing.xl;
+                width: parent.width - 2 * Spacing.xl;
+                height: parent.height;
+                text: "No sessions yet. Finish any exercise and your speed, accuracy, weak keys and per-layout progress appear here.";
+                font-family: Typography.family-ui;
+                font-size: Typography.size-body;
+                color: Theme.text-secondary;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+                wrap: word-wrap;
+            }
+        }
+
+        if UtilityView.an-has-data: ScrollView {
+            x: 0px;
+            y: 0px;
+            width: panel.body-w;
+            height: panel.body-h;
+
+            VerticalLayout {
+                width: root.w;
+                spacing: Spacing.lg;
+                padding-bottom: Spacing.lg;
+                alignment: start;
+
+                // KPIs: two rows of four.
+                Rectangle {
+                    height: 2 * 72px + root.gap;
+                    for k[i] in UtilityView.an-kpis: Tile {
+                        x: Math.mod(i, 4) * ((root.w - 3 * root.gap) / 4 + root.gap);
+                        y: Math.floor(i / 4) * (72px + root.gap);
+                        width: (root.w - 3 * root.gap) / 4;
+                        stat: k;
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: root.gap;
+                    SparklineChart {
+                        width: (root.w - root.gap) / 2;
+                        height: 168px;
+                        title: "Net WPM per day";
+                        value-text: UtilityView.an-speed-value;
+                        line-commands: UtilityView.an-speed-line;
+                        area-commands: UtilityView.an-speed-area;
+                        peak-x: UtilityView.an-speed-peak-x;
+                        peak-y: UtilityView.an-speed-peak-y;
+                        has-data: UtilityView.an-speed-has-data;
+                        empty-text: "No sessions in this range";
+                        footer-left: UtilityView.an-speed-footer;
+                        chart-height: 64px;
+                        range: UtilityView.an-range;
+                        range-requested(id) => {
+                            UtilityView.analytics-range-selected(id);
+                        }
+                    }
+
+                    SparklineChart {
+                        width: (root.w - root.gap) / 2;
+                        height: 168px;
+                        title: "Accuracy per day";
+                        value-text: UtilityView.an-acc-value;
+                        line-commands: UtilityView.an-acc-line;
+                        area-commands: UtilityView.an-acc-area;
+                        peak-x: UtilityView.an-acc-peak-x;
+                        peak-y: UtilityView.an-acc-peak-y;
+                        has-data: UtilityView.an-acc-has-data;
+                        empty-text: "No sessions in this range";
+                        footer-left: UtilityView.an-acc-footer;
+                        chart-height: 64px;
+                        range: UtilityView.an-range;
+                        range-requested(id) => {
+                            UtilityView.analytics-range-selected(id);
+                        }
+                    }
+                }
+
+                PerfTable {
+                    w: root.w;
+                    heading: "PERFORMANCE BY PRODUCT";
+                    rows: UtilityView.an-products;
+                }
+
+                PerfTable {
+                    w: root.w;
+                    heading: "PERFORMANCE BY LAYOUT";
+                    rows: UtilityView.an-layouts;
+                }
+
+                HorizontalLayout {
+                    spacing: root.gap;
+                    LineList {
+                        width: (root.w - root.gap) / 2;
+                        w: (root.w - root.gap) / 2;
+                        heading: "WEAK KEYS · all sessions";
+                        empty: "No missed keys recorded.";
+                        lines: UtilityView.an-weak;
+                    }
+
+                    LineList {
+                        width: (root.w - root.gap) / 2;
+                        w: (root.w - root.gap) / 2;
+                        heading: "ERROR ANALYSIS · uncorrected, all sessions";
+                        empty: "No errors recorded.";
+                        lines: UtilityView.an-errors;
+                    }
+                }
+
+                VerticalLayout {
+                    spacing: 2px;
+                    Eyebrow {
+                        text: "PRACTICE HISTORY · latest sessions";
+                    }
+
+                    for h[i] in UtilityView.an-history: Rectangle {
+                        height: 26px;
+                        border-radius: Radius.sm;
+                        background: Math.mod(i, 2) == 0 ? Theme.bg-surface : transparent;
+                        HorizontalLayout {
+                            Cell { width: root.w * 0.18; text: h.when; font-family: Typography.family-mono; color: Theme.text-secondary; }
+                            Cell { width: root.w * 0.34; text: h.title; font-family: Typography.family-devanagari; }
+                            Cell { width: root.w * 0.22; text: h.product; color: Theme.text-secondary; }
+                            Cell { width: root.w * 0.09; text: h.net; font-family: Typography.family-mono; color: Theme.primary; }
+                            Cell { width: root.w * 0.09; text: h.accuracy; font-family: Typography.family-mono; }
+                            Cell { width: root.w * 0.08; text: h.time; font-family: Typography.family-mono; }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

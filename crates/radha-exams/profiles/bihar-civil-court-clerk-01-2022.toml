@@ -1,0 +1,54 @@
+# Bihar Civil Court Clerk (UDC) — Employment Notice 01/2022.
+# No official typing-test rule was found for this notice (selection per
+# secondary sources: written objective test + interview). This is an
+# explicitly UNOFFICIAL general typing-practice profile: unofficial_practice
+# keeps it PracticeOnly whatever its fields say. The verified Civil Courts
+# rules of other notices (S-01 Notice 03/2022, S-02 Notice 02/2022) are not
+# mixed in; they only explain the configurable practice defaults.
+schema_version = 1
+id = "bihar-civil-court"
+profile_version = 1
+display_name = "Bihar Civil Court — Clerk"
+body = "Civil Courts of Bihar"
+unofficial_practice = true
+practice_notice = "This is not the official typing test of Bihar Civil Court Clerk (Employment Notice 01/2022). Practice only. It will be updated when official rules are verified."
+
+[notice]
+title = "Clerk (UDC), Employment Notice 01/2022"
+reference = "Employment Notice 01/2022"
+note = "No typing-test rule verified for this notice (X-02 pending)."
+
+[[sources]]
+id = "S-08"
+kind = "primary"
+title = "Civil Courts Patna — admit card notice, UDC written test 18-05-2025 (search snippet only)"
+url = "https://cdnbbsr.s3waas.gov.in/s3ec05a18630ab1c3b9f14454cf70dc711/uploads/2025/05/2025051479.pdf"
+read = false
+
+[[sources]]
+id = "S-10"
+kind = "secondary"
+title = "Testbook — Patna Civil Court Clerk"
+url = "https://testbook.com/patna-civil-court-clerk"
+read = true
+
+[[tests]]
+language = "english"
+layouts = { status = "configurable", default = ["qwerty"], note = "practice default" }
+font = { status = "configurable", default = "Arial", note = "Civil Courts notices 03/2022 and 02/2022 name Times New Roman; nothing is stated for 01/2022" }
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+layouts = { status = "configurable", default = ["gail"], note = "Civil Courts notices 03/2022 and 02/2022 use Remington Gail + Mangal; nothing is stated for 01/2022" }
+font = { status = "configurable", default = "Mangal", note = "practice default from the other Civil Courts notices" }
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "No single current typing scheme; practice profile"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://patnahighcourt.bihar.gov.in/Recruitments.aspx"
+
+[[reference_claims]]
+claim = "English 35 WPM · Hindi 30 WPM · Legal Terminology · 10 min · Backspace allowed · Mangal GAIL · Kruti Dev"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

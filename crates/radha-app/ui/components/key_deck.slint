@@ -1,0 +1,154 @@
+// ============================================================================
+// KeyCap / KeyDeck — tactile key row used as a card "signature"
+// ============================================================================
+//
+// DESIGN.md Chapter 20.3 and 20.4. A deck is a row of key caps. Home cards use it
+// to look distinct (home row, symbol row, Devanagari sampler) while sharing one
+// card structure.
+//
+// A cap is drawn as a face sitting on a 2 px "lip" (the bottom edge shows the lip
+// colour), inside the same 26 px height as before, so it reads as a physical key.
+//
+// States (KeyCapState), face / lip+text:
+//   Normal    bg-surface      / border-strong, text-primary
+//   Active    accent fill     / darker accent, text-on-primary
+//   Optimal   success-subtle  / success
+//   Warning   warning-subtle  / warning
+//   Critical  error-subtle    / error
+// `active: true` always wins (Active), which keeps the original `active` /
+// `active-index` API working for ProductCard. Heatmaps pair the state with a
+// `caption` ("54%"), so a state is never told by colour alone; a cap with a
+// caption is 38 px tall.
+//
+// Three glyphs are treated as separators and drawn as plain text, not as caps:
+//   "·"  a gap between groups
+//   "→"  maps one cap to the next (Kruti Dev: d → क)
+//   "|"  a hard divider (left hand | right hand)
+//
+// Static: no animation. Caps are cheap rectangles, and nothing here may cost
+// frames while someone types.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke } from "../theme/metrics.slint";
+
+/// Visual state of a KeyCap (heatmaps, highlighted next key).
+export enum KeyCapState {
+    Normal,
+    Active,
+    Optimal,
+    Warning,
+    Critical,
+}
+
+export component KeyCap inherits Rectangle {
+    /// The character on the cap, or a separator ("·", "→", "|").
+    in property <string> glyph;
+    /// Highlight the cap with the accent fill; overrides `state`.
+    in property <bool> active: false;
+    /// Fill of the Active state.
+    in property <color> accent: Theme.primary;
+    /// Visual state; ignored while `active` is true.
+    in property <KeyCapState> state: KeyCapState.Normal;
+    /// Draw the glyph in the Devanagari family instead of mono.
+    in property <bool> devanagari: false;
+    /// Optional small text under the glyph (heatmap %, finger); empty = none.
+    in property <string> caption;
+
+    property <bool> separator: root.glyph == "·" || root.glyph == "→" || root.glyph == "|";
+    property <KeyCapState> effective: root.active ? KeyCapState.Active : root.state;
+
+    property <color> face-color:
+        root.effective == KeyCapState.Active ? root.accent
+        : root.effective == KeyCapState.Optimal ? Theme.success-subtle
+        : root.effective == KeyCapState.Warning ? Theme.warning-subtle
+        : root.effective == KeyCapState.Critical ? Theme.error-subtle
+        : Theme.bg-surface;
+
+    property <color> lip-color:
+        root.effective == KeyCapState.Active ? root.accent.darker(0.2)
+        : root.effective == KeyCapState.Optimal ? Theme.success
+        : root.effective == KeyCapState.Warning ? Theme.warning
+        : root.effective == KeyCapState.Critical ? Theme.error
+        : Theme.border-strong;
+
+    property <color> glyph-color:
+        root.effective == KeyCapState.Active ? Theme.text-on-primary
+        : root.effective == KeyCapState.Optimal ? Theme.success
+        : root.effective == KeyCapState.Warning ? Theme.warning
+        : root.effective == KeyCapState.Critical ? Theme.error
+        : Theme.text-primary;
+
+    height: root.caption == "" ? 26px : 38px;
+    min-width: root.separator ? 10px : 24px;
+    border-radius: Radius.sm;
+    // The cap body is the lip colour; the face covers all but the bottom 2 px.
+    background: root.separator ? transparent : root.lip-color;
+    border-width: root.separator ? 0px : Stroke.hairline;
+    border-color: root.lip-color;
+
+    Rectangle {
+        visible: !root.separator;
+        x: 0px;
+        y: 0px;
+        width: parent.width;
+        height: parent.height - 2px;
+        border-radius: Radius.sm;
+        background: root.face-color;
+        border-width: Stroke.hairline;
+        border-color: root.lip-color;
+    }
+
+    VerticalLayout {
+        padding-left: root.separator ? 2px : 6px;
+        padding-right: root.separator ? 2px : 6px;
+        padding-bottom: root.separator ? 0px : 2px;
+        spacing: 0px;
+        alignment: center;
+
+        Text {
+            text: root.glyph;
+            font-family: root.separator
+                ? Typography.family-ui
+                : (root.devanagari ? Typography.family-devanagari : Typography.family-mono);
+            font-size: Typography.size-caption;
+            font-weight: Typography.weight-semibold;
+            color: root.separator ? Theme.text-disabled : root.glyph-color;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+
+        if root.caption != "": Text {
+            text: root.caption;
+            font-family: Typography.family-mono;
+            font-size: 9px;
+            color: root.effective == KeyCapState.Active ? Theme.text-on-primary : root.glyph-color;
+            horizontal-alignment: center;
+        }
+    }
+}
+
+export component KeyDeck inherits HorizontalLayout {
+    /// Glyphs left to right; separators allowed (see KeyCap).
+    in property <[string]> keys;
+    /// Index of the highlighted cap, -1 for none.
+    in property <int> active-index: 0;
+    /// Fill of the highlighted cap.
+    in property <color> accent: Theme.primary;
+    /// Per-cap state by index; missing entries are Normal.
+    in property <[KeyCapState]> states: [];
+    /// Draw every cap in the Devanagari family.
+    in property <bool> devanagari: false;
+
+    spacing: 3px;
+    alignment: start;
+
+    for key[i] in root.keys: KeyCap {
+        glyph: key;
+        active: i == root.active-index;
+        accent: root.accent;
+        state: i < root.states.length ? root.states[i] : KeyCapState.Normal;
+        devanagari: root.devanagari;
+    }
+}

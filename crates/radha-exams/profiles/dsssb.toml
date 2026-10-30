@@ -1,0 +1,28 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "dsssb"
+profile_version = 1
+display_name = "DSSSB LDC & Junior Judicial Asst"
+body = "Delhi Subordinate Services Selection Board"
+
+[notice]
+title = "LDC and Junior Judicial Assistant — post-code typing instructions"
+note = "Primary instructions not read in Radha; rules are unknown and post-code specific."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "Post-code-specific typing instructions (802/24, 802/23)"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://dsssb.delhi.gov.in/circulars-orders-notifications/instructions?page=2"
+
+[[reference_claims]]
+claim = "English 35 WPM · Hindi 30 WPM · 10 Min · Post-Code · Backspace allowed · QWERTY · Kruti / Mangal"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

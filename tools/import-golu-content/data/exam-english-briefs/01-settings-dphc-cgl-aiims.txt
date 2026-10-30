@@ -1,0 +1,445 @@
+// English Exam Master briefs (P09 content). Read by tools/import-golu-content.
+//
+// Format:
+//   @profile CODE            a fictional office for every passage of a profile
+//   key: value               org, place, sections (;-separated), role, party, code
+//   #ID | topic phrase       one brief per title-bank ID that has no Radha 500 draft
+//   - fact                   four or more facts specific to the title
+//
+// Everything here is original practice material: offices, people, numbers and
+// procedures are fictional and state no official rule of any recruitment body.
+
+@profile DPHC
+org: Kalinagar Police Station Office
+place: Kalinagar
+sections: General Diary Desk; Records Room; Dispatch Section; Complaint Cell
+role: ministerial clerk
+party: complainant
+code: KPS
+
+@profile CGL-DEST
+org: Regional Accounts Office
+place: Sitapur Nagar
+sections: Data Processing Unit; Accounts Section; Records Cell; Stores Section
+role: data entry assistant
+party: supplier
+code: RAO
+
+@profile AIIMS-CRE
+org: Greenfield Institute of Medical Sciences
+place: Navapur
+sections: Patient Registration Desk; Medical Records Department; Outpatient Office; Hospital Stores
+role: clerical assistant
+party: patient
+code: GIMS
+
+@profile DSSSB
+org: Riverside District Office
+place: Riverside
+sections: Diary Section; Court Registry; Establishment Branch; Citizen Service Counter
+role: lower division clerk
+party: applicant
+code: RDO
+
+@profile BELTRON
+org: District Data Services Centre
+place: Gangapur
+sections: Data Entry Hall; Verification Desk; Service Counter; Records Archive
+role: data entry operator
+party: applicant
+code: DDSC
+
+@profile UPPBPB
+org: Rampur Kalan Police Office
+place: Rampur Kalan
+sections: Computer Room; General Diary Desk; Records Room; Control Desk
+role: computer operator
+party: complainant
+code: RKP
+
+@profile CRPF
+org: Thirty-Fourth Training Unit Office
+place: Sundargarh Camp
+sections: Personnel Section; Stores Section; Accounts Cell; Transport Office
+role: ministerial head constable
+party: unit member
+code: TUO
+
+@profile CAPF
+org: Border Wing Administrative Office
+place: Northgate Sector
+sections: Personnel Branch; Quartermaster Store; Welfare Cell; Communication Room
+role: ministerial clerk
+party: staff member
+code: BWAO
+
+@profile UPPCL
+org: Kesar Nagar Electricity Distribution Division
+place: Kesar Nagar
+sections: Billing Section; Consumer Service Counter; Meter Cell; Maintenance Office
+role: office assistant
+party: consumer
+code: KEDD
+
+@profile RHC
+org: Principal Registry of the Marudhar Judicial Complex
+place: Marudhar
+sections: Filing Counter; Copying Section; Listing Branch; Record Room
+role: junior judicial assistant
+party: litigant
+code: MJC
+
+@profile PHC-COT
+org: Ganga Valley High Court Registry
+place: Ganga Valley
+sections: Computer Section; Filing Section; Copying Department; Record Room
+role: computer operator-cum-typist
+party: litigant
+code: GVHC
+
+@profile BICC
+org: Kamalpur Civil Court Office
+place: Kamalpur
+sections: Filing Counter; Nazarat Section; Copying Section; Record Room
+role: court clerk
+party: litigant
+code: KCC
+
+@profile AHC
+org: Devgarh District Court Registry
+place: Devgarh
+sections: Filing Counter; Copying Section; Nazarat Section; Record Room
+role: Group-C clerk
+party: litigant
+code: DDC
+
+@profile MPHC
+org: Vindhyanagar District and Sessions Court
+place: Vindhyanagar
+sections: Registration Branch; Copying Section; Judicial Records Room; Establishment Section
+role: court assistant
+party: litigant
+code: VDC
+
+@profile EPFO
+org: Regional Social Security Office
+place: Sitalpur
+sections: Claims Section; Member Services Desk; Compliance Section; Accounts Branch
+role: social security assistant
+party: member
+code: RSSO
+
+// ---------------------------------------------------------------- DPHC (missing drafts)
+#DPHC-024 | word-processing and table formatting in a police office
+- A table of the week's duty hours is set with fixed column widths, so that names and times line up when the sheet is printed.
+- Headings are typed in bold once, and the same font size is used for every row, which keeps the printed page easy to scan.
+- Before printing, the clerk uses the preview to confirm that no column has spilled onto a second page.
+- The document is saved under a name that gives the subject and the date, so that it can be found again without opening other files.
+
+#DPHC-025 | a ten-minute ministerial typing practice passage
+- The practice passage mixes plain sentences with names, dates and reference numbers, because ministerial work combines all three.
+- The typist reads a line ahead of the cursor, which helps keep a steady rhythm instead of stopping at every comma.
+- Capital letters, full stops and hyphens are copied exactly as shown, since a missing mark changes the record.
+- At the end of the practice, the typist compares the typed text with the original and notes every word that differs.
+
+// ---------------------------------------------------------------- CGL-DEST
+#CGL-DEST-001 | the monthly departmental expenditure statement
+- The statement lists every head of expenditure with its budget figure, the amount spent in the month and the balance carried forward.
+- Each amount is typed with two decimal places, and the column totals are added again before the sheet is signed.
+- A figure that differs from the cash book by even one rupee is marked for reconciliation instead of being adjusted quietly.
+- The finished statement carries the month, the office code and the initials of the person who prepared and checked it.
+
+#CGL-DEST-002 | numeric records with dates and reference codes
+- Every record in the batch begins with a reference code, followed by the date of receipt and the amount in figures.
+- Dates are entered in the same day, month and year order throughout, so that sorting the list does not mix them up.
+- Reference codes contain letters, slashes and digits, and each part is typed in the order printed on the source sheet.
+- When two records share the same code, the operator stops and checks the source rather than guessing which one is correct.
+
+#CGL-DEST-003 | a purchase order with item quantities
+- The purchase order names each item, its unit of measure, the quantity ordered and the rate agreed with the supplier.
+- Quantities are typed as whole numbers, while rates and line totals keep two decimal places.
+- The line total is the quantity multiplied by the rate, and the order total is the sum of all the line totals.
+- A copy of the order goes to the stores section, which uses it later to check the goods when they arrive.
+
+#CGL-DEST-004 | invoice details and tax amounts
+- An invoice is entered with its number, date, supplier name, taxable value and the tax charged at each rate.
+- The tax amount is checked by applying the stated rate to the taxable value and rounding to two decimal places.
+- The invoice total must equal the taxable value plus the tax; any difference is written in the remarks column.
+- Invoices are entered in the order of their dates, and a missing number in a supplier's series is reported.
+
+#CGL-DEST-005 | an employee directory with joining dates
+- Each line of the directory gives an employee number, a full name, the designation, the section and the date of joining.
+- Names are typed exactly as they appear in the service book, including initials and the order of the surname.
+- Joining dates are entered in a single format so that the list can be sorted by length of service.
+- Telephone extensions are added only when they appear on the approved list kept by the establishment section.
+
+#CGL-DEST-006 | a postal dispatch list with tracking numbers
+- The dispatch list records the serial number, the addressee, the town, the postal code and the tracking number of each article.
+- Tracking numbers are long strings of letters and digits, so they are read back in groups of four after entry.
+- The number of articles on the list must match the number handed over at the counter, as shown on the receipt.
+- A letter returned undelivered is entered again with its original serial number and a note giving the reason.
+
+#CGL-DEST-007 | attendance statistics by section
+- Attendance is summarised for each section as the number of working days, days present, days on leave and days absent.
+- The four figures for each employee must add up to the number of working days in the month.
+- Section totals are calculated from the individual lines, never typed directly from an earlier report.
+- Percentages are worked out to one decimal place, and the method of rounding is stated at the foot of the table.
+
+#CGL-DEST-008 | a bank reconciliation summary for an office
+- The reconciliation starts with the balance in the cash book and the balance shown in the bank statement on the same date.
+- Cheques issued but not yet presented are listed with their numbers, dates and amounts.
+- Deposits made late in the month that the bank has not yet credited are listed separately.
+- After both adjustments, the two balances must agree exactly, and the summary is signed only when they do.
+
+#CGL-DEST-009 | survey results presented as a numeric narrative
+- The narrative turns a table of survey results into sentences, giving each figure with its unit and its base.
+- Every percentage in the text is checked against the count it came from and the total number of responses.
+- Large numbers are written with commas in the usual places, so that a reader can see their size at a glance.
+- The narrative avoids words such as most or few unless the figures show clearly what they mean.
+
+#CGL-DEST-010 | inventory opening and closing balances
+- For each item, the inventory sheet shows the opening balance, the quantity received, the quantity issued and the closing balance.
+- The closing balance is the opening balance plus receipts minus issues, and it becomes the next month's opening balance.
+- A negative closing balance is impossible, so it always points to a missing receipt or a mistyped issue.
+- The physical count taken at the end of the month is compared with the closing balance and any shortage is reported.
+
+#CGL-DEST-011 | quarterly output data in tabular form
+- The table shows the output of each unit for the three months of the quarter and the total for the quarter.
+- The total for each unit is the sum of its three monthly figures, and the grand total is checked across and down.
+- Units are listed in the same order as in the previous quarter, so that the two tables can be compared line by line.
+- A sharp rise or fall in any figure is noted beside the table with the reason given by the unit.
+
+#CGL-DEST-012 | a report containing percentages and decimal values
+- The report gives figures as percentages and decimals, and each figure keeps the number of decimal places used in the source.
+- A decimal point in the wrong place can change a value tenfold, so each figure is read back aloud after entry.
+- Percentages that should add up to one hundred are totalled, and any small rounding difference is explained in a footnote.
+- Zeros after a decimal point are typed when the source shows them, because they indicate the precision of the measurement.
+
+#CGL-DEST-013 | consecutive reference numbers and record IDs
+- A run of consecutive reference numbers is entered one per line, and the last number is checked against the first plus the count.
+- A skipped or repeated number in the series is reported at once, since it may mean a lost or duplicated record.
+- Record IDs keep their leading zeros, so a number such as 00417 is never shortened to 417.
+- The operator types the full ID even when only the last digits change, because shortcuts lead to errors in long runs.
+
+#CGL-DEST-014 | names, addresses and postal codes
+- Each address is entered in the same order: name, house number, street, locality, town and postal code.
+- Postal codes are six digits long, and an entry with five or seven digits is set aside for checking.
+- Names of places are spelled as on the source document, even when another spelling is common in speech.
+- Abbreviations such as Road or Street are typed in full unless the form itself uses the short form.
+
+#CGL-DEST-015 | a schedule containing times and deadlines
+- The schedule lists each task with its start date, its deadline and the officer responsible for it.
+- Times are given on the twenty-four-hour clock in the working copy and in words in the circulated version.
+- A deadline that falls on a holiday is moved to the next working day, and the change is shown in the notes.
+- When a task depends on another, the schedule names the earlier task so that its delay can be traced.
+
+#CGL-DEST-016 | a telephone directory verification exercise
+- The directory gives each office, the officer's designation, the telephone number and the extension.
+- Every number in the draft is compared with the latest list supplied by each section before the directory is printed.
+- Numbers are typed in groups separated by hyphens, which makes a transposed pair of digits easier to spot.
+- An entry that cannot be confirmed is marked to be verified rather than copied from an old edition.
+
+#CGL-DEST-017 | mixed punctuation in an official data note
+- The data note uses commas, semicolons, colons, brackets and quotation marks, and each one is copied exactly.
+- A colon introduces a list of figures, while semicolons separate items that already contain commas.
+- Brackets enclose explanations that can be skipped without changing the meaning of the sentence.
+- Quotation marks are used only for the exact words of a source, never to show emphasis.
+
+#CGL-DEST-018 | repeated words and number accuracy
+- The passage repeats certain words and figures on purpose, to test whether the typist keeps an exact place.
+- A typist who loses the line may type a repeated phrase twice or skip it altogether.
+- Numbers that look alike, such as 1689 and 1698, appear close together and must not be swapped.
+- Keeping a finger or a ruler under the source line is a simple way to avoid jumping to the wrong repetition.
+
+#CGL-DEST-019 | a procurement summary with currency values
+- The summary lists each purchase with the date, the supplier, the quantity, the value in rupees and the mode of payment.
+- Rupee amounts are typed with commas for thousands and two decimal places, as in Rs. 125,000.00.
+- The total value of purchases is checked against the payments recorded by the accounts section for the same period.
+- Purchases above the limit set by the office are marked to show that they needed a higher approval.
+
+#CGL-DEST-020 | a census-style household data summary
+- The household summary records the number of members, their age groups, and the type of house for each household.
+- Totals for each age group are added across households, and the grand total must equal the number of persons counted.
+- Codes are used for the type of house, and the meaning of each code is printed beneath the table.
+- No name or personal detail appears in the summary, which deals only with numbers.
+
+#CGL-DEST-021 | a list of applications by date and status
+- The list shows each application number, the date received, the subject and its present status.
+- Status is recorded with one of four fixed words: received, under review, completed or returned.
+- The number of applications in each status is counted at the end, and the four counts must add up to the total.
+- Applications are listed in the order of their dates, oldest first, so that delays stand out.
+
+#CGL-DEST-022 | a table-to-text conversion practice
+- In this exercise, a small table is rewritten as continuous text, with every figure kept in its correct place.
+- Each row of the table becomes one sentence, and the column headings become the words that introduce the figures.
+- The typed text must not leave out any cell, even one that contains a zero.
+- After typing, the figures in the text are ticked off against the table one by one.
+
+#CGL-DEST-023 | a short statistical report with comparisons
+- The report compares this year's figures with last year's and gives the change as a number and as a percentage.
+- A rise is described as an increase and a fall as a decrease, and the base year is named every time.
+- Small changes are reported plainly, without words that suggest more significance than the figures support.
+- The table at the end repeats every figure used in the text, so that a reader can check each comparison.
+
+#CGL-DEST-024 | a high-density key-depression passage with figures
+- The passage is packed with numbers, codes and punctuation, so that nearly every word needs a shift or a digit key.
+- Speed in such a passage comes from a steady rhythm rather than bursts followed by long pauses.
+- A typist who looks at the keyboard for each digit loses time, so the number row is practised separately beforehand.
+- Errors in figures are counted strictly, since a wrong digit makes a record useless.
+
+#CGL-DEST-025 | a fifteen-minute data-entry practice session
+- The practice session uses a long sheet of records, each with a code, a date, a quantity and an amount.
+- The operator keeps a steady pace and does not stop to correct earlier lines unless the method allows it.
+- At the end of the session, the number of records entered and the number of mistakes are noted separately.
+- The aim of the practice is a high count of correct key depressions, not a high count of hurried ones.
+
+// ---------------------------------------------------------------- AIIMS-CRE
+#AIIMS-CRE-001 | the daily service summary of a patient registration desk
+- The summary gives the number of new registrations, repeat visits and enquiries handled at the desk during the day.
+- New registrations are counted from the serial numbers issued, not from memory or a rough tally.
+- Busy hours are noted in the summary, which helps the office plan the number of counters for the next week.
+- Any registration cancelled during the day is shown with its number and the reason, so the count stays accurate.
+
+#AIIMS-CRE-002 | appointment scheduling and queue management
+- Appointments are booked in fixed slots, and each slot shows the patient's registration number and the clinic.
+- A patient who arrives without an appointment is given the next free slot and told the expected waiting time.
+- The queue display is updated as each patient is called, so that people waiting can see their turn approaching.
+- Slots left empty by patients who do not arrive are released for others after a short waiting period.
+
+#AIIMS-CRE-003 | medical record file numbering and retrieval
+- Each medical record file carries a number made up of the year of registration and a running serial.
+- Files are shelved in numerical order, and a tracer card marks the place of any file taken out.
+- When a file is requested, the clerk notes the name of the requesting department and the time it left the shelf.
+- A file not returned within the agreed time is followed up with the department that borrowed it.
+
+#AIIMS-CRE-004 | a hospital admission and discharge register
+- The register records the patient's number, the ward, the date and time of admission and the date and time of discharge.
+- Each admission line is completed at the time of entry, and the discharge columns are filled only when the patient leaves.
+- The number of patients in each ward at midnight is worked out from the register and reported the next morning.
+- Corrections in the register are made with a single line through the wrong entry and the initials of the person correcting it.
+
+#AIIMS-CRE-005 | outpatient department attendance statistics
+- The statistics show the number of patients seen in each clinic, divided into new and follow-up visits.
+- Daily figures are added to give weekly and monthly totals, which are compared with the same period last year.
+- A clinic that is closed on a particular day is shown with a dash rather than a zero, to avoid confusion.
+- The figures are typed into a standard table so that the department heads can read them quickly.
+
+#AIIMS-CRE-006 | an inventory of medical and office supplies
+- The inventory lists each item with its code, the unit, the opening stock, the receipts, the issues and the closing stock.
+- Items with an expiry date are listed with that date, and stock nearing expiry is issued first.
+- The reorder level of each item is printed beside it, and any item below that level is highlighted for purchase.
+- The store keeper and a second staff member sign the monthly count to confirm that it is correct.
+
+#AIIMS-CRE-007 | a laboratory report dispatch register
+- The register records the report number, the patient's registration number, the test, and the department to which the report was sent.
+- Each report is entered before it leaves the laboratory office, together with the time of dispatch.
+- The receiving department signs the register, which proves that the report reached the right place.
+- Reports collected by patients in person are entered with the time of collection and the patient's signature.
+
+#AIIMS-CRE-008 | referral note routing between departments
+- A referral note names the referring doctor, the department to which the patient is referred, and the reason in brief.
+- The clerk enters the note in the referral register and gives the patient a slip with the room number and the time.
+- Urgent referrals are marked clearly and sent ahead so that the receiving department expects the patient.
+- When the patient is seen, the receiving department records the date, which closes the entry in the register.
+
+#AIIMS-CRE-009 | a patient helpdesk giving directions and information
+- The helpdesk answers questions about clinic timings, room numbers, registration and the location of facilities.
+- Answers are given from an up-to-date information sheet rather than from memory, which may be out of date.
+- Questions that the helpdesk cannot answer are written down and passed to the right department with a promise of a reply.
+- The helpdesk keeps a count of the questions asked, which shows where better signs or notices are needed.
+
+#AIIMS-CRE-010 | a hospital cleaning and infection-control notice
+- The notice sets out the times at which wards, corridors and waiting areas are cleaned each day.
+- It asks visitors to use the hand-washing points placed at the entrance of every ward.
+- Areas being cleaned are marked with a sign, and visitors are asked to wait until the floor is dry.
+- The notice is typed in short, clear sentences and printed in large letters so that it can be read from a distance.
+
+#AIIMS-CRE-011 | medicine store stock reconciliation
+- Reconciliation compares the stock shown in the store ledger with the stock actually counted on the shelves.
+- Each medicine is counted by batch, and the batch number and expiry date are checked against the ledger.
+- A difference between the ledger and the count is investigated before any adjustment is entered.
+- Expired stock is recorded separately and kept apart until it is disposed of under the store's procedure.
+
+#AIIMS-CRE-012 | an ambulance movement and service log
+- The log records each trip with the vehicle number, the time of leaving, the destination and the time of return.
+- The odometer reading is noted at the start and end of every trip, and the distance is worked out from the two.
+- The driver signs each entry, and the supervisor checks the log at the end of every shift.
+- Fuel taken during the day is entered with the quantity and the receipt number.
+
+#AIIMS-CRE-013 | health camp registration and follow-up
+- Each person attending the camp is registered with a camp number, age, and the service received.
+- The registration sheet is typed into the main record within two days, so that follow-up can be planned.
+- People asked to return for a check are listed with the date of their follow-up visit.
+- The camp report gives the total attendance and the number of people referred to the hospital.
+
+#AIIMS-CRE-014 | confidential handling of patient information
+- Patient information is shared only with staff who need it for the patient's care or for an approved office task.
+- Files and screens are never left open where visitors can read them, even for a short time.
+- Requests for copies of records are entered in a register and dealt with only after the request is approved.
+- Staff speak about a patient's details only in private, never at the counter where others can hear.
+
+#AIIMS-CRE-015 | preparing an administrative meeting agenda
+- The agenda lists the date, time and place of the meeting, followed by the items in the order they will be taken up.
+- Each item names the officer who will present it and any paper that members should read beforehand.
+- The agenda is sent to members several days ahead, with the papers attached in the same order as the items.
+- Items carried over from the previous meeting are listed first, so that pending matters are not forgotten.
+
+#AIIMS-CRE-016 | drafting a formal hospital office letter
+- A formal letter carries a reference number, the date, the name and address of the recipient, a subject line and a salutation.
+- The first paragraph states the purpose of the letter, and the following paragraphs give the details in order.
+- The letter ends with a clear request or statement of what will happen next, followed by the signature block.
+- A copy of every letter is kept in the file, and its reference number is entered in the dispatch register.
+
+#AIIMS-CRE-017 | a short report on waiting times
+- The report measures the time between registration and consultation for a sample of patients in each clinic.
+- Waiting times are given as an average and as the longest wait, because an average alone can hide long delays.
+- The report compares the figures for mornings and afternoons, which often differ.
+- Its recommendations are practical, such as opening an extra counter at the busiest hour.
+
+#AIIMS-CRE-018 | a public health awareness essay
+- The essay explains, in plain language, how simple habits such as washing hands and drinking clean water prevent illness.
+- It avoids medical terms that ordinary readers may not know, or explains them in a few words when they are needed.
+- The essay encourages readers to visit a health centre early rather than waiting until an illness becomes serious.
+- Each paragraph makes one point, which keeps the essay easy to follow when it is read aloud.
+
+#AIIMS-CRE-019 | a letter about improving patient services
+- The letter thanks patients for their suggestions and explains which of them the hospital has been able to act on.
+- It describes each improvement in a sentence, such as longer counter hours or clearer signs.
+- Where a suggestion could not be adopted, the letter gives the reason politely.
+- The letter invites further suggestions and gives the address to which they can be sent.
+
+#AIIMS-CRE-020 | data accuracy in medical record entry
+- Each entry is typed from the original form, and the patient's number is checked before any other field is filled.
+- Dates, names and test results are read back after entry, because an error in any of them can affect care.
+- Fields that are blank on the form are left blank in the system, never filled with a guess.
+- At the end of each batch, a second person checks a sample of entries against the forms.
+
+#AIIMS-CRE-021 | a staff duty roster and shift handover
+- The roster shows each staff member's name, designation and shift for every day of the week.
+- Changes to the roster are made only with the approval of the officer in charge and are recorded with the date.
+- At each handover, the outgoing staff member notes pending tasks in the handover book.
+- The incoming staff member reads and signs the note, so that responsibility passes clearly from one shift to the next.
+
+#AIIMS-CRE-022 | an equipment maintenance request register
+- Each request names the equipment, its asset number, the department, the fault reported and the date of the request.
+- The engineering section enters the date on which it attended and the action taken.
+- A request remains open until the department confirms that the equipment is working again.
+- The register is reviewed every week, and requests open for a long time are brought to the notice of the supervisor.
+
+#AIIMS-CRE-023 | arrangements for a blood donation camp
+- The arrangements cover the venue, the date, the time, the staff on duty and the materials needed.
+- Donors are registered at a separate counter, and each is given a number that follows them through the camp.
+- Refreshments and a resting area are arranged for donors after they have given blood.
+- The summary report gives the number of donors registered and the number who were able to donate.
+
+#AIIMS-CRE-024 | a noting and drafting scenario for a computer skill test
+- In noting, the clerk summarises a case in a few paragraphs and ends with a clear point for the officer to decide.
+- In drafting, the clerk prepares the letter or order that will carry out the officer's decision.
+- Both the note and the draft use short sentences, correct names and accurate dates.
+- The draft is formatted with a heading, numbered paragraphs and a signature block, as the office style requires.
+
+#AIIMS-CRE-025 | a typing passage on healthcare office administration
+- Healthcare offices depend on accurate records, because every patient visit creates documents that others will rely on.
+- The registration desk, the records department and the stores all follow written procedures for their daily work.
+- Staff in these offices balance speed with care, since a hurried entry may cause a delay later.
+- A clear and polite manner at the counter is as important as accurate typing in the back office.

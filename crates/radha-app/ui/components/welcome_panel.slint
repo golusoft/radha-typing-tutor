@@ -1,26 +1,28 @@
 // ============================================================================
-// WelcomePanel — compact orientation strip above the product sections
+// WelcomePanel — compact hero strip above the product sections (HOME-04)
 // ============================================================================
 //
 // Deliberately NOT a marketing hero. Home is a training dashboard, and a large
 // welcome block would push the actual products below the fold on a 768px-tall
 // window — exactly the screen this product targets as its minimum.
 //
-// So: one line of greeting, one supporting line, and three compact stats. Roughly
-// 96px tall.
+// So: greeting + streak + Quick Resume, a 7D / 30D net-WPM sparkline, and
+// three compact stats. Roughly 150px tall.
 //
 // Honest empty state
 // ------------------
-// Until the progress system exists (Phase 31) there are no real figures, so the
-// stats show an em dash and a "no sessions yet" note rather than zeros or invented
-// numbers. A "0 WPM / 0%" readout would look like a measured result rather than an
-// absence of one. `has-data` flips to the real values when they exist, with no
-// layout change.
+// Every figure comes from SQLite through `UtilityView` (P08), computed when
+// Home is shown or a session is saved, never while typing. With no sessions
+// the stats show an em dash, the sparkline its empty text, and no streak or
+// resume line — never zeros or invented numbers.
 // ============================================================================
 
 import { Theme } from "../theme/palette.slint";
 import { Typography } from "../theme/typography.slint";
 import { Spacing, Radius, Stroke } from "../theme/metrics.slint";
+import { SparklineChart } from "sparkline_chart.slint";
+import { RadhaButton, ButtonVariant } from "button.slint";
+import { UtilityView } from "../data/utility.slint";
 
 component Stat inherits VerticalLayout {
     in property <string> label;
@@ -28,6 +30,7 @@ component Stat inherits VerticalLayout {
     in property <color> accent: Theme.primary;
 
     spacing: 1px;
+    alignment: center;
 
     Text {
         text: root.label;
@@ -71,15 +74,18 @@ export component WelcomePanel inherits Rectangle {
     // instead of reporting its unwrapped size upward. `width` on this panel is set
     // by the caller, so these values come from outside and cannot be influenced by
     // the content.
-    private property <length> stats-width: 300px;
+    private property <length> stats-width: 260px;
+    private property <length> chart-width: 300px;
     private property <length> greeting-width:
-        root.width - Spacing.xl * 3 - root.stats-width;
+        root.width - Spacing.xl * 4 - root.stats-width - root.chart-width;
 
     HorizontalLayout {
-        padding: Spacing.xl;
+        padding: Spacing.lg;
+        padding-left: Spacing.xl;
+        padding-right: Spacing.xl;
         spacing: Spacing.xl;
 
-        // --- Greeting -------------------------------------------------------
+        // --- Greeting, streak, Quick Resume -----------------------------------
         VerticalLayout {
             width: root.greeting-width;
             spacing: Spacing.xxs;
@@ -92,9 +98,11 @@ export component WelcomePanel inherits Rectangle {
                 font-weight: Typography.weight-semibold;
                 letter-spacing: Typography.tracking-tight;
                 color: Theme.text-primary;
+                overflow: elide;
             }
 
             Text {
+                width: root.greeting-width;
                 text: root.has-data
                     ? "Continue building speed, accuracy and consistency."
                     : "Pick a course below to begin building speed and accuracy.";
@@ -103,15 +111,72 @@ export component WelcomePanel inherits Rectangle {
                 color: Theme.text-secondary;
                 wrap: word-wrap;
             }
+
+            // visible: rather than if: — Rust sets these before run() (Slint rule 3).
+            Text {
+                visible: UtilityView.hero-streak != "";
+                height: self.visible ? Typography.size-caption * 1.5 : 0px;
+                text: UtilityView.hero-streak;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                font-weight: Typography.weight-semibold;
+                color: Theme.accent;
+            }
+
+            Rectangle {
+                visible: UtilityView.hero-resume != "";
+                height: self.visible ? 32px : 0px;
+                HorizontalLayout {
+                    spacing: Spacing.sm;
+                    alignment: start;
+                    RadhaButton {
+                        text: "Resume";
+                        compact: true;
+                        clicked => {
+                            UtilityView.resume();
+                        }
+                    }
+
+                    Text {
+                        width: root.greeting-width - 90px;
+                        text: UtilityView.hero-resume;
+                        font-family: Typography.family-devanagari;
+                        font-size: Typography.size-caption;
+                        color: Theme.text-secondary;
+                        vertical-alignment: center;
+                        overflow: elide;
+                    }
+                }
+            }
+        }
+
+        // --- Trend (7D / 30D) ---------------------------------------------------
+        SparklineChart {
+            width: root.chart-width;
+            title: "Net WPM trend";
+            value-text: UtilityView.hero-chart-value;
+            line-commands: UtilityView.hero-chart-line;
+            area-commands: UtilityView.hero-chart-area;
+            peak-x: UtilityView.hero-peak-x;
+            peak-y: UtilityView.hero-peak-y;
+            has-data: UtilityView.hero-chart-has-data;
+            empty-text: "No sessions in this range yet";
+            footer-left: UtilityView.hero-chart-footer;
+            footer-right: UtilityView.hero-chart-trend;
+            // Both footers on one line elided "4 practice days · 11 ses…"
+            // in the 300 px hero chart.
+            stacked-footer: true;
+            chart-height: 32px;
+            range: UtilityView.hero-range;
+            range-requested(id) => {
+                UtilityView.hero-range-selected(id);
+            }
         }
 
         // --- Stats ----------------------------------------------------------
-        // Labels kept short and spacing moderate: this group's intrinsic width adds
-        // to the whole page's minimum, and long labels here were part of what pushed
-        // content past the 1024px minimum window size.
         HorizontalLayout {
             width: root.stats-width;
-            spacing: Spacing.xl;
+            spacing: Spacing.lg;
             alignment: end;
 
             Stat {
@@ -121,7 +186,7 @@ export component WelcomePanel inherits Rectangle {
             }
 
             Stat {
-                label: "BEST WPM";
+                label: "BEST NET";
                 value: root.best-wpm;
                 accent: root.has-data ? Theme.accent : Theme.text-disabled;
             }

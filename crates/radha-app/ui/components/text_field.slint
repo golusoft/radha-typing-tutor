@@ -1,0 +1,53 @@
+// ============================================================================
+// TextField — single-line text entry in Radha tokens (P08 overlays)
+// ============================================================================
+//
+// The stock LineEdit draws with the widget style's own accent colours, which
+// may be blue; this field uses Theme tokens only. Owners read `text` (two-way)
+// and may listen to `accepted` (Enter).
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke } from "../theme/metrics.slint";
+
+export component TextField inherits Rectangle {
+    in-out property <string> text;
+    in property <string> placeholder;
+    in property <bool> mono: false;
+    callback accepted(string);
+
+    height: 34px;
+    border-radius: Radius.md;
+    background: input.has-focus ? Theme.bg-surface : Theme.bg-sunken;
+    border-width: input.has-focus ? Stroke.thick : Stroke.hairline;
+    border-color: input.has-focus ? Theme.primary : Theme.border-soft;
+    clip: true;
+
+    input := TextInput {
+        x: Spacing.md;
+        y: (parent.height - self.height) / 2;
+        width: parent.width - 2 * Spacing.md;
+        text <=> root.text;
+        font-family: root.mono ? Typography.family-mono : Typography.family-devanagari;
+        font-size: Typography.size-body-sm;
+        color: Theme.text-primary;
+        selection-background-color: Theme.primary-subtle;
+        selection-foreground-color: Theme.text-primary;
+        single-line: true;
+        accepted => {
+            root.accepted(self.text);
+        }
+    }
+
+    if root.text == "": Text {
+        x: Spacing.md;
+        y: (parent.height - self.height) / 2;
+        width: parent.width - 2 * Spacing.md;
+        text: root.placeholder;
+        font-family: Typography.family-ui;
+        font-size: Typography.size-body-sm;
+        color: Theme.text-tertiary;
+        overflow: elide;
+    }
+}

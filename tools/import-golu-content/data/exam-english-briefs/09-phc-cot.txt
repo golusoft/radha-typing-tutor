@@ -1,0 +1,151 @@
+// PHC-COT — Patna High Court Computer Operator-cum-Typist (fictional Ganga Valley High Court Registry)
+
+#PHC-COT-001 | a computer operator's daily work register
+- The daily work register lists each document typed or entered by the operator with its file number.
+- The time taken for long documents is recorded, which helps plan the workload.
+- Documents returned for correction are noted with the reason.
+- The register is signed by the section officer at the end of each day.
+
+#PHC-COT-002 | receiving a court file in the registry
+- A file received in the registry is checked for its number, the number of volumes and the page count.
+- The receipt is entered in the movement register with the time and the sender's name.
+- Missing pages or volumes are reported at once to the sending section.
+- The file is then placed in the rack assigned to its category.
+
+#PHC-COT-003 | preparing a court notice in formal English
+- A court notice states the case number, the names of the parties and the date fixed for hearing.
+- It tells the recipient what is required, such as appearing in person or filing a reply.
+- The language is formal and free of unnecessary words.
+- The notice is checked against the order before it is signed.
+
+#PHC-COT-004 | verifying case numbers and filing dates
+- Each case number in a list is compared with the registration register.
+- Filing dates are checked against the stamp on the first page of the petition.
+- Differences are marked and referred to the filing section.
+- The verified list is initialled on every page.
+
+#PHC-COT-005 | a typed list of pending matters
+- The list of pending matters shows each case with its number, category and date of last hearing.
+- Matters are sorted by age, so that the oldest appear first.
+- The total number of pending matters is given at the end of the list.
+- The list is updated every month from the case management system.
+
+#PHC-COT-006 | cause list data and serial numbers
+- Each matter in the cause list has a serial number that the court uses to call it.
+- Serial numbers run without a break within each list.
+- Supplementary lists start a new series, marked clearly at the top.
+- The operator checks that no matter appears twice in the same list.
+
+#PHC-COT-007 | the procedure for scanning documents and naming files
+- Documents are scanned in the order in which they appear in the file.
+- Each scanned file is named with the case number and the document type.
+- The operator checks the scanned image for missing or blurred pages.
+- Scanned files are saved in the folder assigned to the year of filing.
+
+#PHC-COT-008 | a request to retrieve a digital case record
+- A request for a digital case record names the case number and the document required.
+- The operator searches the system and confirms that the requester is authorised.
+- The record is shared through the approved channel and the request is logged.
+- Records that cannot be found are reported with the search terms used.
+
+#PHC-COT-009 | an office memorandum for court staff
+- An office memorandum conveys an instruction or information to the staff of the court.
+- It carries a number, a date and a subject line.
+- The memorandum is brief and states clearly what staff must do and by when.
+- It is circulated to all sections and kept in the memorandum file.
+
+#PHC-COT-010 | a meeting agenda for registry officers
+- The agenda lists the date, time and venue of the meeting and the items for discussion.
+- Each item has a short note explaining the matter and the decision required.
+- Papers relating to the items are attached in the same order.
+- The agenda is sent to officers two days before the meeting.
+
+#PHC-COT-011 | preparing a certified copy dispatch list
+- The dispatch list records certified copies ready for delivery with the applicant's name and the copy number.
+- Copies sent by post are entered with the postal receipt number.
+- Copies collected in person are signed for in the delivery column.
+- The list is closed at the end of each day and filed.
+
+#PHC-COT-012 | court fee receipt and application tracking
+- A court fee receipt is linked to the application for which the fee was paid.
+- The tracking register shows the application number, the receipt number and the current stage.
+- Applications delayed beyond the usual time are marked for follow-up.
+- Applicants can ask for the stage by quoting the receipt number.
+
+#PHC-COT-013 | a court website notice and recruitment information
+- A website notice gives the subject, the date and the details that the public needs.
+- Recruitment notices state the post, the number of vacancies and the last date for applying.
+- Any change to an earlier notice is published as a separate corrigendum.
+- The notice is checked carefully before upload, since it becomes a public record at once.
+
+#PHC-COT-014 | a brief on the electronic filing of documents
+- Electronic filing lets advocates and parties submit documents online.
+- The system checks the file format and size before accepting a document.
+- Each electronic filing receives an acknowledgement with a reference number.
+- Scrutiny of an electronic filing follows the same rules as a paper filing.
+
+#PHC-COT-015 | preparing an accurate court statistics table
+- The statistics table shows cases instituted, disposed of and pending for each category.
+- The pending figure equals the opening balance plus institutions minus disposals.
+- Each column is totalled and checked against the case management system.
+- A note explains any category in which the figures have changed sharply.
+
+#PHC-COT-016 | entering case status and the next date
+- After each hearing, the operator enters the stage of the case and the next date in the system.
+- The entry is made from the signed order sheet, not from notes taken in court.
+- The next date is checked against the court calendar to make sure it is a working day.
+- The system shows the update on the public case status page.
+
+#PHC-COT-017 | a formal letter requesting missing documents
+- The letter identifies the case and the documents that are missing from the record.
+- It requests the office concerned to send the documents by a stated date.
+- The letter refers to the court's direction that requires the documents.
+- A reminder is sent if no reply is received by the date given.
+
+#PHC-COT-018 | a record room issue and return register
+- The issue register records each file taken from the record room with the borrower's name and section.
+- The date and time of return are entered when the file comes back.
+- Files kept beyond the allowed period are listed for reminders.
+- The register is checked monthly against the files on the shelves.
+
+#PHC-COT-019 | judicial administration and timely case processing
+- Timely processing of cases depends on prompt registration, listing and service of notices.
+- Each section has time limits for its part of the work.
+- Delays are identified through regular reports and addressed by the officers concerned.
+- Efficient administration supports the court in deciding cases without avoidable delay.
+
+#PHC-COT-020 | a note on confidential court information
+- Confidential court information includes sealed documents and details protected by law.
+- Such information is handled only by staff authorised to deal with it.
+- It is never discussed outside the office or stored on personal devices.
+- Breaches are reported at once to the officer in charge.
+
+#PHC-COT-021 | a court calendar and holiday schedule
+- The court calendar shows the working days, holidays and vacation periods for the year.
+- Holidays are listed with their dates and the days of the week.
+- Special sittings during vacations are announced by separate notices.
+- The calendar is published at the start of the year and placed on the website.
+
+#PHC-COT-022 | a computer equipment maintenance log
+- The maintenance log records each fault reported with the equipment number, the date and the nature of the fault.
+- The technician records the action taken and the date of repair.
+- Equipment that fails repeatedly is listed for replacement.
+- The log helps plan the purchase of spares and new equipment.
+
+#PHC-COT-023 | proofreading a court office draft
+- Proofreading compares the typed draft with the original word by word.
+- Names, case numbers and dates receive special attention.
+- Errors are marked with standard proof marks in the margin.
+- The corrected draft is checked again before it is sent for signature.
+
+#PHC-COT-024 | a court administration passage of about four hundred words
+- This practice passage is of the length commonly used in a short court typing test.
+- It describes routine registry work in clear and formal English.
+- The typist should aim to complete it with very few errors within the time allowed.
+- The length and time rules of an actual test must be taken from its notice.
+
+#PHC-COT-025 | a ten-minute high court typing simulation
+- This simulation gives a continuous passage of court-related prose for timed practice.
+- It includes case numbers, dates and the names of fictional parties.
+- The typist should keep a steady pace for the full duration.
+- Rules for an actual test are configured separately in the app from the published notice.

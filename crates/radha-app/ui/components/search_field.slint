@@ -1,0 +1,150 @@
+// ============================================================================
+// SearchField — single-line search box
+// ============================================================================
+//
+// Used by Home (HOME-03). The field only reports text; Rust decides what matches
+// (`src/catalog.rs`), so the matching rule is one tested function instead of
+// per-component expressions.
+//
+// `focus-input()` lets the shell move focus here on Ctrl+K.
+//
+// The placeholder is a separate Text shown while the field is empty, because the
+// stock TextInput has no placeholder of its own.
+//
+// States (DESIGN.md 20.3):
+//   idle      bg-sunken, hairline border-soft, search icon text-tertiary,
+//             placeholder + shortcut hint visible
+//   focus     bg-surface, 2 px primary border, search icon primary
+//   has-text  placeholder and hint hidden; a clear button (Lucide "x") appears.
+//             Clearing empties the text and raises `edited("")` then `cleared()`,
+//             so an owner that only listens to `edited` stays in sync.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke } from "../theme/metrics.slint";
+
+export component SearchField inherits Rectangle {
+    /// The query text (two-way).
+    in-out property <string> text;
+    /// Shown while the field is empty.
+    in property <string> placeholder: "Search";
+    /// Keyboard shortcut shown at the right while empty; "" hides it.
+    in property <string> hint: "Ctrl+K";
+
+    /// The user changed the text. Carries the new text.
+    callback edited(string);
+    /// The clear button emptied the field (after `edited("")`).
+    callback cleared();
+
+    /// Move keyboard focus into the field.
+    public function focus-input() {
+        input.focus();
+    }
+
+    // Shared by the clear button's click and keyboard paths.
+    function clear-text() {
+        root.text = "";
+        root.edited("");
+        root.cleared();
+    }
+
+    height: 36px;
+    border-radius: Radius.md;
+    background: input.has-focus ? Theme.bg-surface : Theme.bg-sunken;
+    border-width: input.has-focus ? Stroke.thick : Stroke.hairline;
+    border-color: input.has-focus ? Theme.primary : Theme.border-soft;
+
+    HorizontalLayout {
+        padding-left: Spacing.md;
+        padding-right: Spacing.md;
+        spacing: Spacing.sm;
+
+        Image {
+            source: @image-url("../../../../assets/icons/search.svg");
+            width: 16px;
+            height: 16px;
+            y: (parent.height - self.height) / 2;
+            colorize: input.has-focus ? Theme.primary : Theme.text-tertiary;
+        }
+
+        Rectangle {
+            horizontal-stretch: 1;
+
+            input := TextInput {
+                x: 0px;
+                y: (parent.height - self.height) / 2;
+                width: parent.width;
+                text <=> root.text;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-body-sm;
+                color: Theme.text-primary;
+                single-line: true;
+                edited => {
+                    root.edited(self.text);
+                }
+            }
+
+            if root.text == "": Text {
+                x: 0px;
+                y: (parent.height - self.height) / 2;
+                text: root.placeholder;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-body-sm;
+                color: Theme.text-tertiary;
+                overflow: elide;
+                width: parent.width;
+            }
+        }
+
+        if root.text == "" && root.hint != "": Text {
+            text: root.hint;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-micro;
+            color: Theme.text-disabled;
+            vertical-alignment: center;
+        }
+
+        // --- Clear button (has-text) ------------------------------------------
+        // Tab reaches it after the text; Space / Enter clears and puts focus
+        // back in the text (the button disappears with the text, so focus must
+        // land somewhere visible). A mouse click does not move focus.
+        if root.text != "": Rectangle {
+            width: 20px;
+            height: 20px;
+            y: (parent.height - self.height) / 2;
+            border-radius: Radius.sm;
+            border-width: clear-focus.has-focus ? Stroke.thick : 0px;
+            border-color: Theme.primary;
+
+            clear-focus := FocusScope {
+                key-pressed(event) => {
+                    if (event.text == " " || event.text == "\n") {
+                        root.clear-text();
+                        input.focus();
+                        return EventResult.accept;
+                    }
+                    return EventResult.reject;
+                }
+            }
+
+            clear := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => {
+                    root.clear-text();
+                }
+            }
+
+            Image {
+                source: @image-url("../../../../assets/icons/x.svg");
+                x: 3px;
+                y: 3px;
+                width: 14px;
+                height: 14px;
+                colorize: clear.has-hover || clear-focus.has-focus
+                    ? Theme.text-primary
+                    : Theme.text-tertiary;
+            }
+        }
+    }
+}

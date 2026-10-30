@@ -1,0 +1,54 @@
+# Radha Typing Flow engine configuration (data, not code).
+#
+# Read by `radha_core::flow::FlowConfig::parse`. Every key is optional except
+# `schema`; a missing key keeps its built-in default, an unknown key or a value
+# out of range rejects the whole file (the app then logs it and runs on the
+# built-in defaults, which are exactly the values below).
+#
+# Times are milliseconds. Bands and factors are fractions of the typist's own
+# tempo (an exponential moving average of their recent keystroke intervals),
+# so the engine adapts to a 20 WPM beginner and a 90 WPM expert alike.
+
+schema = 1
+
+# --- Rhythm -----------------------------------------------------------------
+# Intervals kept for the live window (cadence bars, live smoothness).
+window = 64
+# Shorter than this is a key rollover / chord: not rhythm, never scored.
+min_interval_ms = 8
+# At or above this is a pause: the rhythm restarts, nothing is scored.
+pause_ms = 2000
+# Intervals after a (re)start that only set the tempo.
+warmup = 4
+# Weight of the newest interval in the tempo average.
+tempo_alpha = 0.15
+# An interval within +/- this fraction of the tempo is "smooth".
+smooth_band = 0.45
+# The same band for an interval into or out of a space (word boundary).
+boundary_band = 0.75
+# Slower than tempo x this (and below pause_ms) is a hesitation.
+hesitation_factor = 2.5
+
+# --- Rhythm language ----------------------------------------------------------
+# Live smoothness % for "steady"; below `settling_smoothness` is "uneven".
+steady_smoothness = 85
+settling_smoothness = 65
+# Session cadence variance (coefficient of variation) that still counts as even.
+even_cv = 0.35
+
+# --- Weak keys (weights ported from Golu Typing OS adaptive/weak_keys.rs) -----
+weak_min_attempts = 5
+weak_score = 20
+weak_error_weight = 60
+weak_latency_weight = 25
+weak_recurrence_weight = 15
+weak_recurrence_errors = 10
+max_weak_keys = 5
+
+# --- Drill ------------------------------------------------------------------
+# Words in a recommended drill.
+drill_words = 48
+# Below this key accuracy % the drill isolates the key first.
+raw_key_accuracy = 80
+# Repetitions of an isolated key group.
+key_reps = 4

@@ -1,0 +1,28 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "crpf-hcm"
+profile_version = 1
+display_name = "CRPF Head Constable (Min.)"
+body = "Central Reserve Police Force"
+
+[notice]
+title = "Head Constable (Ministerial) — typing test"
+note = "Primary notification not read in Radha; rules are unknown."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "35 WPM English / 30 WPM Hindi, Hindi on Remington GAIL with Mangal, 5% permissible error, deductions beyond"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://rect.crpf.gov.in/Upload/Recruitment/526072024-761.pdf"
+
+[[reference_claims]]
+claim = "English 35 WPM · Hindi 30 WPM · 10 Min · Strict Penalty · Backspace allowed · QWERTY · Mangal / Kruti"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

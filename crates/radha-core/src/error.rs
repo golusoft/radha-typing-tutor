@@ -111,6 +111,19 @@ pub enum CoreError {
         /// What was attempted and why it was rejected.
         detail: String,
     },
+
+    /// A user-supplied setting is out of range or unparseable, for example a
+    /// custom timer of 0 s or "61:00".
+    ///
+    /// A typed error rather than a clamp, so the settings screen can tell the
+    /// user what is wrong instead of silently running a different value.
+    #[error("invalid {setting}: {detail}")]
+    InvalidSetting {
+        /// Which setting, e.g. "time limit".
+        setting: &'static str,
+        /// What was wrong with the value.
+        detail: String,
+    },
 }
 
 impl CoreError {
@@ -153,7 +166,8 @@ impl CoreError {
             CoreError::ResourceMissing { .. }
             | CoreError::Malformed { .. }
             | CoreError::UnknownLayout { .. }
-            | CoreError::InvalidSessionState { .. } => true,
+            | CoreError::InvalidSessionState { .. }
+            | CoreError::InvalidSetting { .. } => true,
 
             // Storage-level failures: the app cannot persist progress, which
             // is severe enough to stop rather than silently lose user data.
@@ -213,6 +227,16 @@ mod tests {
             detail: "syntax error".into()
         }
         .is_recoverable());
+    }
+
+    #[test]
+    fn an_invalid_setting_is_recoverable_and_names_the_setting() {
+        let err = CoreError::InvalidSetting {
+            setting: "time limit",
+            detail: "0 s is below the 1 s minimum".into(),
+        };
+        assert!(err.is_recoverable());
+        assert!(err.to_string().contains("time limit"));
     }
 
     #[test]

@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tools\\content-engine\\test\\krutidev-conversion.test.js",
+    "sha256": "d2d4fa529b404f12f6dd5fb30053eac362318f048b4d1cfe26134bced26bef7d",
+    "extracted": "2026-10-25"
+  },
+  "extra_sources": [
+    {
+      "origin": "golu-expert-ai",
+      "path": "tools\\content-engine\\krutidev-convert-core.js",
+      "sha256": "68739717c3006191e33cc085948a769d2d31392ee52ead9e17f2e9c542263ef9",
+      "extracted": "2026-10-25",
+      "used_for": "converter algorithm reference (toKrutiDev, reconstruct)"
+    }
+  ],
+  "cases": [
+    {
+      "name": "preposed_short_i",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "हिंदी",
+      "golu_expected": "fganh",
+      "radha_expected": "fganh"
+    },
+    {
+      "name": "half_plus_completer",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "भारत",
+      "golu_expected": "Hkkjr",
+      "radha_expected": "Hkkjr"
+    },
+    {
+      "name": "post_posed_reph",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "अर्थ",
+      "golu_expected": "vFkZ",
+      "radha_expected": "vFkZ"
+    },
+    {
+      "name": "purna",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "पूर्ण",
+      "golu_expected": "iw.kZ",
+      "radha_expected": "iw.kZ"
+    },
+    {
+      "name": "karya",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "कार्य",
+      "golu_expected": "dk;Z",
+      "radha_expected": "dk;Z"
+    },
+    {
+      "name": "rakar",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "क्रम",
+      "golu_expected": "dze",
+      "radha_expected": "dze"
+    },
+    {
+      "name": "rakar_plus_preposed_i",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "क्रिया",
+      "golu_expected": "fdz;k",
+      "radha_expected": "fdz;k"
+    },
+    {
+      "name": "shiksha",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "शिक्षा",
+      "golu_expected": "f'k{kk",
+      "radha_expected": "f'k{kk"
+    },
+    {
+      "name": "krishi",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "कृषि",
+      "golu_expected": "d`f\"k",
+      "radha_expected": "d`f\"k"
+    },
+    {
+      "name": "danda_on_shift_a",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "पलता।",
+      "golu_expected": "iyrkA",
+      "radha_expected": "iyrkA"
+    },
+    {
+      "name": "visarga",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "कः",
+      "golu_expected": "d%",
+      "radha_expected": "d%"
+    },
+    {
+      "name": "half_form_key",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "क्",
+      "golu_expected": "D",
+      "radha_expected": "D"
+    },
+    {
+      "name": "bare_halant_key",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "उद्देश्य",
+      "golu_expected": "mn~ns';",
+      "radha_expected": "mn~ns';"
+    },
+    {
+      "name": "nukta_stays_in_its_group",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "ड़",
+      "golu_expected": "M+",
+      "radha_expected": "M+"
+    },
+    {
+      "name": "ligature_au",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "और",
+      "golu_expected": "vkSj",
+      "radha_expected": "vkSj"
+    },
+    {
+      "name": "vidyarthi",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "विद्यार्थी",
+      "golu_expected": "fo|kFkhZ",
+      "radha_expected": "fo|kFkhZ"
+    },
+    {
+      "name": "candrabindu_alt_0161",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "हूँ",
+      "golu_expected": "gw¡",
+      "radha_expected": "gw¡"
+    },
+    {
+      "name": "maa_alt_0161",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "माँ",
+      "golu_expected": "ek¡",
+      "radha_expected": "ek¡"
+    },
+    {
+      "name": "nya_alt_0165",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "ञ",
+      "golu_expected": "¥",
+      "radha_expected": "¥"
+    },
+    {
+      "name": "abbreviation_alt_0176",
+      "tag": "intentional_divergence",
+      "kind": "convert",
+      "unicode": "डा॰",
+      "golu_expected": "Mk°",
+      "radha_expected": "Mkñ",
+      "reason": "book 04 KD010-MAP-174: the abbreviation sign ॰ is Alt+0241 (ñ); Alt+0176 is not in the book"
+    },
+    {
+      "name": "parentheses_alt_0188_0189",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "(क)",
+      "golu_expected": "¼d½",
+      "radha_expected": "¼d½"
+    },
+    {
+      "name": "candra_o_without_alt_code",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "डॉ",
+      "golu_expected": "MkW",
+      "radha_expected": "MkW"
+    },
+    {
+      "name": "college",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "कॉलेज",
+      "golu_expected": "dkWyst",
+      "radha_expected": "dkWyst"
+    },
+    {
+      "name": "om_is_refused",
+      "tag": "must_match",
+      "kind": "convert_refused",
+      "unicode": "ॐ",
+      "golu_expected": 1,
+      "radha_expected": 1
+    },
+    {
+      "name": "asterisk_is_refused",
+      "tag": "must_match",
+      "kind": "convert_refused",
+      "unicode": "*",
+      "golu_expected": 1,
+      "radha_expected": 1
+    },
+    {
+      "name": "danda_is_A_and_aa_is_k",
+      "tag": "must_match",
+      "kind": "convert",
+      "unicode": "।ा",
+      "golu_expected": "Ak",
+      "radha_expected": "Ak"
+    },
+    {
+      "name": "precomposed_nukta_converts_after_nfc",
+      "tag": "intentional_divergence",
+      "kind": "convert",
+      "unicode": "क़",
+      "reason": "Radha NFC-normalises before converting, so U+0958 becomes क + ़ and converts; Golu has no reverse entry for the precomposed letter and fails it (gap log G-DIV-3)",
+      "golu_expected": "failure",
+      "radha_expected": "d+"
+    }
+  ]
+}

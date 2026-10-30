@@ -1,0 +1,28 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "mp-cpct"
+profile_version = 1
+display_name = "MP CPCT — Proficiency Test"
+body = "MAP_IT Madhya Pradesh"
+
+[notice]
+title = "Computer Proficiency Certification Test — typing"
+note = "Primary rule book not read in Radha; rules are unknown."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "MCQ + English/Hindi typing, 15 min per typing test, Hindi Unicode in Remington GAIL or InScript"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://cpct.mp.gov.in/per/g01/pub/1172/ASM/WebPortal/1/PDF/CPCT_Rule_book_Modified_V1.2.2.pdf"
+
+[[reference_claims]]
+claim = "English 30+ WPM · Hindi 20+ WPM · 15 Min · Opted Layout · Backspace allowed · Remington GAIL · InScript"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

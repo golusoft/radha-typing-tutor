@@ -143,7 +143,11 @@ pub fn init(paths: &AppPaths) -> Result<PathBuf> {
 /// Called immediately after [`init`] so every log file opens with the version
 /// and paths — the first three questions any bug report raises.
 pub fn log_startup_banner(paths: &AppPaths, log_file: &Path) {
-    log::info!("=== {} v{} ===", radha_core::PRODUCT_NAME, radha_core::VERSION);
+    log::info!(
+        "=== {} v{} ===",
+        radha_core::PRODUCT_NAME,
+        radha_core::VERSION
+    );
     log::info!(
         "Build profile: {}",
         if cfg!(debug_assertions) {

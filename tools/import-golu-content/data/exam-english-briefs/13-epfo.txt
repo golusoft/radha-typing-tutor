@@ -1,0 +1,151 @@
+// EPFO — SSA skill test / data entry (fictional Regional Social Security Office)
+
+#EPFO-001 | member account details and record verification
+- A member account record holds the member's name, date of birth, date of joining and the employer's code.
+- Each field is checked against the documents submitted by the employer.
+- Differences between the record and the documents are listed for correction.
+- The verified record is marked with the date of verification and the assistant's code.
+
+#EPFO-002 | a universal account number data entry check
+- Each universal account number has a fixed number of digits, and an entry with more or fewer digits is rejected.
+- The number is read back in groups after entry to catch transposed digits.
+- The member's name linked to the number is checked on the screen before saving.
+- Duplicate numbers are reported to the supervisor at once.
+
+#EPFO-003 | an employer contribution statement by month
+- The contribution statement shows, for each month, the wages on which contributions were paid.
+- It lists the employee share, the employer share and the total remitted.
+- Monthly totals are added to give the yearly figure.
+- Months with no remittance are shown with a zero and a note.
+
+#EPFO-004 | a provident fund claim receipt register
+- Each claim received is entered with the claim number, the member's account number and the date of receipt.
+- The type of claim, such as final settlement or partial withdrawal, is recorded.
+- The register shows the section to which the claim is sent for processing.
+- Claims returned for want of documents are marked with the reason.
+
+#EPFO-005 | a claim status update and member communication
+- The status of each claim is updated as it moves from receipt to approval and payment.
+- Members receive a message at each important stage.
+- A rejected claim is communicated with the reason and the steps to correct it.
+- The date of every communication is recorded in the claim file.
+
+#EPFO-006 | pension application record verification
+- A pension application is checked for the member's service period, the date of exit and the bank details.
+- The service period is worked out from the contribution record.
+- Missing contribution months are noted and verified with the employer.
+- The verified application is forwarded for approval with a checklist.
+
+#EPFO-007 | nominee details and a change request
+- Nominee details include the name, the relationship, the date of birth and the share of each nominee.
+- The shares of all nominees must add up to one hundred per cent.
+- A change request is accepted only with the member's signature or verified online consent.
+- The old nomination is kept in the record history after the change.
+
+#EPFO-008 | an employer establishment registration summary
+- The registration summary lists each establishment with its code, name, address and date of coverage.
+- The number of employees reported at registration is shown in a separate column.
+- Establishments registered during the month are listed first.
+- The summary is checked against the registration register.
+
+#EPFO-009 | monthly contribution reconciliation
+- Reconciliation compares the contributions shown in the employer's returns with the amounts received in the bank.
+- Differences are listed by establishment and month.
+- Each difference is explained, for example by a late payment or an arithmetic error.
+- The reconciled figures are entered in the accounts.
+
+#EPFO-010 | a data mismatch in member identity records
+- A mismatch occurs when the name or date of birth differs between two records of the same member.
+- The assistant compares both records with the supporting documents.
+- The correct value is confirmed before any change is made.
+- The correction is logged with the document used as evidence.
+
+#EPFO-011 | a formal reply to a member enquiry
+- The reply refers to the member's enquiry by its date and reference number.
+- It answers each question in the order in which it was asked.
+- Account details are given only to the member or an authorised person.
+- The reply ends with the contact details of the office.
+
+#EPFO-012 | a public notice on online social security services
+- The notice explains which services members can use online, such as checking balances and filing claims.
+- It reminds members to keep their mobile numbers and bank details up to date.
+- It warns members never to share passwords or one-time codes.
+- The notice gives the helpline number and the address of the regional office.
+
+#EPFO-013 | the secure handling of member personal data
+- Member data is accessed only through individual logins, and every access is recorded.
+- Printouts containing personal details are kept out of public view.
+- Data is never copied to personal devices.
+- Any loss or misuse of data is reported to the officer in charge immediately.
+
+#EPFO-014 | a transfer request between member accounts
+- A transfer request moves the balance from a previous account to the current account of the member.
+- The request is checked for the correct account numbers and employer details.
+- The previous employer's records are verified before the transfer is approved.
+- The member is informed when the transfer is complete.
+
+#EPFO-015 | a settlement queue and pending claim report
+- The pending claim report lists claims waiting for settlement with the date of receipt.
+- Claims are sorted by age, oldest first.
+- The number of days each claim has been pending is shown in a separate column.
+- Claims pending beyond the time limit are highlighted for priority action.
+
+#EPFO-016 | updating bank details after verification
+- New bank details are accepted only after the account is verified with the bank.
+- The account number and the branch code are typed with great care.
+- The old bank details are retained in the history of the record.
+- The member receives confirmation once the update is approved.
+
+#EPFO-017 | a summary of employer compliance records
+- The compliance summary shows whether each employer filed returns and paid contributions on time.
+- Late filings and late payments are listed with the number of days of delay.
+- Employers with repeated delays are marked for follow-up.
+- The summary is prepared every quarter.
+
+#EPFO-018 | digital record retention and an audit trail
+- Digital records are retained for the period fixed for each type of record.
+- An audit trail records every change with the date, the time and the user who made it.
+- Audit trails cannot be edited by ordinary users.
+- Regular reviews check that the trail is complete.
+
+#EPFO-019 | a member helpdesk call and ticket log
+- Each call to the helpdesk is logged with a ticket number, the member's account number and the query.
+- The log records whether the query was answered at once or passed to a section.
+- Tickets passed to sections are followed up until closed.
+- The number of tickets opened and closed each day is reported.
+
+#EPFO-020 | preparing a monthly workload statement
+- The workload statement shows the number of claims, transfers and corrections handled in the month.
+- Figures are given for each section and for the office as a whole.
+- The statement compares the month's work with the previous month.
+- It is submitted to the officer in charge in the first week of the next month.
+
+#EPFO-021 | social security awareness in general
+- Social security schemes help workers save for retirement and protect families in hard times.
+- Regular contributions build a fund that grows over the years of service.
+- Members should check their account statements regularly.
+- Awareness programmes explain these benefits in simple language.
+
+#EPFO-022 | a letter requesting missing claim documents
+- The letter identifies the claim by its number and the member's name.
+- It lists each missing document clearly.
+- The letter states the date by which the documents should be sent.
+- It explains that the claim will be processed as soon as the documents arrive.
+
+#EPFO-023 | precis practice on a short administrative circular
+- A precis reduces a circular to its essential points in about one third of the length.
+- It keeps the meaning of the original without adding new ideas.
+- The precis is written in complete sentences and in the third person.
+- A short title is given at the top of the precis.
+
+#EPFO-024 | high-density numeric records and key-depression practice
+- This practice passage contains many account numbers, amounts and dates.
+- Key depressions are counted for every character, including spaces and punctuation.
+- Numeric accuracy is as important as speed in data-entry work.
+- The typist should keep the hands on the home position and use the number row without looking down.
+
+#EPFO-025 | a computer skill test simulation for social security assistants
+- This simulation reflects the data entry and correspondence work of a social security office.
+- It contains member records, amounts and formal sentences.
+- The practice measures both key depressions and errors.
+- The actual skill test rules must be taken from the notice for the recruitment cycle.

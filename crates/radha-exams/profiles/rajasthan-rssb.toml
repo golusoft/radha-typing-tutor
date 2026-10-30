@@ -1,0 +1,28 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "rajasthan-rssb"
+profile_version = 1
+display_name = "Rajasthan RSSB — LDC & IA"
+body = "Rajasthan Staff Selection Board"
+
+[notice]
+title = "Junior Assistant / LDC Grade II and Informatics Assistant — typing"
+note = "Primary notification not read in Radha; rules are unknown."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "Speed and efficiency test profile for Grade II / Junior Assistant"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://rssb.rajasthan.gov.in/storage/news_item/1736321756.pdf"
+
+[[reference_claims]]
+claim = "English 30 WPM · Hindi 25 WPM · Speed + Efficiency · 10 min · Backspace allowed · Kruti Dev 010 · DevLys"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

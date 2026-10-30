@@ -19,6 +19,8 @@ radha-layouts.workspace = true
 radha-content.workspace = true
 radha-db.workspace = true
 radha-analytics.workspace = true
+# Exam profiles (P09): the only place exam rules live (RULES 31).
+radha-exams.workspace = true
 
 # App boundary uses anyhow for context-rich bubbling (Task 3).
 anyhow.workspace = true

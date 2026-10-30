@@ -1,0 +1,28 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "capf-hcm"
+profile_version = 1
+display_name = "BSF / CAPF HC (Ministerial)"
+body = "Central Armed Police Forces"
+
+[notice]
+title = "Head Constable (Ministerial) — typing test, force by force"
+note = "Primary notifications not read in Radha; rules are unknown and differ by force."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "Force-specific; do not assume CRPF rules"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://rectt.bsf.gov.in/"
+
+[[reference_claims]]
+claim = "English 35 WPM · Hindi 30 WPM · 10 Min · CAPF Pool · Backspace allowed · QWERTY · Mangal GAIL"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

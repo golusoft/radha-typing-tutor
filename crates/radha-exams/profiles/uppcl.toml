@@ -1,0 +1,28 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "uppcl"
+profile_version = 1
+display_name = "UPPCL Executive Asst & Clerk"
+body = "UP Power Corporation Limited"
+
+[notice]
+title = "Executive Assistant and Clerk — typing"
+note = "Primary notification not read in Radha; rules are unknown."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "Post-level Hindi typing / font arrangements; other notices may specify Kruti Dev 010/016"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://uppcl.org/site/writereaddata/uploadedCirculars/C_202601241648507345.pdf"
+
+[[reference_claims]]
+claim = "English 35 WPM · Hindi 30 WPM · 5 Min · High Precision · Backspace allowed · Kruti Dev 010 Mandatory"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

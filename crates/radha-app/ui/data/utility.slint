@@ -1,0 +1,148 @@
+// ============================================================================
+// Utility view-model — Home hero, Analytics, Profile, Settings, Candidate (P08)
+// ============================================================================
+//
+// Rust owns every value (RULES.MD Rule 16). Aggregates are computed by Rust
+// when an overlay opens or a Result is saved, never while typing. `open`
+// names the overlay on screen ("" for none); the UI only asks for a change
+// through `open-requested` / `close`, and Rust answers.
+// ============================================================================
+
+/// A label + value tile or line.
+export struct StatLine {
+    label: string,
+    value: string,
+    note: string,
+}
+
+/// One row of a per-product or per-layout table. `has-data` false shows
+/// dashes, never zeros.
+export struct PerfRow {
+    name: string,
+    detail: string,
+    sessions: string,
+    net: string,
+    accuracy: string,
+    best: string,
+    time: string,
+    has-data: bool,
+}
+
+/// One practice-history line.
+export struct HistoryLine {
+    when: string,
+    title: string,
+    product: string,
+    net: string,
+    accuracy: string,
+    time: string,
+}
+
+/// One achievement.
+export struct AchievementLine {
+    title: string,
+    progress: string,
+    earned: bool,
+}
+
+export global UtilityView {
+    /// "" | "analytics" | "profile" | "settings" | "candidate".
+    in-out property <string> open;
+
+    // --- Home hero (HOME-04) --------------------------------------------------
+    in-out property <bool> hero-has-data;
+    in-out property <string> hero-practice: "—";
+    in-out property <string> hero-best: "—";
+    in-out property <string> hero-accuracy: "—";
+    /// "3-day streak", "" when none.
+    in-out property <string> hero-streak;
+    in-out property <string> hero-range: "7d";
+    in-out property <bool> hero-chart-has-data;
+    in-out property <string> hero-chart-line;
+    in-out property <string> hero-chart-area;
+    in-out property <float> hero-peak-x;
+    in-out property <float> hero-peak-y;
+    in-out property <string> hero-chart-value;
+    in-out property <string> hero-chart-footer;
+    in-out property <string> hero-chart-trend;
+    /// Quick Resume of the actual last session ("" hides it).
+    in-out property <string> hero-resume;
+
+    // --- Analytics overlay (RULES 3) -------------------------------------------
+    in-out property <bool> an-has-data;
+    in-out property <string> an-range: "30d";
+    in-out property <[StatLine]> an-kpis;
+    in-out property <bool> an-speed-has-data;
+    in-out property <string> an-speed-line;
+    in-out property <string> an-speed-area;
+    in-out property <float> an-speed-peak-x;
+    in-out property <float> an-speed-peak-y;
+    in-out property <string> an-speed-value;
+    in-out property <string> an-speed-footer;
+    in-out property <bool> an-acc-has-data;
+    in-out property <string> an-acc-line;
+    in-out property <string> an-acc-area;
+    in-out property <float> an-acc-peak-x;
+    in-out property <float> an-acc-peak-y;
+    in-out property <string> an-acc-value;
+    in-out property <string> an-acc-footer;
+    in-out property <[PerfRow]> an-products;
+    in-out property <[PerfRow]> an-layouts;
+    in-out property <[StatLine]> an-weak;
+    in-out property <[StatLine]> an-errors;
+    in-out property <[HistoryLine]> an-history;
+
+    // --- Profile overlay (RULES 4) ----------------------------------------------
+    in-out property <string> pf-name;
+    in-out property <string> pf-photo-path;
+    in-out property <image> pf-photo;
+    in-out property <bool> pf-has-photo;
+    in-out property <string> pf-initial: "L";
+    in-out property <string> pf-level: "—";
+    in-out property <string> pf-level-note;
+    in-out property <[StatLine]> pf-bests;
+    in-out property <[AchievementLine]> pf-achievements;
+    in-out property <string> pf-licence: "Licence not configured";
+    in-out property <string> pf-status;
+
+    // --- Settings overlay (RULES 5) -----------------------------------------------
+    in-out property <string> st-theme: "light";
+    in-out property <string> st-font: "22 px";
+    in-out property <bool> st-bold;
+    in-out property <bool> st-sound: true;
+    in-out property <bool> st-reduce-motion;
+    in-out property <string> st-backspace: "full";
+    in-out property <string> st-highlight: "word-error";
+    in-out property <bool> st-paper;
+    in-out property <bool> st-keyboard: true;
+    // Settings → Keyboard layout (LayoutId::as_str).
+    in-out property <string> st-layout: "gail";
+    in-out property <string> st-guide: "full";
+    in-out property <bool> st-focus;
+    in-out property <string> st-backup-path;
+    in-out property <string> st-export-path;
+    in-out property <string> st-data-status;
+    in-out property <string> st-version;
+    in-out property <string> st-config-path;
+    in-out property <string> st-data-path;
+
+    // --- Candidate info (RS-10) --------------------------------------------------
+    in-out property <string> cd-name;
+    in-out property <string> cd-roll;
+    in-out property <string> cd-status;
+
+    callback open-requested(string);
+    callback close();
+    callback hero-range-selected(string);
+    callback resume();
+    callback analytics-range-selected(string);
+    callback save-profile(string, string);
+    /// (key, value) — fixed ids; Rust validates and saves settings.toml.
+    callback set-setting(string, string);
+    callback backup(string);
+    callback export-history(string);
+    /// A fixed contact link id ("website", "whatsapp", "phone").
+    callback open-link(string);
+    callback save-candidate(string, string);
+    callback clear-candidate();
+}

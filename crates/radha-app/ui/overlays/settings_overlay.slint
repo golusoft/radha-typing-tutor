@@ -1,0 +1,494 @@
+// ============================================================================
+// SettingsOverlay — preferences in settings.toml (RULES.MD 5, P08)
+// ============================================================================
+//
+// Every control raises `UtilityView.set-setting(key, value)` with fixed ids;
+// Rust validates, saves %APPDATA%\Radha\Radha Typing Tutor\config\settings.toml
+// and writes the stored value back, so the UI never shows a value Rust did
+// not keep. The section list is presentation only, so it lives here.
+// Contact links are opened by Rust from fixed ids (no URLs in .slint).
+// ============================================================================
+
+import { ScrollView } from "std-widgets.slint";
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke } from "../theme/metrics.slint";
+import { OverlayPanel } from "../components/overlay_panel.slint";
+import { SegmentedToggle, SegmentOption } from "../components/segmented_toggle.slint";
+import { TextField } from "../components/text_field.slint";
+import { RadhaButton, ButtonVariant } from "../components/button.slint";
+import { UtilityView } from "../data/utility.slint";
+
+component Choice inherits VerticalLayout {
+    in property <string> label;
+    in property <string> note;
+    in property <length> w;
+    in property <[SegmentOption]> options;
+    in property <string> current;
+    callback selected(string);
+    spacing: 4px;
+    padding-bottom: Spacing.md;
+
+    Text {
+        text: root.label;
+        font-family: Typography.family-ui;
+        font-size: Typography.size-body-sm;
+        font-weight: Typography.weight-semibold;
+        color: Theme.text-primary;
+    }
+
+    if root.note != "": Text {
+        width: root.w;
+        text: root.note;
+        font-family: Typography.family-ui;
+        font-size: Typography.size-caption;
+        color: Theme.text-secondary;
+        wrap: word-wrap;
+    }
+
+    HorizontalLayout {
+        alignment: start;
+        SegmentedToggle {
+            options: root.options;
+            current: root.current;
+            selected(id) => {
+                root.selected(id);
+            }
+        }
+    }
+}
+
+component OnOff inherits Choice {
+    in property <bool> on;
+    options: [{ id: "on", label: "On" }, { id: "off", label: "Off" }];
+    current: root.on ? "on" : "off";
+}
+
+component Info inherits Text {
+    font-family: Typography.family-ui;
+    font-size: Typography.size-caption;
+    color: Theme.text-secondary;
+    wrap: word-wrap;
+}
+
+export component SettingsOverlay inherits Rectangle {
+    property <string> section: "appearance";
+    property <length> nav-w: 196px;
+    property <length> w: panel.body-w - root.nav-w - Spacing.xl - 18px;
+
+    panel := OverlayPanel {
+        width: root.width;
+        height: root.height;
+        max-panel-w: 920px;
+        max-panel-h: 660px;
+        title: "Settings";
+        subtitle: "Saved to settings.toml right away. Exams keep their own locked rules.";
+        close => {
+            UtilityView.close();
+        }
+
+        // --- Sections ---------------------------------------------------------
+        VerticalLayout {
+            x: 0px;
+            y: 0px;
+            width: root.nav-w;
+            spacing: 2px;
+            alignment: start;
+
+            for s in [
+                { id: "appearance", label: "Appearance & theme" },
+                { id: "typography", label: "Typography & font size" },
+                { id: "sound", label: "Sound" },
+                { id: "animation", label: "Animation" },
+                { id: "typing", label: "Typing" },
+                { id: "keyboard", label: "Keyboard" },
+                { id: "guide", label: "Hindi Guide" },
+                { id: "focus", label: "Focus mode" },
+                { id: "data", label: "Data" },
+                { id: "app", label: "Application" },
+            ]: item := Rectangle {
+                height: 34px;
+                border-radius: Radius.md;
+                background: root.section == s.id ? Theme.primary-subtle
+                    : item-touch.has-hover ? Theme.bg-raised : transparent;
+                border-width: item-focus.has-focus ? Stroke.thick : 0px;
+                border-color: Theme.primary;
+
+                Rectangle {
+                    x: 0px;
+                    y: 8px;
+                    width: Stroke.accent-stripe;
+                    height: parent.height - 16px;
+                    border-radius: 2px;
+                    background: root.section == s.id ? Theme.primary : transparent;
+                }
+
+                Text {
+                    x: Spacing.md;
+                    width: parent.width - Spacing.lg;
+                    height: parent.height;
+                    text: s.label;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-body-sm;
+                    font-weight: root.section == s.id ? Typography.weight-semibold : Typography.weight-medium;
+                    color: root.section == s.id ? Theme.primary : Theme.text-secondary;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+
+                item-focus := FocusScope {
+                    key-pressed(event) => {
+                        if (event.text == " " || event.text == "\n") {
+                            root.section = s.id;
+                            return EventResult.accept;
+                        }
+                        return EventResult.reject;
+                    }
+                }
+
+                item-touch := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => {
+                        root.section = s.id;
+                    }
+                }
+            }
+        }
+
+        // --- Section body -------------------------------------------------------
+        ScrollView {
+            x: root.nav-w + Spacing.xl;
+            y: 0px;
+            width: panel.body-w - root.nav-w - Spacing.xl;
+            height: panel.body-h;
+
+            VerticalLayout {
+                width: root.w;
+                alignment: start;
+                spacing: Spacing.sm;
+
+                if root.section == "appearance": Choice {
+                    w: root.w;
+                    label: "Theme";
+                    note: "Ivory light or deep-plum dark. The theme button on every screen does the same.";
+                    options: [{ id: "light", label: "Light" }, { id: "dark", label: "Dark" }];
+                    current: UtilityView.st-theme;
+                    selected(id) => {
+                        UtilityView.set-setting("theme", id);
+                    }
+                }
+
+                if root.section == "typography": VerticalLayout {
+                    spacing: Spacing.sm;
+                    Text {
+                        text: "Typing text size";
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-body-sm;
+                        font-weight: Typography.weight-semibold;
+                        color: Theme.text-primary;
+                    }
+
+                    Info {
+                        width: root.w;
+                        text: "15 to 34 px. Hindi passages never go below 18 px so matras stay readable.";
+                    }
+
+                    HorizontalLayout {
+                        alignment: start;
+                        spacing: Spacing.sm;
+                        RadhaButton {
+                            text: "A−";
+                            compact: true;
+                            variant: ButtonVariant.Secondary;
+                            clicked => {
+                                UtilityView.set-setting("font", "down");
+                            }
+                        }
+
+                        Text {
+                            text: UtilityView.st-font;
+                            font-family: Typography.family-mono;
+                            font-size: Typography.size-body;
+                            font-weight: Typography.weight-bold;
+                            color: Theme.text-primary;
+                            vertical-alignment: center;
+                        }
+
+                        RadhaButton {
+                            text: "A+";
+                            compact: true;
+                            variant: ButtonVariant.Secondary;
+                            clicked => {
+                                UtilityView.set-setting("font", "up");
+                            }
+                        }
+                    }
+
+                    OnOff {
+                        w: root.w;
+                        label: "Bold typing text";
+                        on: UtilityView.st-bold;
+                        selected(id) => {
+                            UtilityView.set-setting("bold", id);
+                        }
+                    }
+                }
+
+                if root.section == "sound": OnOff {
+                    w: root.w;
+                    label: "Typing sounds";
+                    note: "Key, error, timer and completion sounds. The Typing screen's sound button changes it for the current session.";
+                    on: UtilityView.st-sound;
+                    selected(id) => {
+                        UtilityView.set-setting("sound", id);
+                    }
+                }
+
+                if root.section == "animation": OnOff {
+                    w: root.w;
+                    label: "Reduce motion";
+                    note: "Turns off hover lifts and transitions. Recommended on slower PCs. The typing screen never animates besides the caret.";
+                    on: UtilityView.st-reduce-motion;
+                    selected(id) => {
+                        UtilityView.set-setting("reduce-motion", id);
+                    }
+                }
+
+                if root.section == "typing": VerticalLayout {
+                    Choice {
+                        w: root.w;
+                        label: "Backspace (practice default)";
+                        options: [
+                            { id: "full", label: "Full" },
+                            { id: "word", label: "One word" },
+                            { id: "off", label: "None" },
+                        ];
+                        current: UtilityView.st-backspace;
+                        selected(id) => {
+                            UtilityView.set-setting("backspace", id);
+                        }
+                    }
+
+                    Choice {
+                        w: root.w;
+                        label: "Highlight";
+                        options: [
+                            { id: "word-error", label: "Word + error" },
+                            { id: "word", label: "Word only" },
+                            { id: "blind", label: "Blind" },
+                        ];
+                        current: UtilityView.st-highlight;
+                        selected(id) => {
+                            UtilityView.set-setting("highlight", id);
+                        }
+                    }
+
+                    OnOff {
+                        w: root.w;
+                        label: "Paper mode";
+                        note: "Cream paper, monospace, print-like border.";
+                        on: UtilityView.st-paper;
+                        selected(id) => {
+                            UtilityView.set-setting("paper", id);
+                        }
+                    }
+                }
+
+                if root.section == "keyboard": VerticalLayout {
+                    Choice {
+                        w: root.w;
+                        label: "Keyboard layout (Remington GAIL, Remington CBI, Kruti Dev 010, InScript)";
+                        note: "The typing course follows the layout: QWERTY loads the English course, each Hindi layout its own. InScript has no course of its own and uses the Unicode Hindi passages it can type. Hindi exams start on this layout unless the exam names Kruti Dev.";
+                        options: [
+                            { id: "qwerty", label: "QWERTY" },
+                            { id: "gail", label: "GAIL" },
+                            { id: "cbi", label: "CBI" },
+                            { id: "krutidev", label: "Kruti Dev" },
+                            { id: "inscript", label: "InScript" },
+                        ];
+                        current: UtilityView.st-layout;
+                        selected(id) => {
+                            UtilityView.set-setting("layout", id);
+                        }
+                    }
+
+                    OnOff {
+                        w: root.w;
+                        label: "Key Guide / mistake-key marking";
+                        note: "Off by default: the typing screen highlights whole words. On: the next key, finger guide and mistake-key marks. Never shown in exams.";
+                        on: UtilityView.st-keyboard;
+                        selected(id) => {
+                            UtilityView.set-setting("key-guide", id);
+                        }
+                    }
+                }
+
+                if root.section == "guide": Choice {
+                    w: root.w;
+                    label: "Hindi Guide in lessons";
+                    note: "Full: key, hand and finger always. Smart: after a pause or a mistake. Minimal: key only. Off: nothing. Beginner lessons step it down as your accuracy holds.";
+                    options: [
+                        { id: "full", label: "Full" },
+                        { id: "smart", label: "Smart" },
+                        { id: "minimal", label: "Minimal" },
+                        { id: "off", label: "Off" },
+                    ];
+                    current: UtilityView.st-guide;
+                    selected(id) => {
+                        UtilityView.set-setting("guide", id);
+                    }
+                }
+
+                if root.section == "focus": OnOff {
+                    w: root.w;
+                    label: "Start sessions in focus mode";
+                    note: "Hides the coach strip and side panels so only the passage and your typing remain.";
+                    on: UtilityView.st-focus;
+                    selected(id) => {
+                        UtilityView.set-setting("focus", id);
+                    }
+                }
+
+                if root.section == "data": VerticalLayout {
+                    spacing: Spacing.sm;
+                    Text {
+                        text: "Back up your progress";
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-body-sm;
+                        font-weight: Typography.weight-semibold;
+                        color: Theme.text-primary;
+                    }
+
+                    Info {
+                        width: root.w;
+                        text: "A complete copy of the database (sessions, bests, profile). An existing file is never overwritten.";
+                    }
+
+                    TextField {
+                        width: root.w;
+                        text <=> UtilityView.st-backup-path;
+                        mono: true;
+                        placeholder: "Full path ending in .sqlite";
+                    }
+
+                    HorizontalLayout {
+                        alignment: start;
+                        RadhaButton {
+                            text: "Back up now";
+                            compact: true;
+                            clicked => {
+                                UtilityView.backup(UtilityView.st-backup-path);
+                            }
+                        }
+                    }
+
+                    Text {
+                        text: "Export session history";
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-body-sm;
+                        font-weight: Typography.weight-semibold;
+                        color: Theme.text-primary;
+                    }
+
+                    TextField {
+                        width: root.w;
+                        text <=> UtilityView.st-export-path;
+                        mono: true;
+                        placeholder: "Full path ending in .csv";
+                    }
+
+                    HorizontalLayout {
+                        alignment: start;
+                        RadhaButton {
+                            text: "Export CSV";
+                            compact: true;
+                            variant: ButtonVariant.Secondary;
+                            clicked => {
+                                UtilityView.export-history(UtilityView.st-export-path);
+                            }
+                        }
+                    }
+
+                    Info {
+                        width: root.w;
+                        text: UtilityView.st-data-status;
+                        color: Theme.primary;
+                    }
+
+                    Info {
+                        width: root.w;
+                        text: "Data folder: " + UtilityView.st-data-path;
+                    }
+                }
+
+                if root.section == "app": VerticalLayout {
+                    spacing: Spacing.sm;
+                    Text {
+                        text: "Radha Typing Tutor " + UtilityView.st-version;
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-h3;
+                        font-weight: Typography.weight-bold;
+                        color: Theme.text-primary;
+                    }
+
+                    Info {
+                        width: root.w;
+                        text: "Created by Golu Kumar. Works fully offline.";
+                    }
+
+                    for c in [
+                        { l: "Website", v: "golupdf.online", id: "website" },
+                        { l: "WhatsApp", v: "8603064972", id: "whatsapp" },
+                        { l: "Phone", v: "8789086401", id: "phone" },
+                    ]: HorizontalLayout {
+                        spacing: Spacing.md;
+                        height: 36px;
+                        Text {
+                            width: 90px;
+                            text: c.l;
+                            font-family: Typography.family-ui;
+                            font-size: Typography.size-caption;
+                            color: Theme.text-tertiary;
+                            vertical-alignment: center;
+                        }
+
+                        Text {
+                            width: 160px;
+                            text: c.v;
+                            font-family: Typography.family-mono;
+                            font-size: Typography.size-body-sm;
+                            color: Theme.text-primary;
+                            vertical-alignment: center;
+                        }
+
+                        VerticalLayout {
+                            alignment: center;
+                            RadhaButton {
+                                text: "Open";
+                                compact: true;
+                                variant: ButtonVariant.Ghost;
+                                clicked => {
+                                    UtilityView.open-link(c.id);
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            horizontal-stretch: 1;
+                        }
+                    }
+
+                    Info {
+                        width: root.w;
+                        text: "Settings file: " + UtilityView.st-config-path;
+                    }
+
+                    Info {
+                        width: root.w;
+                        text: "Licence: not configured in this build.";
+                    }
+                }
+            }
+        }
+    }
+}

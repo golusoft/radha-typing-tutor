@@ -1,0 +1,121 @@
+// ============================================================================
+// SegmentedToggle — a small exclusive choice (LEARN | TEST, 7D | 30D)
+// ============================================================================
+//
+// DESIGN.md Chapter 20.3. A sunken track holding two or more segments; the
+// active one is filled with the primary colour and set semibold, so selection
+// reads by weight and fill, not by colour alone (DESIGN.md 20.7).
+//
+// States per segment:
+//   idle      transparent, text-secondary
+//   hover     bg-raised
+//   active    primary fill, text-on-primary, semibold
+//   disabled  text-disabled, no pointer, no callback (per option or whole control);
+//             the current segment stays marked (bg-surface fill + semibold), so
+//             a locked value such as a profile-fixed language is still readable
+//   focus     2 px ring (primary; text-on-primary on the active fill).
+//             Tab reaches every usable segment; Space / Enter selects it.
+//
+// The control only reports a request (`selected(id)`); the owner decides the new
+// `current`, which keeps state out of the UI (RULES.MD Rule 16).
+//
+// Width hugs the segments. Place it in a layout with `alignment: start` (or next
+// to a stretching sibling) rather than giving it a width.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Motion, Stroke } from "../theme/metrics.slint";
+
+/// One segment. `disabled` defaults to false.
+export struct SegmentOption {
+    id: string,
+    label: string,
+    disabled: bool,
+}
+
+export component SegmentedToggle inherits Rectangle {
+    /// The segments, left to right.
+    in property <[SegmentOption]> options;
+    /// Id of the active segment.
+    in property <string> current;
+    /// False disables every segment (shown in text-disabled, no callback).
+    in property <bool> enabled: true;
+    /// Dense variant for card headers: 24 px tall instead of 34 px.
+    in property <bool> compact: false;
+
+    /// A usable segment was clicked. Carries its id (also for the active one;
+    /// the owner decides whether anything changes).
+    callback selected(string);
+
+    height: root.compact ? 24px : 34px;
+    horizontal-stretch: 0;
+    border-radius: Radius.md;
+    background: Theme.bg-sunken;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-soft;
+
+    HorizontalLayout {
+        padding: 3px;
+        spacing: 2px;
+        alignment: start;
+
+        for option in root.options: seg := Rectangle {
+            property <bool> is-active: option.id == root.current;
+            property <bool> usable: root.enabled && !option.disabled;
+
+            border-radius: Radius.sm;
+            // Active: primary fill when usable, bg-surface when disabled (the
+            // selection must stay visible on a locked control).
+            background: seg.is-active
+                ? (seg.usable ? Theme.primary : Theme.bg-surface)
+                : (touch.has-hover && seg.usable ? Theme.bg-raised : transparent);
+            // Focus ring for keyboard users (hover alone does not serve them).
+            border-width: focus.has-focus ? Stroke.thick : 0px;
+            border-color: seg.is-active ? Theme.text-on-primary : Theme.primary;
+
+            animate background { duration: Motion.fast; }
+
+            HorizontalLayout {
+                padding-left: root.compact ? Spacing.sm : Spacing.md;
+                padding-right: root.compact ? Spacing.sm : Spacing.md;
+                alignment: center;
+
+                Text {
+                    text: option.label;
+                    font-family: Typography.family-ui;
+                    font-size: root.compact ? Typography.size-micro : Typography.size-caption;
+                    font-weight: seg.is-active
+                        ? Typography.weight-semibold
+                        : Typography.weight-medium;
+                    color: !seg.usable
+                        ? Theme.text-disabled
+                        : (seg.is-active ? Theme.text-on-primary : Theme.text-secondary);
+                    vertical-alignment: center;
+                }
+            }
+
+            focus := FocusScope {
+                // Disabled segments are skipped by Tab.
+                enabled: seg.usable;
+                key-pressed(event) => {
+                    // Space and Enter activate, matching platform button behaviour.
+                    if (seg.usable && (event.text == " " || event.text == "\n")) {
+                        root.selected(option.id);
+                        return EventResult.accept;
+                    }
+                    return EventResult.reject;
+                }
+            }
+
+            touch := TouchArea {
+                enabled: seg.usable;
+                mouse-cursor: seg.usable ? MouseCursor.pointer : MouseCursor.default;
+                clicked => {
+                    focus.focus();
+                    root.selected(option.id);
+                }
+            }
+        }
+    }
+}

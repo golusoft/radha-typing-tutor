@@ -31,10 +31,19 @@ use std::path::{Path, PathBuf};
 use radha_core::{CoreError, Result};
 use rusqlite::Connection;
 
+pub mod content_import;
 pub mod migrations;
 pub mod repository;
+pub mod sessions;
+pub mod stats;
 
-pub use repository::SqliteRepository;
+pub use content_import::{import_bundle, import_bundles, ImportReport};
+pub use repository::{CardProgress, SqliteRepository};
+pub use sessions::{
+    ErrorAggregate, ErrorKind, FlowExerciseRhythm, FlowRhythmRecord, SavedSession,
+    SessionMetricsRecord, SessionRecord,
+};
+pub use stats::{ErrorTotals, SessionLine, WeakKeyTotal};
 
 /// An open connection to the Radha database.
 ///

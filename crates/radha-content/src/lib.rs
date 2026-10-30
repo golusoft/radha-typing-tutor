@@ -20,6 +20,16 @@
 
 use radha_layouts::LayoutId;
 
+pub mod codec;
+pub mod import;
+pub mod numeric;
+pub mod quality;
+pub mod target;
+
+pub use target::{
+    ContentStatus, ContentTarget, ExamPassageMeta, ExamPool, ExerciseMeta, EXAM_MAX_WORDS,
+};
+
 /// Which product an exercise belongs to.
 ///
 /// Mirrors the nine Home-screen cards in `STRUCTURE.MD`. Closed enum so adding a
@@ -58,6 +68,32 @@ impl ProductId {
             ProductId::HindiLearn(LayoutId::RemingtonGail) => "hindi-learn-gail",
             ProductId::HindiLearn(LayoutId::RemingtonCbi) => "hindi-learn-cbi",
             ProductId::HindiLearn(LayoutId::KrutiDev) => "hindi-learn-krutidev",
+            ProductId::HindiMastery(LayoutId::Inscript) => "hindi-mastery-inscript",
+            ProductId::HindiLearn(LayoutId::Inscript) => "hindi-learn-inscript",
+        }
+    }
+
+    /// Every product a session can be typed in: the nine Home products plus
+    /// Hindi Typing Mastery on InScript, reached through the layout switch
+    /// (it has no Home card and no content of its own).
+    #[must_use]
+    pub fn every() -> Vec<ProductId> {
+        let mut all = ProductId::all();
+        all.push(ProductId::HindiMastery(LayoutId::Inscript));
+        all
+    }
+
+    /// The product whose stored exercises this product types. InScript has
+    /// no dedicated content: it is served the Unicode Hindi course of
+    /// Remington GAIL, keeping only passages InScript can type (the caller
+    /// checks each one), and says so on screen.
+    #[must_use]
+    pub fn content_source(self) -> ProductId {
+        match self {
+            ProductId::HindiMastery(LayoutId::Inscript) => {
+                ProductId::HindiMastery(LayoutId::RemingtonGail)
+            }
+            other => other,
         }
     }
 
@@ -69,7 +105,7 @@ impl ProductId {
     /// slug, so a stale or malformed value from the UI degrades gracefully rather
     /// than panicking (`RULES.MD` Rule 23).
     pub fn from_slug(slug: &str) -> radha_core::Result<Self> {
-        ProductId::all()
+        ProductId::every()
             .into_iter()
             .find(|product| product.slug() == slug)
             .ok_or_else(|| radha_core::CoreError::ResourceMissing {
@@ -89,6 +125,7 @@ impl ProductId {
                 LayoutId::RemingtonGail => "Remington GAIL Typing",
                 LayoutId::RemingtonCbi => "Remington CBI Typing",
                 LayoutId::KrutiDev => "Kruti Dev Typing",
+                LayoutId::Inscript => "InScript Typing",
             },
             ProductId::HindiLearn(layout) => match layout {
                 LayoutId::Qwerty => "Hindi Learn",
@@ -96,6 +133,7 @@ impl ProductId {
                 LayoutId::RemingtonGail => "Remington GAIL",
                 LayoutId::RemingtonCbi => "Remington CBI",
                 LayoutId::KrutiDev => "Kruti Dev",
+                LayoutId::Inscript => "InScript",
             },
         }
     }
@@ -127,9 +165,9 @@ impl ProductId {
     pub fn layout(self) -> LayoutId {
         match self {
             // The three English products all use QWERTY.
-            ProductId::EnglishClassic
-            | ProductId::TypingFlow
-            | ProductId::NumberPunctuation => LayoutId::Qwerty,
+            ProductId::EnglishClassic | ProductId::TypingFlow | ProductId::NumberPunctuation => {
+                LayoutId::Qwerty
+            }
             // Hindi products carry their own layout.
             ProductId::HindiMastery(layout) | ProductId::HindiLearn(layout) => layout,
         }
@@ -161,6 +199,10 @@ pub struct Exercise {
     pub number: u32,
     /// Short title.
     pub title: String,
+    /// Curriculum grouping, e.g. "Foundation". `None` when not recorded.
+    pub category: Option<String>,
+    /// Difficulty 1 (foundation) to 5 (expert). `None` when not recorded.
+    pub difficulty: Option<u8>,
     /// The text the user must type.
     pub content: String,
 }
@@ -290,6 +332,21 @@ mod tests {
     fn home_screen_has_exactly_nine_products() {
         // PRD.md Section 6 / STRUCTURE.MD: three sections of three cards.
         assert_eq!(ProductId::all().len(), 9);
+    }
+
+    #[test]
+    fn inscript_is_typeable_but_borrows_unicode_hindi_content() {
+        let inscript = ProductId::HindiMastery(LayoutId::Inscript);
+        assert!(!ProductId::all().contains(&inscript), "no Home card");
+        assert_eq!(ProductId::from_slug(inscript.slug()).ok(), Some(inscript));
+        assert_eq!(
+            inscript.content_source(),
+            ProductId::HindiMastery(LayoutId::RemingtonGail)
+        );
+        assert_eq!(
+            ProductId::EnglishClassic.content_source(),
+            ProductId::EnglishClassic
+        );
     }
 
     #[test]

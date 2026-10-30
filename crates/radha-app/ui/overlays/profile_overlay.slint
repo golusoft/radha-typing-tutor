@@ -1,0 +1,255 @@
+// ============================================================================
+// ProfileOverlay — name, photo, level, bests, achievements (RULES.MD 4, P08)
+// ============================================================================
+//
+// Everything shown comes from the database when the overlay opens. The level
+// is a practice band from the best net WPM, not an exam grade. The licence
+// reads "not configured" until real licence logic exists (PRD DV-07).
+// ============================================================================
+
+import { ScrollView } from "std-widgets.slint";
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke } from "../theme/metrics.slint";
+import { OverlayPanel } from "../components/overlay_panel.slint";
+import { TextField } from "../components/text_field.slint";
+import { RadhaButton, ButtonVariant } from "../components/button.slint";
+import { UtilityView } from "../data/utility.slint";
+
+component Eyebrow inherits Text {
+    font-family: Typography.family-ui;
+    font-size: Typography.size-micro;
+    font-weight: Typography.weight-semibold;
+    letter-spacing: Typography.tracking-wide;
+    color: Theme.text-tertiary;
+}
+
+export component ProfileOverlay inherits Rectangle {
+    property <length> left-w: 300px;
+    property <length> right-w: panel.body-w - root.left-w - Spacing.xl;
+
+    panel := OverlayPanel {
+        width: root.width;
+        height: root.height;
+        max-panel-w: 900px;
+        max-panel-h: 640px;
+        title: "Profile";
+        subtitle: "Stored only on this PC.";
+        close => {
+            UtilityView.close();
+        }
+
+        // --- Identity ---------------------------------------------------------
+        VerticalLayout {
+            x: 0px;
+            y: 0px;
+            width: root.left-w;
+            spacing: Spacing.sm;
+            alignment: start;
+
+            Rectangle {
+                width: 96px;
+                height: 96px;
+                border-radius: 48px;
+                background: Theme.primary-subtle;
+                border-width: Stroke.thick;
+                border-color: Theme.primary;
+                clip: true;
+
+                Image {
+                    visible: UtilityView.pf-has-photo;
+                    width: parent.width;
+                    height: parent.height;
+                    source: UtilityView.pf-photo;
+                    image-fit: cover;
+                }
+
+                Text {
+                    visible: !UtilityView.pf-has-photo;
+                    text: UtilityView.pf-initial;
+                    font-family: Typography.family-devanagari;
+                    font-size: Typography.size-display;
+                    font-weight: Typography.weight-bold;
+                    color: Theme.primary;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+
+            Eyebrow {
+                text: "NAME";
+            }
+
+            name-field := TextField {
+                width: root.left-w;
+                text <=> UtilityView.pf-name;
+                placeholder: "Your name";
+            }
+
+            Eyebrow {
+                text: "PHOTO (full path to a .png or .jpg file)";
+            }
+
+            photo-field := TextField {
+                width: root.left-w;
+                text <=> UtilityView.pf-photo-path;
+                placeholder: "Optional";
+                mono: true;
+            }
+
+            HorizontalLayout {
+                alignment: start;
+                RadhaButton {
+                    text: "Save profile";
+                    compact: true;
+                    clicked => {
+                        UtilityView.save-profile(UtilityView.pf-name, UtilityView.pf-photo-path);
+                    }
+                }
+            }
+
+            Text {
+                width: root.left-w;
+                text: UtilityView.pf-status;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                color: Theme.text-secondary;
+                wrap: word-wrap;
+            }
+
+            Rectangle {
+                width: root.left-w;
+                height: 64px;
+                border-radius: Radius.md;
+                background: Theme.secondary-subtle;
+
+                VerticalLayout {
+                    padding: Spacing.md;
+                    spacing: 2px;
+                    Eyebrow {
+                        text: "ACCOUNT / LICENCE";
+                    }
+
+                    Text {
+                        text: UtilityView.pf-licence;
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-body-sm;
+                        font-weight: Typography.weight-semibold;
+                        color: Theme.secondary;
+                    }
+                }
+            }
+        }
+
+        // --- Level, bests, achievements --------------------------------------
+        ScrollView {
+            x: root.left-w + Spacing.xl;
+            y: 0px;
+            width: root.right-w;
+            height: panel.body-h;
+
+            VerticalLayout {
+                width: root.right-w - 18px;
+                spacing: Spacing.sm;
+                alignment: start;
+                padding-bottom: Spacing.lg;
+
+                Eyebrow {
+                    text: "TYPING LEVEL";
+                }
+
+                Text {
+                    text: UtilityView.pf-level;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-h1;
+                    font-weight: Typography.weight-bold;
+                    color: Theme.primary;
+                }
+
+                Text {
+                    width: root.right-w - 18px;
+                    text: UtilityView.pf-level-note;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-caption;
+                    color: Theme.text-secondary;
+                    wrap: word-wrap;
+                }
+
+                Eyebrow {
+                    text: "BESTS AND PRACTICE";
+                }
+
+                for b[i] in UtilityView.pf-bests: Rectangle {
+                    height: 28px;
+                    border-radius: Radius.sm;
+                    background: Math.mod(i, 2) == 0 ? Theme.bg-surface : transparent;
+                    HorizontalLayout {
+                        padding-left: Spacing.sm;
+                        padding-right: Spacing.sm;
+                        Text {
+                            horizontal-stretch: 1;
+                            text: b.label;
+                            font-family: Typography.family-ui;
+                            font-size: Typography.size-caption;
+                            color: Theme.text-secondary;
+                            vertical-alignment: center;
+                        }
+
+                        Text {
+                            text: b.value;
+                            font-family: Typography.family-mono;
+                            font-size: Typography.size-body-sm;
+                            font-weight: Typography.weight-bold;
+                            color: Theme.text-primary;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+
+                Eyebrow {
+                    text: "ACHIEVEMENTS";
+                }
+
+                for a in UtilityView.pf-achievements: Rectangle {
+                    height: 36px;
+                    border-radius: Radius.md;
+                    background: a.earned ? Theme.success-subtle : Theme.bg-sunken;
+                    border-width: Stroke.hairline;
+                    border-color: a.earned ? Theme.success : Theme.border-soft;
+
+                    HorizontalLayout {
+                        padding-left: Spacing.md;
+                        padding-right: Spacing.md;
+                        spacing: Spacing.sm;
+                        Text {
+                            text: a.earned ? "✓" : "○";
+                            font-family: Typography.family-ui;
+                            font-size: Typography.size-body;
+                            font-weight: Typography.weight-bold;
+                            color: a.earned ? Theme.success : Theme.text-disabled;
+                            vertical-alignment: center;
+                        }
+
+                        Text {
+                            horizontal-stretch: 1;
+                            text: a.title;
+                            font-family: Typography.family-ui;
+                            font-size: Typography.size-body-sm;
+                            font-weight: Typography.weight-semibold;
+                            color: a.earned ? Theme.text-primary : Theme.text-secondary;
+                            vertical-alignment: center;
+                        }
+
+                        Text {
+                            text: a.earned ? "Earned" : a.progress;
+                            font-family: Typography.family-ui;
+                            font-size: Typography.size-caption;
+                            color: a.earned ? Theme.success : Theme.text-tertiary;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Results\\ResultAnalyzerTests.cs",
+    "sha256": "192711feba69d2e24605077caed06550ecbadb8c5c16c7450581229575c588d0",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "A_Perfect_Passage_Is_All_Correct_Words_And_No_Errors",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "asdf jkl; asdf", "events": [ { "at_ms": 0, "type": "text", "text": "asdf jkl; asdf" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "WordsTyped": 3, "CorrectWords": 3, "WrongWords": 0, "Errors": [] },
+      "radha_expected": { "word_outcomes": "CCC", "error_count": 0, "word_accuracy": 100.0 }
+    },
+    {
+      "name": "Word_Counts_Always_Reconcile",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "asdf jkl; asdf jkl;", "events": [ { "at_ms": 0, "type": "text", "text": "asdf jklx asdf" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "WordsTyped": "CorrectWords + WrongWords" },
+      "radha_expected": { "word_outcomes": "CI", "word_accuracy": 50.0 }
+    },
+    {
+      "name": "Untyped_Words_Are_Not_Counted_As_Wrong",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "Radha judges only committed words (a word followed by a typed separator, or the final word at the end of the text), so the in-progress \"asdf\" is not yet a typed word. Golu counts it as 1 typed, 1 correct. Neither counts untyped words as wrong.",
+      "input": { "unit": "char", "target": "asdf jkl; asdf jkl;", "events": [ { "at_ms": 0, "type": "text", "text": "asdf" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "WordsTyped": 1, "CorrectWords": 1, "WrongWords": 0 },
+      "radha_expected": { "word_outcomes": "", "error_count": 0 }
+    },
+    {
+      "name": "Characters_Typed_Counts_Committed_Code_Points",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "asdf jkl;", "events": [ { "at_ms": 0, "type": "text", "text": "asdf jk" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CharactersTyped": 7 },
+      "radha_expected": { "characters_typed": 7 }
+    },
+    {
+      "name": "A_Missing_Space_Reports_The_Word_As_Extra_Character",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "Word-aligned matcher: without a typed space the letters after \"asdf\" are Extra charged to word 1, which is not committed yet (no separator typed). Golu's positional analyzer reports one \"Extra Character\" row for word 1 (Radha's unit-level kind for each of them is Extra).",
+      "input": { "unit": "char", "target": "asdf jkl;", "events": [ { "at_ms": 0, "type": "text", "text": "asdfmjkl;" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Errors": [ { "WordNumber": 1, "Expected": "asdf", "Typed": "asdfm", "Error": "Extra Character" } ] },
+      "radha_expected": { "extra": 5, "word_outcomes": "", "outcomes": "ccccxxxxx", "error_kinds": ["Extra", "Extra", "Extra", "Extra", "Extra"] }
+    },
+    {
+      "name": "A_Wrong_Letter_Reports_Wrong_Character",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "asdf jkl;", "events": [ { "at_ms": 0, "type": "text", "text": "asdf jxl;" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Errors": [ { "WordNumber": 2, "Expected": "jkl;", "Typed": "jxl;", "Error": "Wrong Character" } ] },
+      "radha_expected": { "word_outcomes": "CI", "error_kinds": ["WrongCharacter"] }
+    },
+    {
+      "name": "A_Case_Slip_Reports_Wrong_Case_Matching_How_It_Was_Scored",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "asdf jkl;", "events": [ { "at_ms": 0, "type": "text", "text": "asdf Jkl;" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Errors": [ { "Error": "Wrong Case" } ] },
+      "radha_expected": { "word_outcomes": "CI", "error_kinds": ["WrongCase"], "word_mistakes": ["None", "Case"], "unit_half": 1 }
+    },
+    {
+      "name": "A_Short_Final_Word_Reports_Missing_Character",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "In Radha the final word is judged only when the end of the text is reached (or the user types space / submits); \"jkl\" is still in progress, so nothing is missing yet. Golu's after-the-fact analyzer reports Missing Character.",
+      "input": { "unit": "char", "target": "asdf jkl;", "events": [ { "at_ms": 0, "type": "text", "text": "asdf jkl" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Errors": [ { "Error": "Missing Character" } ] },
+      "radha_expected": { "word_outcomes": "C", "error_count": 0, "state": "Active" }
+    },
+    {
+      "name": "A_Dropped_Character_Shifts_And_Later_Words_Are_Reported_Wrong_Too",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "Word-aligned matching keeps one dropped letter inside its word: \"asd \" is one Missing error and \"jkl;\" stays correct. Golu's positional analyzer documents this shift as a LIMITATION (ResultAnalyzer.cs class doc) and reports both words wrong.",
+      "input": { "unit": "char", "target": "asdf jkl;", "events": [ { "at_ms": 0, "type": "text", "text": "asd jkl;" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Errors.Count": 2, "Errors[0]": { "Expected": "asdf", "Typed": "asd", "Error": "Missing Character" }, "Errors[1].Expected": "jkl;" },
+      "radha_expected": { "word_outcomes": "IC", "missing": 1, "error_count": 1, "finished": true }
+    },
+    {
+      "name": "Typing_Past_The_End_Of_The_Passage_Is_An_Extra_Character",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "A Radha session completes the moment the passage is finished with a correct final unit (session.rs auto-complete), so \"xy\" typed afterwards is ignored and cannot become an error. Golu's analyzer runs on a recorded string and reports Extra Character. Letters past the end of an unfinished passage are still Extra in Radha (matcher test characters_past_the_end_of_the_text_are_extra).",
+      "input": { "unit": "char", "target": "asdf", "events": [ { "at_ms": 0, "type": "text", "text": "asdfxy" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Errors": [ { "Error": "Extra Character" } ] },
+      "radha_expected": { "extra": 0, "word_outcomes": "C", "state": "Complete", "typed_text": "asdf" }
+    },
+    {
+      "name": "Error_Rows_Are_In_Passage_Order",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "aaa bbb ccc", "events": [ { "at_ms": 0, "type": "text", "text": "aax bbb ccx" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "WordNumbers": [1, 3] },
+      "radha_expected": { "word_outcomes": "ICI" }
+    },
+    {
+      "name": "Nothing_Typed_Produces_An_Empty_Zeroed_Breakdown",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "asdf jkl;", "events": [], "snapshot_at_ms": 0 },
+      "golu_expected": { "WordsTyped": 0, "CharactersTyped": 0, "Errors": [] },
+      "radha_expected": { "word_outcomes": "", "characters_typed": 0, "error_count": 0 }
+    },
+    {
+      "name": "Multiple_Spaces_Between_Words_Do_Not_Create_Empty_Words",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "asdf   jkl;", "events": [ { "at_ms": 0, "type": "text", "text": "asdf   jkl;" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "WordsTyped": 2, "CorrectWords": 2 },
+      "radha_expected": { "word_outcomes": "CC", "error_count": 0 }
+    }
+  ]
+}

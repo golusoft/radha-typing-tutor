@@ -1,0 +1,28 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "aiims-cre"
+profile_version = 1
+display_name = "AIIMS CRE — Clerical Posts"
+body = "All India Institute of Medical Sciences"
+
+[notice]
+title = "Common Recruitment Examination — skill test for clerical posts"
+note = "Primary notification not read in Radha; rules are unknown."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "Group/post-specific; group code 3 (DEO/JAA/LDC/UDC) 15-min typing thresholds by post; 60-min essay/letter section for some groups"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://docs.aiimsexams.ac.in/sites/Scheme%20of%20Skill%20Test%20CRE-2024.pdf"
+
+[[reference_claims]]
+claim = "English 35 WPM · Hindi 30 WPM · 10 Min · CRE Pattern · Backspace allowed · QWERTY · Mangal InScript"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

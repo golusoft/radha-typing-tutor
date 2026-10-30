@@ -1,0 +1,48 @@
+// ============================================================================
+// CadenceBars — a tiny static rhythm glyph
+// ============================================================================
+//
+// DESIGN.md Chapter 20.3. A row of short rounded bars, bottom-aligned, that
+// suggests typing rhythm next to a card title or a streak. Bars alternate
+// between `accent` and `accent-light`.
+//
+// Decorative and static: no animation, so it never costs frames while someone
+// types. It is not a chart — real per-session data belongs in SparklineChart.
+// Height is fixed (`bar-height`); width hugs the bars.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+
+export component CadenceBars inherits Rectangle {
+    /// Bar heights as fractions of `bar-height` (clamped to 0–1), left to right.
+    in property <[float]> levels: [0.6, 1.0, 0.8, 1.0, 0.7];
+    /// Colour of the 1st, 3rd, 5th… bar.
+    in property <color> accent: Theme.accent;
+    /// Colour of the 2nd, 4th… bar.
+    in property <color> accent-light: Theme.accent-light;
+    /// Height of a full (1.0) bar; also the component's height.
+    in property <length> bar-height: 20px;
+    /// Width of each bar.
+    in property <length> bar-width: 6px;
+
+    height: root.bar-height;
+    horizontal-stretch: 0;
+
+    HorizontalLayout {
+        spacing: 3px;
+        alignment: start;
+
+        for level[i] in root.levels: Rectangle {
+            width: root.bar-width;
+
+            Rectangle {
+                x: 0px;
+                width: parent.width;
+                height: parent.height * Math.max(0, Math.min(1, level));
+                y: parent.height - self.height;
+                border-radius: root.bar-width / 2;
+                background: Math.mod(i, 2) == 0 ? root.accent : root.accent-light;
+            }
+        }
+    }
+}

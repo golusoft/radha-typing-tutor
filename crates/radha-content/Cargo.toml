@@ -12,3 +12,13 @@ publish.workspace = true
 radha-core.workspace = true
 radha-layouts.workspace = true
 log.workspace = true
+# Golu exercise JSON and Radha content bundles (P04 import). Exact pins, the
+# same versions radha-core/radha-layouts already use, so the lock is unchanged.
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.151"
+# P04 storage: deflate for bundle files and the SQLite text column. Exact pin
+# on the version already in the lock (Slint's image stack uses it), so the
+# release executable gains no new compression code.
+miniz_oxide = "=0.8.9"
+# P04 provenance and integrity: sha256 of every source file and passage.
+sha2 = "=0.10.9"

@@ -1,0 +1,117 @@
+//! Kruti Dev 010 key table: 47 base + 46 Shift slots.
+//!
+//! The stored output is the raw ASCII code (identity, Golu
+//! `LegacyDevanagariKeyMap.cs`); `meaning` is the Devanagari the font draws.
+//! Verified against RADHA production keyboard book 04 (Kruti Dev 010, 175
+//! records), which agrees with Golu `docs/krutidev-cbi-mapping-conversion.md`
+//! §2 on every slot it maps. Kruti Dev's own table: it is not derived from
+//! any other layout.
+
+use crate::keys::Layer::{Base as B, Shift as S};
+use crate::table::TokenKind::{
+    Completer, Conjunct as Cj, Consonant as C, Digit as D, Halant, Half as H, Matra as M, Nukta,
+    Preposed, Punctuation as P, Rakar, Reph, Vowel as V,
+};
+use crate::table::{lg, KeyEntry};
+
+pub(super) const TABLE: [KeyEntry; 93] = [
+    // Number row.
+    lg(b'`', B, "`", "\u{0943}", M),
+    lg(b'`', S, "~", "\u{094D}", Halant),
+    lg(b'1', B, "1", "1", D),
+    lg(b'1', S, "!", "!", P),
+    lg(b'2', B, "2", "2", D),
+    lg(b'2', S, "@", "/", P),
+    lg(b'3', B, "3", "3", D),
+    lg(b'3', S, "#", "रु", Cj),
+    lg(b'4', B, "4", "4", D),
+    // Shift+4 (`$`) is a registered CONFLICT in book 04 (KD010-MAP-052):
+    // deliberately unmapped.
+    lg(b'5', B, "5", "5", D),
+    lg(b'5', S, "%", "\u{0903}", M),
+    lg(b'6', B, "6", "6", D),
+    lg(b'6', S, "^", "\u{2018}", P),
+    lg(b'7', B, "7", "7", D),
+    lg(b'7', S, "&", "-", P),
+    lg(b'8', B, "8", "8", D),
+    lg(b'8', S, "*", "\u{2019}", P),
+    lg(b'9', B, "9", "9", D),
+    lg(b'9', S, "(", ";", P),
+    lg(b'0', B, "0", "0", D),
+    lg(b'0', S, ")", "द्ध", Cj),
+    lg(b'-', B, "-", ".", P),
+    lg(b'-', S, "_", "ऋ", V),
+    lg(b'=', B, "=", "त्र", Cj),
+    lg(b'=', S, "+", "\u{093C}", Nukta),
+    // Top row.
+    lg(b'q', B, "q", "\u{0941}", M),
+    lg(b'q', S, "Q", "फ", C),
+    lg(b'w', B, "w", "\u{0942}", M),
+    lg(b'w', S, "W", "\u{0945}", M),
+    lg(b'e', B, "e", "म", C),
+    lg(b'e', S, "E", "म्", H),
+    lg(b'r', B, "r", "त", C),
+    lg(b'r', S, "R", "त्", H),
+    lg(b't', B, "t", "ज", C),
+    lg(b't', S, "T", "ज्", H),
+    lg(b'y', B, "y", "ल", C),
+    lg(b'y', S, "Y", "ल्", H),
+    lg(b'u', B, "u", "न", C),
+    lg(b'u', S, "U", "न्", H),
+    lg(b'i', B, "i", "प", C),
+    lg(b'i', S, "I", "प्", H),
+    lg(b'o', B, "o", "व", C),
+    lg(b'o', S, "O", "व्", H),
+    lg(b'p', B, "p", "च", C),
+    lg(b'p', S, "P", "च्", H),
+    lg(b'[', B, "[", "ख्", H),
+    lg(b'[', S, "{", "क्ष्", H),
+    lg(b']', B, "]", ",", P),
+    lg(b']', S, "}", "द्व", Cj),
+    lg(b'\\', B, "\\", "?", P),
+    lg(b'\\', S, "|", "द्य", Cj),
+    // Home row.
+    lg(b'a', B, "a", "\u{0902}", M),
+    lg(b'a', S, "A", "।", P),
+    lg(b's', B, "s", "\u{0947}", M),
+    lg(b's', S, "S", "\u{0948}", M),
+    lg(b'd', B, "d", "क", C),
+    lg(b'd', S, "D", "क्", H),
+    lg(b'f', B, "f", "\u{093F}", Preposed),
+    lg(b'f', S, "F", "थ्", H),
+    lg(b'g', B, "g", "ह", C),
+    lg(b'g', S, "G", "ळ", C),
+    lg(b'h', B, "h", "\u{0940}", M),
+    lg(b'h', S, "H", "भ्", H),
+    lg(b'j', B, "j", "र", C),
+    lg(b'j', S, "J", "श्र", Cj),
+    lg(b'k', B, "k", "\u{093E}", Completer),
+    lg(b'k', S, "K", "ज्ञ", Cj),
+    lg(b'l', B, "l", "स", C),
+    lg(b'l', S, "L", "स्", H),
+    lg(b';', B, ";", "य", C),
+    lg(b';', S, ":", "रू", Cj),
+    lg(b'\'', B, "'", "श्", H),
+    lg(b'\'', S, "\"", "ष्", H),
+    // Bottom row.
+    lg(b'z', B, "z", "\u{094D}\u{0930}", Rakar),
+    lg(b'z', S, "Z", "र्", Reph),
+    lg(b'x', B, "x", "ग", C),
+    lg(b'x', S, "X", "ग्", H),
+    lg(b'c', B, "c", "ब", C),
+    lg(b'c', S, "C", "ब्", H),
+    lg(b'v', B, "v", "अ", V),
+    lg(b'v', S, "V", "ट", C),
+    lg(b'b', B, "b", "इ", V),
+    lg(b'b', S, "B", "ठ", C),
+    lg(b'n', B, "n", "द", C),
+    lg(b'n', S, "N", "छ", C),
+    lg(b'm', B, "m", "उ", V),
+    lg(b'm', S, "M", "ड", C),
+    lg(b',', B, ",", "ए", V),
+    lg(b',', S, "<", "ढ", C),
+    lg(b'.', B, ".", "ण्", H),
+    lg(b'.', S, ">", "झ", C),
+    lg(b'/', B, "/", "ध्", H),
+    lg(b'/', S, "?", "घ्", H),
+];

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Multilingual\\RemingtonGailGoldenTests.cs",
+    "sha256": "986d0e97f82834f8fdb8a46d555369893dc2ea313109f7a36feac6dc87038820",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    { "name": "Consonant_Ka", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "d", "golu_expected": "क", "radha_expected": "क" },
+    { "name": "Ka_Plus_AaMatra", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "dk", "golu_expected": "का", "radha_expected": "का" },
+    { "name": "Preposed_IMatra", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "fd", "golu_expected": "कि", "radha_expected": "कि" },
+    { "name": "Ka_Plus_IiMatra", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "dh", "golu_expected": "की", "radha_expected": "की" },
+    { "name": "Ka_Plus_UMatra", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "dq", "golu_expected": "कु", "radha_expected": "कु" },
+    { "name": "Ka_Plus_EMatra", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "ds", "golu_expected": "के", "radha_expected": "के" },
+    { "name": "HalfToFull_Kha", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "[k", "golu_expected": "ख", "radha_expected": "ख" },
+    { "name": "HalfToFull_Bha", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "Hk", "golu_expected": "भ", "radha_expected": "भ" },
+    { "name": "HalfToFull_Nna", "tag": "must_match", "kind": "type", "layout": "gail", "keys": ".k", "golu_expected": "ण", "radha_expected": "ण" },
+    { "name": "HalfToFull_Sha", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "'k", "golu_expected": "श", "radha_expected": "श" },
+    { "name": "HalfToFull_Ssa", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "\"k", "golu_expected": "ष", "radha_expected": "ष" },
+    { "name": "Conjunct_Sta_Via_HalfForm", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "Lr", "golu_expected": "स्त", "radha_expected": "स्त" },
+    { "name": "Conjunct_Ksha_Completed", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "{k", "golu_expected": "क्ष", "radha_expected": "क्ष" },
+    { "name": "Rakar_Kra", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "dz", "golu_expected": "क्र", "radha_expected": "क्र" },
+    { "name": "Reph_Rka", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "Zd", "golu_expected": "र्क", "radha_expected": "र्क" },
+    { "name": "Anusvara_Ganga", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "xaxk", "golu_expected": "गंगा", "radha_expected": "गंगा" },
+    { "name": "Word_Namaste", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "ueLrs", "golu_expected": "नमस्ते", "radha_expected": "नमस्ते" },
+    { "name": "Word_Hindi", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "fgUnh", "golu_expected": "हिन्दी", "radha_expected": "हिन्दी" },
+    { "name": "Word_Bharat", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "Hkkjr", "golu_expected": "भारत", "radha_expected": "भारत" },
+    { "name": "Word_Khana", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "[kkuk", "golu_expected": "खाना", "radha_expected": "खाना" },
+    { "name": "Vowel_Aa_Recomposed", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "vk", "golu_expected": "आ", "radha_expected": "आ" },
+    { "name": "Vowel_O_Recomposed", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "vks", "golu_expected": "ओ", "radha_expected": "ओ" },
+    { "name": "Backspace_Removes_Matra", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "dk\b", "golu_expected": "क", "radha_expected": "क" },
+    { "name": "Ka_Plus_OMatra_TwoPart", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "dks", "golu_expected": "को", "radha_expected": "को" },
+    { "name": "Ka_Plus_AuMatra_TwoPart", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "dkS", "golu_expected": "कौ", "radha_expected": "कौ" },
+    { "name": "I_Plus_Reph_Yields_Long_Ii", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "bZ", "golu_expected": "ई", "radha_expected": "ई" },
+    { "name": "AltGr_B_Yields_Long_Ii", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "", "altgr_after": "b", "golu_expected": "ई", "radha_expected": "ई" },
+    { "name": "Ka_I_Reph_Yields_Kaii", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "dbZ", "golu_expected": "कई", "radha_expected": "कई" },
+    { "name": "Karka_Is_Typed_With_The_Reph_Last", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "ddZ", "golu_expected": "कर्क", "radha_expected": "कर्क" },
+    { "name": "Karya_Is_Typed_With_The_Reph_Last", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "dk;Z", "golu_expected": "कार्य", "radha_expected": "कार्य" },
+    { "name": "Artha_Is_Typed_With_The_Reph_Last", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "vFkZ", "golu_expected": "अर्थ", "radha_expected": "अर्थ" },
+    { "name": "A_Consonant_After_A_Reph_Starts_A_New_Syllable", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "dZd", "golu_expected": "र्कक", "radha_expected": "र्कक" }
+  ]
+}

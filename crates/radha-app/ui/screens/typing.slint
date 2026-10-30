@@ -1,0 +1,2250 @@
+// ============================================================================
+// TypingScreen v3 — Screen 3 of the four-screen flow (PRD 17.5, DESIGN 20.7)
+// ============================================================================
+//
+// Structure follows design-reference/03-typing.html:
+//
+//   header       back · logo · exercise picker (NN / total) · layout switch ·
+//                Printout · Add Exercise · Fullscreen · Rules · Light/Dark
+//   stats strip  timer ring + timer menu · NET WPM STREAK ACC GROSS ERRORS WORDS
+//   learn strip  (Hindi Learn beginner: step chips)
+//   passage card subtitle, rule chips, the visible lines only (Rust rewraps on
+//                resize), scrollbar, "Word 6 of 400 (1%)" footer
+//   status strip current word · next key + finger (Key Guide only) ·
+//                keystrokes · KDPH · live label
+//   input pane   "Your typing": three lines, preedit, caret
+//   rules panel  layout, backspace, highlight, key guide, scrollbar & font,
+//                paragraph word limit (editable in practice, locked in exam)
+//   dock         Exercise : n/total « » · restart · pause · submit · A-/A+
+//
+// The highlighter is WORD-based: the word being typed is one saffron block,
+// finished words are green or red. The next key is marked only when Rules →
+// Key Guide is on. There is no on-screen keyboard on this screen.
+//
+// Keys never reach this component: the shell's FocusScope forwards every key
+// on this screen to `TypingView.key-typed`; Rust owns the session.
+// Geometry is computed from the screen's own width/height and passed down;
+// no width depends on a child's preferred size.
+//
+// Segment `state`: 0 upcoming, 1 correct, 2 wrong, 3 next key (Key Guide),
+// 4 current word, 5 skipped. Colours are theme tokens only.
+// ============================================================================
+
+import { ListView } from "std-widgets.slint";
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke, Motion } from "../theme/metrics.slint";
+import { RadhaButton, ButtonVariant } from "../components/button.slint";
+import { SegmentedToggle } from "../components/segmented_toggle.slint";
+import { ThemeToggle } from "../components/theme_toggle.slint";
+import { ChoiceChip } from "../components/choice_chip.slint";
+import { TypingView } from "../data/practice.slint";
+
+component Metric inherits Rectangle {
+    in property <string> label;
+    in property <string> value;
+    in property <color> tone: Theme.text-primary;
+    width: 74px;
+    height: 44px;
+    border-radius: Radius.md;
+    background: Theme.bg-sunken;
+
+    VerticalLayout {
+        alignment: center;
+        Text {
+            text: root.label;
+            font-family: Typography.family-ui;
+            font-size: 9px;
+            font-weight: Typography.weight-semibold;
+            letter-spacing: Typography.tracking-wide;
+            color: Theme.text-tertiary;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: root.value;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-body;
+            font-weight: Typography.weight-bold;
+            color: root.tone;
+            horizontal-alignment: center;
+            overflow: elide;
+        }
+    }
+}
+
+component SideLabel inherits Text {
+    font-family: Typography.family-ui;
+    font-size: Typography.size-micro;
+    font-weight: Typography.weight-semibold;
+    letter-spacing: Typography.tracking-wide;
+    color: Theme.text-tertiary;
+}
+
+component Stepper inherits HorizontalLayout {
+    in property <string> value;
+    in property <bool> enabled: true;
+    callback step(int);
+    spacing: Spacing.xs;
+    alignment: start;
+
+    RadhaButton {
+        text: "−";
+        variant: ButtonVariant.Ghost;
+        compact: true;
+        enabled: root.enabled;
+        clicked => {
+            root.step(-1);
+        }
+    }
+
+    Text {
+        width: 64px;
+        text: root.value;
+        font-family: Typography.family-mono;
+        font-size: Typography.size-body-sm;
+        font-weight: Typography.weight-bold;
+        color: root.enabled ? Theme.text-primary : Theme.text-disabled;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+
+    RadhaButton {
+        text: "+";
+        variant: ButtonVariant.Ghost;
+        compact: true;
+        enabled: root.enabled;
+        clicked => {
+            root.step(1);
+        }
+    }
+}
+
+/// A radio option of the rules panel.
+component RadioRow inherits Rectangle {
+    in property <string> text;
+    in property <string> note;
+    in property <bool> selected;
+    in property <bool> enabled: true;
+    in property <length> w;
+    callback clicked();
+    width: root.w;
+    height: root.note != "" ? 38px : 28px;
+    border-radius: Radius.sm;
+    background: root.selected ? Theme.primary-subtle : touch.has-hover && root.enabled ? Theme.bg-raised : transparent;
+
+    Rectangle {
+        x: 6px;
+        y: (28px - self.height) / 2;
+        width: 16px;
+        height: 16px;
+        border-radius: 8px;
+        border-width: Stroke.thick;
+        border-color: root.selected ? Theme.primary : root.enabled ? Theme.border-strong : Theme.text-disabled;
+        background: Theme.bg-surface;
+
+        Rectangle {
+            x: 4px;
+            y: 4px;
+            width: 8px;
+            height: 8px;
+            border-radius: 4px;
+            visible: root.selected;
+            background: Theme.primary;
+        }
+    }
+
+    Text {
+        x: 30px;
+        y: 0px;
+        width: root.w - 36px;
+        height: 28px;
+        text: root.text;
+        font-family: Typography.family-ui;
+        font-size: Typography.size-caption;
+        font-weight: root.selected ? Typography.weight-semibold : Typography.weight-regular;
+        color: root.enabled ? Theme.text-primary : Theme.text-disabled;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+
+    Text {
+        x: 30px;
+        y: 22px;
+        width: root.w - 36px;
+        height: 14px;
+        visible: root.note != "";
+        text: root.note;
+        font-family: Typography.family-ui;
+        font-size: 10px;
+        color: Theme.text-tertiary;
+        overflow: elide;
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => {
+            root.clicked();
+        }
+    }
+}
+
+/// A checkbox of the rules panel.
+component CheckRow inherits Rectangle {
+    in property <string> text;
+    in property <bool> checked;
+    in property <bool> enabled: true;
+    in property <length> w;
+    callback clicked();
+    width: root.w;
+    height: 28px;
+    border-radius: Radius.sm;
+    background: touch.has-hover && root.enabled ? Theme.bg-raised : transparent;
+
+    Rectangle {
+        x: 6px;
+        y: (parent.height - self.height) / 2;
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        border-width: Stroke.thick;
+        border-color: root.checked ? Theme.primary : root.enabled ? Theme.border-strong : Theme.text-disabled;
+        background: root.checked ? Theme.primary : Theme.bg-surface;
+
+        Text {
+            width: parent.width;
+            height: parent.height;
+            visible: root.checked;
+            text: "✓";
+            font-family: Typography.family-ui;
+            font-size: 11px;
+            font-weight: Typography.weight-bold;
+            color: Theme.text-on-primary;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+
+    Text {
+        x: 30px;
+        width: root.w - 36px;
+        height: parent.height;
+        text: root.text;
+        font-family: Typography.family-ui;
+        font-size: Typography.size-caption;
+        color: root.enabled ? Theme.text-primary : Theme.text-disabled;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => {
+            root.clicked();
+        }
+    }
+}
+
+/// A rule chip on the passage card.
+component RuleChip inherits Rectangle {
+    in property <string> text;
+    height: 22px;
+    border-radius: Radius.pill;
+    background: Theme.secondary-subtle;
+
+    HorizontalLayout {
+        padding-left: Spacing.sm;
+        padding-right: Spacing.sm;
+        Text {
+            text: root.text;
+            font-family: Typography.family-ui;
+            font-size: 10px;
+            font-weight: Typography.weight-semibold;
+            color: Theme.secondary;
+            vertical-alignment: center;
+        }
+    }
+}
+
+/// A header dropdown button: label + chevron.
+component DropButton inherits Rectangle {
+    in property <string> text;
+    in property <string> badge;
+    in property <bool> enabled: true;
+    in property <bool> open;
+    in property <string> font: Typography.family-ui;
+    callback clicked();
+    height: 36px;
+    border-radius: Radius.md;
+    background: root.open ? Theme.primary-subtle : touch.has-hover && root.enabled ? Theme.bg-raised : Theme.bg-sunken;
+    border-width: Stroke.hairline;
+    border-color: root.open ? Theme.primary : Theme.border-soft;
+
+    HorizontalLayout {
+        padding-left: Spacing.sm;
+        padding-right: Spacing.sm;
+        spacing: Spacing.sm;
+
+        Text {
+            horizontal-stretch: 1;
+            text: root.text;
+            font-family: root.font;
+            font-size: Typography.size-body-sm;
+            font-weight: Typography.weight-semibold;
+            color: Theme.text-primary;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+
+        if root.badge != "": VerticalLayout {
+            alignment: center;
+            Rectangle {
+                height: 22px;
+                border-radius: Radius.sm;
+                background: Theme.primary;
+                HorizontalLayout {
+                    padding-left: 6px;
+                    padding-right: 6px;
+                    Text {
+                        text: root.badge;
+                        font-family: Typography.family-mono;
+                        font-size: Typography.size-caption;
+                        font-weight: Typography.weight-bold;
+                        color: Theme.text-on-primary;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+        Text {
+            visible: root.enabled;
+            text: "⌄";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-body-sm;
+            color: Theme.text-secondary;
+            vertical-alignment: center;
+        }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => {
+            root.clicked();
+        }
+    }
+}
+
+/// A floating panel (dropdowns, dialogs).
+component Panel inherits Rectangle {
+    border-radius: Radius.lg;
+    background: Theme.bg-surface;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-strong;
+    drop-shadow-blur: 12px;
+    drop-shadow-offset-y: 4px;
+    drop-shadow-color: Theme.shadow.with-alpha(0.22);
+    clip: true;
+    // Clicks inside never fall through to the backdrop.
+    TouchArea { }
+}
+
+export component TypingScreen inherits Rectangle {
+    callback back-requested();
+    callback theme-toggle-requested();
+
+    // --- Geometry (from the screen size only) --------------------------------
+    property <length> pad: Spacing.lg;
+    property <length> gap: Spacing.md;
+    property <length> head-h: 56px;
+    property <length> stats-h: TypingView.focus-mode ? 0px : 60px;
+    property <length> dock-h: 52px;
+    property <bool> rules-shown: TypingView.rules-open && !TypingView.focus-mode;
+    property <length> side-w: root.rules-shown ? 316px : 0px;
+    property <length> main-x: root.pad;
+    property <length> main-w: root.width - 2 * root.pad - (root.rules-shown ? root.side-w + root.gap : 0px);
+    property <length> body-y: root.head-h + root.stats-h + root.gap;
+    property <length> body-h: root.height - root.body-y - root.dock-h - root.gap;
+    property <length> learn-h: TypingView.learn-visible ? 48px : 0px;
+    property <length> status-h: TypingView.focus-mode ? 0px : 36px;
+    property <length> input-font: 24px;
+    property <length> input-line: 40px;
+    property <length> input-h: 30px + 3 * root.input-line + 8px;
+    property <length> passage-y: root.body-y + root.learn-h + (TypingView.learn-visible ? root.gap : 0px);
+    property <length> passage-h: Math.max(160px, root.body-h - root.learn-h - (TypingView.learn-visible ? root.gap : 0px)
+        - (TypingView.focus-mode ? 0px : root.status-h + root.gap) - root.input-h - root.gap);
+    property <length> line-h: TypingView.font-size * 1.75;
+    property <length> block-h: TypingView.font-size * 1.42;
+    property <length> card-head: 58px;
+    property <length> card-foot: 32px;
+    property <length> text-h: root.passage-h - root.card-head - root.card-foot;
+    property <int> rows: Math.max(1, Math.floor(root.text-h / root.line-h));
+    property <bool> scrollbar: TypingView.show-scrollbar && TypingView.scroll-total > TypingView.scroll-rows;
+    /// The passage text area width: Rust rewraps when it changes.
+    property <length> passage-w: root.main-w - 2 * Spacing.lg - 16px;
+    // Exam typography: Hindi Unicode in Mangal, English in Arial (each with
+    // its embedded fallback, chosen by Rust at startup); the Kruti Dev key
+    // stream stays in the monospace legacy view.
+    property <string> passage-font: TypingView.legacy ? Typography.family-mono
+        : TypingView.devanagari ? TypingView.font-hindi
+        : TypingView.font-latin;
+    // A proportional face keeps one weight (400) for the current word too:
+    // a bold word is wider and would push the rest of its line sideways on
+    // every word. Monospace bold has the same advance, so it may stay bold.
+    property <bool> word-bold: root.passage-font == Typography.family-mono;
+    // Smooth scrolling: the first visible line glides to its new value
+    // (one line per auto-scroll step); Rust snaps it for jumps.
+    property <float> scroll-pos: TypingView.scroll-first;
+    animate scroll-pos {
+        duration: TypingView.scroll-glide ? Motion.fast : 0ms;
+        easing: ease-out;
+    }
+    property <float> typed-pos: TypingView.typed-wraps;
+    animate typed-pos {
+        duration: TypingView.typed-glide ? Motion.fast : 0ms;
+        easing: ease-out;
+    }
+    property <bool> caret-on: true;
+
+    // Dropdowns and dialogs (local UI state; Rust acts on the choices).
+    property <bool> ex-open;
+    property <bool> ex-from-dock;
+    property <bool> lay-open;
+    property <bool> timer-open;
+    property <bool> add-open;
+    property <bool> any-open: root.ex-open || root.lay-open || root.timer-open || root.add-open;
+    property <length> ex-x: root.pad + 150px;
+    property <length> ex-w: Math.min(460px, root.width - 2 * root.pad);
+    property <length> ex-h: Math.min(440px, root.height - 2 * root.head-h);
+    property <length> wave-w: 640px;
+
+    changed passage-w => {
+        TypingView.passage-resized(root.passage-w);
+    }
+    changed rows => {
+        TypingView.passage-rows(root.rows);
+    }
+    changed visible => {
+        if (root.visible) {
+            TypingView.passage-resized(root.passage-w);
+            TypingView.passage-rows(root.rows);
+        }
+    }
+
+    function close-menus() {
+        root.ex-open = false;
+        root.lay-open = false;
+        root.timer-open = false;
+        TypingView.request-focus();
+    }
+
+    function open-exercises(from-dock: bool) {
+        root.lay-open = false;
+        root.timer-open = false;
+        root.ex-from-dock = from-dock;
+        root.ex-open = TypingView.picker-visible && !root.ex-open;
+        exlist.content-y = -Math.max(0px, TypingView.exercise-pos * 34px - 160px);
+        if (!root.ex-open) {
+            TypingView.request-focus();
+        }
+    }
+
+    background: Theme.bg-base;
+
+    // Clicking anywhere on the screen gives the typing scope focus back.
+    TouchArea {
+        clicked => {
+            TypingView.request-focus();
+        }
+    }
+
+    caret-timer := Timer {
+        interval: 500ms;
+        running: root.visible && !TypingView.paused;
+        triggered => {
+            root.caret-on = !root.caret-on;
+        }
+    }
+
+    // =========================================================================
+    // Header (TY-01)
+    // =========================================================================
+    Rectangle {
+        x: 0px;
+        y: 0px;
+        width: root.width;
+        height: root.head-h;
+        background: Theme.bg-surface;
+
+        Rectangle {
+            x: 0px;
+            y: parent.height - 1px;
+            width: parent.width;
+            height: 1px;
+            background: Theme.border-soft;
+        }
+
+        HorizontalLayout {
+            padding-left: root.pad;
+            padding-right: root.pad;
+            spacing: Spacing.sm;
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "← Exercises";
+                    variant: ButtonVariant.Ghost;
+                    compact: true;
+                    clicked => {
+                        root.back-requested();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: Radius.md;
+                    background: Theme.primary;
+                    Text {
+                        text: "R";
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-h3;
+                        font-weight: Typography.weight-bold;
+                        color: Theme.text-on-primary;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+
+            // Exercise picker: "Work is Worship" + "01 / 200".
+            VerticalLayout {
+                alignment: center;
+                horizontal-stretch: 1;
+                DropButton {
+                    min-width: 160px;
+                    max-width: 440px;
+                    text: TypingView.title;
+                    badge: TypingView.picker-visible ? TypingView.exercise-counter : "";
+                    enabled: TypingView.picker-visible;
+                    open: root.ex-open && !root.ex-from-dock;
+                    font: TypingView.devanagari || TypingView.legacy ? Typography.family-devanagari : Typography.family-ui;
+                    clicked => {
+                        root.open-exercises(false);
+                    }
+                }
+            }
+
+            // Layout switch.
+            VerticalLayout {
+                alignment: center;
+                DropButton {
+                    width: 168px;
+                    text: TypingView.layout-name;
+                    enabled: TypingView.layout-switchable && !TypingView.rules-locked;
+                    open: root.lay-open;
+                    clicked => {
+                        root.ex-open = false;
+                        root.timer-open = false;
+                        root.lay-open = !root.lay-open;
+                    }
+                }
+            }
+
+            Rectangle {
+                horizontal-stretch: 1;
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "Printout";
+                    variant: ButtonVariant.Ghost;
+                    compact: true;
+                    clicked => {
+                        TypingView.printout();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "+ Add Exercise";
+                    variant: ButtonVariant.Ghost;
+                    compact: true;
+                    clicked => {
+                        root.ex-open = false;
+                        root.lay-open = false;
+                        root.timer-open = false;
+                        TypingView.add-status = "";
+                        TypingView.pause-for-dialog();
+                        root.add-open = true;
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: TypingView.fullscreen ? "Window" : "Fullscreen";
+                    variant: ButtonVariant.Ghost;
+                    compact: true;
+                    clicked => {
+                        TypingView.toggle-fullscreen();
+                    }
+                }
+            }
+
+            // Focus mode hides the Rules panel (where it is switched on), so
+            // the way out lives in the header: this button or F11. Esc is not
+            // used: on GAIL/CBI it is the dead-key prefix.
+            if TypingView.focus-mode: VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "Exit Focus (F11)";
+                    variant: ButtonVariant.Secondary;
+                    compact: true;
+                    clicked => {
+                        TypingView.toggle-focus-mode();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "Rules";
+                    variant: root.rules-shown ? ButtonVariant.Secondary : ButtonVariant.Ghost;
+                    compact: true;
+                    clicked => {
+                        TypingView.rules-open = !TypingView.rules-open;
+                        TypingView.toggle-rules();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                ThemeToggle {
+                    toggle-requested => {
+                        root.theme-toggle-requested();
+                        TypingView.request-focus();
+                    }
+                }
+            }
+        }
+    }
+
+    // =========================================================================
+    // Stats strip: timer ring + menu, live numbers (real engine values)
+    // =========================================================================
+    Rectangle {
+        x: 0px;
+        y: root.head-h;
+        width: root.width;
+        height: root.stats-h;
+        visible: !TypingView.focus-mode;
+        background: Theme.bg-surface;
+
+        Rectangle {
+            x: 0px;
+            y: parent.height - 1px;
+            width: parent.width;
+            height: 1px;
+            background: Theme.border-soft;
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: Spacing.sm;
+
+            // Timer ring (TY-02): remaining fraction, no easing.
+            if TypingView.ring-visible: VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    width: 50px;
+                    height: 50px;
+
+                    Path {
+                        width: parent.width;
+                        height: parent.height;
+                        viewbox-width: 36;
+                        viewbox-height: 36;
+                        commands: "M 18 3 A 15 15 0 1 1 18 33 A 15 15 0 1 1 18 3";
+                        fill: transparent;
+                        stroke: Theme.border-soft;
+                        stroke-width: 4px;
+                    }
+
+                    Path {
+                        width: parent.width;
+                        height: parent.height;
+                        viewbox-width: 36;
+                        viewbox-height: 36;
+                        commands: TypingView.ring-arc;
+                        fill: transparent;
+                        stroke: TypingView.ring-warning ? Theme.error : Theme.primary;
+                        stroke-width: 4px;
+                        stroke-line-cap: round;
+                    }
+
+                    Text {
+                        width: parent.width;
+                        height: parent.height;
+                        text: TypingView.stat-time;
+                        font-family: Typography.family-mono;
+                        font-size: 11px;
+                        font-weight: Typography.weight-bold;
+                        color: TypingView.ring-warning ? Theme.error : Theme.text-primary;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+
+            if !TypingView.ring-visible: VerticalLayout {
+                alignment: center;
+                Metric {
+                    label: "TIME";
+                    value: TypingView.stat-time;
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                spacing: 1px;
+                SideLabel {
+                    text: "DURATION";
+                }
+
+                DropButton {
+                    width: 128px;
+                    height: 30px;
+                    text: TypingView.timer-locked ? "Exam timer" : TypingView.timer-menu-label;
+                    enabled: !TypingView.timer-locked;
+                    open: root.timer-open;
+                    clicked => {
+                        root.ex-open = false;
+                        root.lay-open = false;
+                        root.timer-open = !root.timer-open;
+                        if (!root.timer-open) {
+                            TypingView.request-focus();
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: 1px;
+                background: Theme.border-soft;
+            }
+
+            VerticalLayout {
+                alignment: center;
+                HorizontalLayout {
+                    spacing: Spacing.xs;
+                    Metric {
+                        label: "NET WPM";
+                        value: TypingView.stat-net;
+                        tone: Theme.primary;
+                    }
+
+                    Metric {
+                        label: TypingView.flow ? "RHYTHM" : "STREAK";
+                        value: TypingView.stat-streak;
+                        tone: Theme.accent;
+                    }
+
+                    Metric {
+                        label: "ACC %";
+                        value: TypingView.stat-accuracy;
+                        tone: Theme.success;
+                    }
+
+                    Metric {
+                        label: "GROSS";
+                        value: TypingView.stat-wpm;
+                    }
+
+                    Metric {
+                        label: "ERRORS";
+                        value: TypingView.stat-errors;
+                        tone: Theme.error;
+                    }
+
+                    Metric {
+                        label: "WORDS";
+                        value: TypingView.stat-words;
+                    }
+                }
+            }
+        }
+
+        // Progress through the passage.
+        Rectangle {
+            x: 0px;
+            y: parent.height - 3px;
+            width: parent.width * Math.clamp(TypingView.progress, 0, 1);
+            height: 3px;
+            background: Theme.primary;
+        }
+    }
+
+    // =========================================================================
+    // Main column
+    // =========================================================================
+
+    // --- Hindi Learn strip (HL-01, HL-08) -------------------------------------
+    Rectangle {
+        x: root.main-x;
+        y: root.body-y;
+        width: root.main-w;
+        height: root.learn-h;
+        visible: TypingView.learn-visible;
+        border-radius: Radius.md;
+        background: Theme.success-subtle;
+
+        HorizontalLayout {
+            padding-left: Spacing.md;
+            padding-right: Spacing.md;
+            spacing: Spacing.sm;
+
+            VerticalLayout {
+                alignment: center;
+                horizontal-stretch: 1;
+                Text {
+                    text: TypingView.learn-title;
+                    font-family: Typography.family-devanagari;
+                    font-size: Typography.size-body-sm;
+                    font-weight: Typography.weight-semibold;
+                    color: Theme.text-primary;
+                    overflow: elide;
+                }
+
+                Text {
+                    text: TypingView.learn-note;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-micro;
+                    color: Theme.text-secondary;
+                    overflow: elide;
+                }
+            }
+
+            for chip[i] in TypingView.learn-steps: VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    width: 30px;
+                    height: 32px;
+                    border-radius: Radius.sm;
+                    background: chip.state == 2 ? Theme.success
+                        : chip.current ? Theme.primary
+                        : chip.state == 1 ? Theme.bg-surface : Theme.bg-sunken;
+                    border-width: Stroke.hairline;
+                    border-color: Theme.border-soft;
+
+                    Text {
+                        width: parent.width;
+                        height: parent.height;
+                        text: chip.state == 0 ? "·" : chip.label;
+                        font-family: Typography.family-mono;
+                        font-size: Typography.size-micro;
+                        font-weight: Typography.weight-bold;
+                        color: chip.state == 2 || chip.current ? Theme.text-on-primary
+                            : chip.state == 1 ? Theme.text-primary : Theme.text-disabled;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+
+                    TouchArea {
+                        enabled: chip.state != 0;
+                        clicked => {
+                            TypingView.start-step(i);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // --- Exercise passage card (TY-03): visible lines only -------------------
+    passage := Rectangle {
+        x: root.main-x;
+        y: root.passage-y;
+        width: root.main-w;
+        height: root.passage-h;
+        background: TypingView.paper ? Theme.accent-subtle : Theme.bg-surface;
+        border-radius: TypingView.paper ? Radius.sm : Radius.lg;
+        border-width: TypingView.paper ? Stroke.regular : Stroke.hairline;
+        border-color: TypingView.paper ? Theme.border-strong : Theme.border-soft;
+        clip: true;
+
+        HorizontalLayout {
+            x: Spacing.lg;
+            y: Spacing.md;
+            width: parent.width - 2 * Spacing.lg;
+            height: 22px;
+            spacing: Spacing.xs;
+
+            Text {
+                horizontal-stretch: 1;
+                text: TypingView.paper ? "EXERCISE PASSAGE · PAPER MODE" : "EXERCISE PASSAGE";
+                font-family: Typography.family-ui;
+                font-size: Typography.size-micro;
+                font-weight: Typography.weight-bold;
+                letter-spacing: Typography.tracking-wide;
+                color: Theme.text-tertiary;
+                vertical-alignment: center;
+            }
+
+            if TypingView.devanagari && TypingView.mangal-missing: RuleChip {
+                text: "Mangal not installed · showing Noto Sans Devanagari";
+            }
+
+            RuleChip {
+                text: TypingView.chip-backspace;
+            }
+
+            RuleChip {
+                text: TypingView.chip-highlight;
+            }
+
+            RuleChip {
+                text: TypingView.chip-limit;
+            }
+        }
+
+        Text {
+            x: Spacing.lg;
+            y: Spacing.md + 24px;
+            width: parent.width - 2 * Spacing.lg;
+            height: 18px;
+            text: TypingView.passage-subtitle;
+            font-family: TypingView.devanagari || TypingView.legacy ? Typography.family-devanagari : Typography.family-ui;
+            font-size: Typography.size-caption;
+            font-weight: Typography.weight-semibold;
+            color: Theme.secondary;
+            overflow: elide;
+        }
+
+        // Passage lines: the visible rows plus one buffer line above and
+        // below, clipped to the rows. The block sits at the (gliding)
+        // scroll position, so lines slide in and out instead of jumping.
+        Rectangle {
+            x: Spacing.lg;
+            y: root.card-head;
+            width: root.passage-w;
+            height: root.rows * root.line-h;
+            clip: true;
+
+        VerticalLayout {
+            x: 0px;
+            y: (TypingView.lines-base - root.scroll-pos) * root.line-h;
+            width: root.passage-w;
+            height: TypingView.lines.length * root.line-h;
+            alignment: start;
+
+            for line in TypingView.lines: HorizontalLayout {
+                height: root.line-h;
+                alignment: start;
+                padding-top: (root.line-h - root.block-h) / 2;
+                padding-bottom: (root.line-h - root.block-h) / 2;
+
+                for seg in line.segments: Rectangle {
+                    border-radius: 5px;
+                    background: seg.state == 4 || seg.state == 3 ? Theme.passage-current-bg
+                        : seg.state == 2 ? Theme.passage-wrong-bg : transparent;
+
+                    HorizontalLayout {
+                        Text {
+                            text: seg.text;
+                            font-family: root.passage-font;
+                            font-size: TypingView.font-size;
+                            font-weight: (root.word-bold && (seg.state == 3 || seg.state == 4)) || TypingView.bold
+                                ? Typography.weight-bold
+                                : Typography.weight-regular;
+                            color: seg.state == 1 ? Theme.passage-correct
+                                : seg.state == 2 ? Theme.passage-wrong
+                                : seg.state == 3 ? Theme.passage-key
+                                : seg.state == 4 ? Theme.passage-current-text
+                                : seg.state == 5 ? Theme.passage-skipped : Theme.passage-upcoming;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    // Current word: a solid lower edge (non-colour cue).
+                    Rectangle {
+                        x: 0px;
+                        y: parent.height - 2px;
+                        width: parent.width;
+                        height: 2px;
+                        visible: seg.state == 4 || seg.state == 3;
+                        background: seg.state == 3 ? Theme.passage-key : Theme.passage-current-edge;
+                    }
+
+                    // Wrong word: a wavy underline.
+                    if seg.state == 2: Path {
+                        x: 0px;
+                        y: parent.height - 4px;
+                        width: parent.width;
+                        height: 4px;
+                        viewbox-x: 0;
+                        viewbox-y: 0;
+                        viewbox-width: self.width / 1px;
+                        viewbox-height: 4;
+                        clip: true;
+                        commands: "M 0 3 Q 2 0 4 3 T 8 3 T 12 3 T 16 3 T 20 3 T 24 3 T 28 3 T 32 3 T 36 3 T 40 3 T 44 3 T 48 3 T 52 3 T 56 3 T 60 3 T 64 3 T 68 3 T 72 3 T 76 3 T 80 3 T 84 3 T 88 3 T 92 3 T 96 3 T 100 3 T 104 3 T 108 3 T 112 3 T 116 3 T 120 3 T 124 3 T 128 3 T 132 3 T 136 3 T 140 3 T 144 3 T 148 3 T 152 3 T 156 3 T 160 3 T 164 3 T 168 3 T 172 3 T 176 3 T 180 3 T 184 3 T 188 3 T 192 3 T 196 3 T 200 3 T 204 3 T 208 3 T 212 3 T 216 3 T 220 3 T 224 3 T 228 3 T 232 3 T 236 3 T 240 3 T 244 3 T 248 3 T 252 3 T 256 3 T 260 3 T 264 3 T 268 3 T 272 3 T 276 3 T 280 3 T 284 3 T 288 3 T 292 3 T 296 3 T 300 3 T 304 3 T 308 3 T 312 3 T 316 3 T 320 3 T 324 3 T 328 3 T 332 3 T 336 3 T 340 3 T 344 3 T 348 3 T 352 3 T 356 3 T 360 3 T 364 3 T 368 3 T 372 3 T 376 3 T 380 3 T 384 3 T 388 3 T 392 3 T 396 3 T 400 3 T 404 3 T 408 3 T 412 3 T 416 3 T 420 3 T 424 3 T 428 3 T 432 3 T 436 3 T 440 3 T 444 3 T 448 3 T 452 3 T 456 3 T 460 3 T 464 3 T 468 3 T 472 3 T 476 3 T 480 3";
+                        fill: transparent;
+                        stroke: Theme.passage-wrong;
+                        stroke-width: 1.5px;
+                    }
+
+                    // Skipped word: struck through.
+                    Rectangle {
+                        x: 0px;
+                        y: parent.height / 2;
+                        width: parent.width;
+                        height: 1.5px;
+                        visible: seg.state == 5;
+                        background: Theme.passage-skipped;
+                    }
+                }
+            }
+        }
+        }
+
+        // Mouse wheel scrolls the passage (Auto Scroll brings it back on the
+        // next key); a click gives typing focus back.
+        TouchArea {
+            x: 0px;
+            y: root.card-head;
+            width: parent.width;
+            height: root.text-h;
+            clicked => {
+                TypingView.request-focus();
+            }
+            scroll-event(e) => {
+                if (e.delta-y > 0px) {
+                    TypingView.passage-scroll(-1);
+                    return EventResult.accept;
+                }
+                if (e.delta-y < 0px) {
+                    TypingView.passage-scroll(1);
+                    return EventResult.accept;
+                }
+                return EventResult.reject;
+            }
+        }
+
+        // Scrollbar: track pages, the thumb shows the visible lines.
+        Rectangle {
+            x: parent.width - Spacing.sm - 6px;
+            y: root.card-head;
+            width: 6px;
+            height: root.text-h;
+            visible: root.scrollbar;
+            border-radius: 3px;
+            background: Theme.bg-sunken;
+
+            Rectangle {
+                x: 0px;
+                y: parent.height * TypingView.scroll-first / Math.max(1, TypingView.scroll-total);
+                width: parent.width;
+                height: Math.max(18px, parent.height * TypingView.scroll-rows / Math.max(1, TypingView.scroll-total));
+                border-radius: 3px;
+                background: Theme.border-strong;
+            }
+
+            TouchArea {
+                x: -6px;
+                width: parent.width + 12px;
+                mouse-cursor: MouseCursor.pointer;
+                clicked => {
+                    if (self.mouse-y < parent.height * TypingView.scroll-first / Math.max(1, TypingView.scroll-total)) {
+                        TypingView.passage-scroll(-TypingView.scroll-rows);
+                    } else {
+                        TypingView.passage-scroll(TypingView.scroll-rows);
+                    }
+                }
+            }
+        }
+
+        // Footer: "Word 6 of 400 (1%)" and a thin progress bar.
+        HorizontalLayout {
+            x: Spacing.lg;
+            y: parent.height - root.card-foot;
+            width: parent.width - 2 * Spacing.lg;
+            height: root.card-foot - 6px;
+            spacing: Spacing.md;
+
+            Text {
+                text: TypingView.word-position;
+                font-family: Typography.family-mono;
+                font-size: Typography.size-caption;
+                color: Theme.text-secondary;
+                vertical-alignment: center;
+            }
+
+            VerticalLayout {
+                alignment: center;
+                horizontal-stretch: 1;
+                Rectangle {
+                    height: 4px;
+                    border-radius: 2px;
+                    background: Theme.bg-sunken;
+                    Rectangle {
+                        x: 0px;
+                        width: parent.width * Math.clamp(TypingView.word-progress, 0, 1);
+                        height: parent.height;
+                        border-radius: 2px;
+                        background: Theme.primary;
+                    }
+                }
+            }
+        }
+
+        // Paused veil (TY-07).
+        Rectangle {
+            x: 0px;
+            y: 0px;
+            width: parent.width;
+            height: parent.height;
+            visible: TypingView.paused;
+            background: Theme.bg-surface.with-alpha(0.93);
+
+            VerticalLayout {
+                alignment: center;
+                spacing: Spacing.xs;
+                Text {
+                    text: "Paused";
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-h1;
+                    font-weight: Typography.weight-semibold;
+                    color: Theme.text-secondary;
+                    horizontal-alignment: center;
+                }
+
+                Text {
+                    text: "Press Esc or Resume to continue; your keyboard stays on this screen.";
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-caption;
+                    color: Theme.text-tertiary;
+                    horizontal-alignment: center;
+                }
+            }
+        }
+    }
+
+    // --- Status strip (TY-04) ---------------------------------------------------
+    status := Rectangle {
+        x: root.main-x;
+        y: passage.y + passage.height + root.gap;
+        width: root.main-w;
+        height: root.status-h;
+        visible: !TypingView.focus-mode;
+        border-radius: Radius.md;
+        background: Theme.bg-surface;
+        border-width: Stroke.hairline;
+        border-color: Theme.border-soft;
+
+        HorizontalLayout {
+            padding-left: Spacing.md;
+            padding-right: Spacing.md;
+            spacing: Spacing.sm;
+
+            VerticalLayout {
+                alignment: center;
+                SideLabel {
+                    text: "CURRENT WORD";
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    height: 24px;
+                    border-radius: Radius.sm;
+                    background: Theme.passage-current-bg;
+                    HorizontalLayout {
+                        padding-left: Spacing.sm;
+                        padding-right: Spacing.sm;
+                        Text {
+                            text: TypingView.coach-word;
+                            font-family: root.passage-font;
+                            font-size: Typography.size-body-sm;
+                            font-weight: Typography.weight-bold;
+                            color: Theme.passage-current-text;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+
+            // GAIL/CBI (books 01/03): an Esc dead-key prefix is pending.
+            // `if`, not `visible`: while hidden it takes no strip width.
+            if TypingView.esc-armed: VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    height: 24px;
+                    border-radius: Radius.sm;
+                    background: Theme.warning-subtle;
+                    border-width: Stroke.hairline;
+                    border-color: Theme.warning;
+                    HorizontalLayout {
+                        padding-left: Spacing.sm;
+                        padding-right: Spacing.sm;
+                        Text {
+                            text: "Esc armed";
+                            font-family: Typography.family-ui;
+                            font-size: Typography.size-caption;
+                            font-weight: Typography.weight-bold;
+                            color: Theme.text-primary;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+
+            // Key Guide only: the next key and the finger.
+            VerticalLayout {
+                alignment: center;
+                visible: TypingView.guide-visible && TypingView.guide-show-key;
+                SideLabel {
+                    text: "NEXT KEY";
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                visible: TypingView.guide-visible && TypingView.guide-show-key;
+                Rectangle {
+                    height: 24px;
+                    border-radius: Radius.sm;
+                    background: Theme.primary;
+                    HorizontalLayout {
+                        padding-left: Spacing.sm;
+                        padding-right: Spacing.sm;
+                        Text {
+                            text: TypingView.guide-modifiers + TypingView.guide-key;
+                            font-family: Typography.family-mono;
+                            font-size: Typography.size-body-sm;
+                            font-weight: Typography.weight-bold;
+                            color: Theme.text-on-primary;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                visible: TypingView.guide-visible && TypingView.guide-show-key && TypingView.guide-meaning != "";
+                Text {
+                    text: "draws " + TypingView.guide-meaning;
+                    font-family: Typography.family-devanagari;
+                    font-size: Typography.size-caption;
+                    color: Theme.text-secondary;
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                visible: TypingView.guide-visible && TypingView.guide-show-finger;
+                SideLabel {
+                    text: "FINGER GUIDE";
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                horizontal-stretch: 1;
+                Text {
+                    text: TypingView.guide-visible && TypingView.guide-show-finger ? TypingView.guide-finger : "";
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-caption;
+                    font-weight: Typography.weight-semibold;
+                    color: Theme.text-secondary;
+                    overflow: elide;
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                Text {
+                    text: "Keystrokes " + TypingView.stat-keys + "   ·   KDPH " + TypingView.stat-kdph;
+                    font-family: Typography.family-mono;
+                    font-size: Typography.size-caption;
+                    color: Theme.text-secondary;
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 4px;
+                    background: TypingView.live ? Theme.success : TypingView.paused ? Theme.warning : Theme.text-disabled;
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                Text {
+                    text: TypingView.live-label;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-caption;
+                    font-weight: Typography.weight-semibold;
+                    color: TypingView.live ? Theme.success : Theme.text-tertiary;
+                }
+            }
+        }
+    }
+
+    // --- Your typing (input pane) -------------------------------------------------
+    Rectangle {
+        x: root.main-x;
+        y: TypingView.focus-mode ? passage.y + passage.height + root.gap : status.y + status.height + root.gap;
+        width: root.main-w;
+        height: root.input-h;
+        border-radius: Radius.lg;
+        background: Theme.bg-surface;
+        border-width: TypingView.focused ? Stroke.thick : Stroke.hairline;
+        border-color: TypingView.coach-message != "" ? Theme.error
+            : TypingView.focused ? Theme.primary : Theme.border-strong;
+        clip: true;
+
+        Text {
+            x: Spacing.lg;
+            y: Spacing.sm;
+            width: parent.width - 2 * Spacing.lg;
+            height: 18px;
+            text: TypingView.coach-message != "" ? TypingView.coach-message
+                : !TypingView.focused ? "YOUR TYPING · click here or press any key to focus"
+                : TypingView.notice != "" ? "YOUR TYPING · " + TypingView.notice
+                : TypingView.idle ? "YOUR TYPING · click or start typing anywhere" : "YOUR TYPING";
+            font-family: TypingView.coach-message != "" ? Typography.family-devanagari : Typography.family-ui;
+            font-size: Typography.size-micro;
+            font-weight: Typography.weight-semibold;
+            letter-spacing: Typography.tracking-wide;
+            color: TypingView.coach-message != "" ? Theme.error
+                : !TypingView.focused ? Theme.warning : Theme.text-tertiary;
+            overflow: elide;
+        }
+
+        // The typed lines, clipped to three rows. Rust keeps one more
+        // earlier line above them; on a wrap the block starts one row lower
+        // and glides up (`typed-pos`), so lines move instead of jumping.
+        Rectangle {
+            x: Spacing.lg;
+            y: 30px;
+            width: parent.width - 2 * Spacing.lg;
+            height: 3 * root.input-line;
+            clip: true;
+
+            property <length> lift: (TypingView.typed-wraps - root.typed-pos) * root.input-line;
+
+            // Earlier lines, bottom-aligned above the line being typed.
+            Text {
+                x: 0px;
+                y: -root.input-line + parent.lift;
+                width: parent.width;
+                height: 3 * root.input-line;
+                text: TypingView.typed-head;
+                font-family: TypingView.legacy ? Typography.family-mono : root.passage-font;
+                font-size: root.input-font;
+                color: Theme.text-secondary;
+                vertical-alignment: bottom;
+                overflow: clip;
+            }
+
+            HorizontalLayout {
+                x: 0px;
+                y: 2 * root.input-line + parent.lift;
+                width: parent.width;
+                height: root.input-line;
+                alignment: start;
+
+                Text {
+                    text: TypingView.typed-tail;
+                    font-family: TypingView.legacy ? Typography.family-mono : root.passage-font;
+                    font-size: root.input-font;
+                    color: Theme.text-primary;
+                    vertical-alignment: center;
+                    overflow: clip;
+                }
+
+                Text {
+                    text: TypingView.preedit;
+                    font-family: TypingView.font-hindi;
+                    font-size: root.input-font;
+                    color: Theme.accent;
+                    vertical-alignment: center;
+                }
+
+                Rectangle {
+                    width: 2px;
+                    height: 30px;
+                    y: (parent.height - self.height) / 2;
+                    background: root.caret-on && TypingView.focused ? Theme.primary : transparent;
+                }
+            }
+        }
+    }
+
+    // =========================================================================
+    // Exam Rules & Settings panel (TY-05)
+    // =========================================================================
+    rules := Rectangle {
+        x: root.width - root.pad - root.side-w;
+        y: root.body-y;
+        width: root.side-w;
+        height: root.body-h;
+        visible: root.rules-shown;
+        border-radius: Radius.lg;
+        background: Theme.bg-surface;
+        border-width: Stroke.hairline;
+        border-color: Theme.border-soft;
+        clip: true;
+
+        property <length> iw: root.side-w - 2 * Spacing.md;
+        property <bool> ed: !TypingView.rules-locked;
+
+        Flickable {
+            x: 0px;
+            y: 0px;
+            width: parent.width;
+            height: parent.height;
+            content-height: 1180px;
+
+            VerticalLayout {
+                x: Spacing.md;
+                y: Spacing.md;
+                width: rules.iw;
+                spacing: 3px;
+                alignment: start;
+
+                Text {
+                    text: "Exam Rules & Settings";
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-body;
+                    font-weight: Typography.weight-bold;
+                    color: Theme.text-primary;
+                }
+
+                Text {
+                    width: rules.iw;
+                    text: TypingView.rules-locked ? "Locked · " + TypingView.rules-lock-reason : "Real-time simulation parameters · saved for next time";
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-micro;
+                    color: TypingView.rules-locked ? Theme.secondary : Theme.text-tertiary;
+                    wrap: word-wrap;
+                }
+
+                Rectangle {
+                    height: Spacing.xs;
+                }
+
+                SideLabel {
+                    text: "KEYBOARD LAYOUT";
+                }
+
+                for o in TypingView.layout-options: RadioRow {
+                    w: rules.iw;
+                    text: o.label;
+                    selected: o.id == TypingView.layout-id;
+                    enabled: TypingView.layout-switchable && !TypingView.rules-locked;
+                    clicked => {
+                        TypingView.set-layout(o.id);
+                    }
+                }
+
+                Rectangle {
+                    height: Spacing.xs;
+                }
+
+                SideLabel {
+                    text: "BACKSPACE OPTIONS";
+                }
+
+                RadioRow {
+                    w: rules.iw;
+                    text: "Full Backspace (Standard)";
+                    selected: TypingView.backspace == "full";
+                    enabled: rules.ed;
+                    clicked => {
+                        TypingView.set-backspace("full");
+                    }
+                }
+
+                RadioRow {
+                    w: rules.iw;
+                    text: "One Word Backspace (Current Word)";
+                    selected: TypingView.backspace == "word";
+                    enabled: rules.ed;
+                    clicked => {
+                        TypingView.set-backspace("word");
+                    }
+                }
+
+                RadioRow {
+                    w: rules.iw;
+                    text: "Deactivate Backspace (RRB NTPC)";
+                    selected: TypingView.backspace == "off";
+                    enabled: rules.ed;
+                    clicked => {
+                        TypingView.set-backspace("off");
+                    }
+                }
+
+                Rectangle {
+                    height: Spacing.xs;
+                }
+
+                SideLabel {
+                    text: "HIGHLIGHT OPTIONS";
+                }
+
+                RadioRow {
+                    w: rules.iw;
+                    text: "Word + Error Highlight";
+                    selected: TypingView.highlight == "word-error";
+                    enabled: rules.ed;
+                    clicked => {
+                        TypingView.set-highlight("word-error");
+                    }
+                }
+
+                RadioRow {
+                    w: rules.iw;
+                    text: "Word Highlight Only";
+                    selected: TypingView.highlight == "word";
+                    enabled: rules.ed;
+                    clicked => {
+                        TypingView.set-highlight("word");
+                    }
+                }
+
+                RadioRow {
+                    w: rules.iw;
+                    text: "No Highlight (Exam Blind Mode)";
+                    note: "No colouring until the result";
+                    selected: TypingView.highlight == "blind";
+                    enabled: rules.ed;
+                    clicked => {
+                        TypingView.set-highlight("blind");
+                    }
+                }
+
+                Rectangle {
+                    height: Spacing.xs;
+                }
+
+                SideLabel {
+                    text: "KEY GUIDE";
+                }
+
+                CheckRow {
+                    w: rules.iw;
+                    text: "Key Guide / Mistake-key marking";
+                    checked: TypingView.key-guide;
+                    enabled: rules.ed;
+                    clicked => {
+                        TypingView.toggle-key-guide();
+                    }
+                }
+
+                if TypingView.key-guide: HorizontalLayout {
+                    padding-left: 30px;
+                    alignment: start;
+                    SegmentedToggle {
+                        compact: true;
+                        options: [
+                            { id: "full", label: "Always" },
+                            { id: "smart", label: "Smart" },
+                            { id: "minimal", label: "Key only" },
+                        ];
+                        current: TypingView.guide-mode;
+                        selected(id) => {
+                            TypingView.set-guide(id);
+                        }
+                    }
+                }
+
+                Rectangle {
+                    height: Spacing.xs;
+                }
+
+                SideLabel {
+                    text: "SCROLLBAR & FONT OPTIONS";
+                }
+
+                CheckRow {
+                    w: rules.iw;
+                    text: "Show Scrollbar";
+                    checked: TypingView.show-scrollbar;
+                    clicked => {
+                        TypingView.toggle-scrollbar();
+                    }
+                }
+
+                CheckRow {
+                    w: rules.iw;
+                    text: "Auto Scroll";
+                    checked: TypingView.auto-scroll;
+                    clicked => {
+                        TypingView.toggle-auto-scroll();
+                    }
+                }
+
+                CheckRow {
+                    w: rules.iw;
+                    text: "Bold Font";
+                    checked: TypingView.bold;
+                    clicked => {
+                        TypingView.toggle-bold();
+                    }
+                }
+
+                CheckRow {
+                    w: rules.iw;
+                    text: "Paper Mode";
+                    checked: TypingView.paper;
+                    clicked => {
+                        TypingView.toggle-paper();
+                    }
+                }
+
+                HorizontalLayout {
+                    spacing: Spacing.sm;
+                    padding-left: 6px;
+                    Text {
+                        text: "Font size";
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-caption;
+                        color: Theme.text-primary;
+                        vertical-alignment: center;
+                    }
+
+                    Stepper {
+                        value: TypingView.font-label;
+                        step(d) => {
+                            TypingView.font-step(d);
+                        }
+                    }
+                }
+
+                Rectangle {
+                    height: Spacing.xs;
+                }
+
+                SideLabel {
+                    text: "PARAGRAPH SETTINGS";
+                }
+
+                CheckRow {
+                    w: rules.iw;
+                    text: "Apply Word Limit";
+                    checked: TypingView.word-limit-on;
+                    enabled: rules.ed;
+                    clicked => {
+                        TypingView.set-word-limit(!TypingView.word-limit-on, limit.text);
+                    }
+                }
+
+                HorizontalLayout {
+                    padding-left: 30px;
+                    spacing: Spacing.sm;
+                    height: 32px;
+
+                    Rectangle {
+                        width: 84px;
+                        border-radius: Radius.sm;
+                        background: limit.has-focus ? Theme.bg-surface : Theme.bg-sunken;
+                        border-width: limit.has-focus || TypingView.word-limit-error != "" ? Stroke.thick : Stroke.hairline;
+                        border-color: TypingView.word-limit-error != "" ? Theme.error
+                            : limit.has-focus ? Theme.primary : Theme.border-soft;
+
+                        limit := TextInput {
+                            x: Spacing.sm;
+                            y: (parent.height - self.height) / 2;
+                            width: parent.width - 2 * Spacing.sm;
+                            single-line: true;
+                            input-type: InputType.number;
+                            text <=> TypingView.word-limit-text;
+                            enabled: !TypingView.rules-locked;
+                            font-family: Typography.family-mono;
+                            font-size: Typography.size-body-sm;
+                            color: Theme.text-primary;
+                            accepted => {
+                                TypingView.set-word-limit(true, self.text);
+                            }
+                        }
+                    }
+
+                    Text {
+                        text: "words";
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-caption;
+                        color: Theme.text-secondary;
+                        vertical-alignment: center;
+                    }
+
+                    RadhaButton {
+                        text: "Apply";
+                        variant: ButtonVariant.Secondary;
+                        compact: true;
+                        enabled: !TypingView.rules-locked;
+                        clicked => {
+                            TypingView.set-word-limit(true, limit.text);
+                        }
+                    }
+                }
+
+                Text {
+                    width: rules.iw;
+                    text: TypingView.word-limit-error != "" ? TypingView.word-limit-error : "Min 50, max 1500 words · the passage ends at a word boundary";
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-micro;
+                    color: TypingView.word-limit-error != "" ? Theme.error : Theme.text-tertiary;
+                    wrap: word-wrap;
+                }
+
+                SideLabel {
+                    text: "KEYSTROKE LIMIT";
+                }
+
+                Stepper {
+                    value: TypingView.key-limit;
+                    enabled: !TypingView.rules-locked;
+                    step(d) => {
+                        TypingView.key-limit-step(d);
+                    }
+                }
+
+                SideLabel {
+                    text: "SCREEN";
+                }
+
+                CheckRow {
+                    w: rules.iw;
+                    text: "Key sounds";
+                    checked: TypingView.sound;
+                    clicked => {
+                        TypingView.toggle-sound();
+                    }
+                }
+
+                CheckRow {
+                    w: rules.iw;
+                    text: "Focus mode (passage and typing only) · F11";
+                    checked: TypingView.focus-mode;
+                    clicked => {
+                        TypingView.toggle-focus-mode();
+                    }
+                }
+
+                // Kruti Dev: honest about the missing font.
+                if TypingView.legacy: VerticalLayout {
+                    spacing: Spacing.xxs;
+                    SideLabel {
+                        text: "KRUTI DEV READING";
+                    }
+
+                    Text {
+                        width: root.side-w - 2 * Spacing.md;
+                        text: "The Kruti Dev font is not bundled: the passage shows the raw key stream you type. This line reads:";
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-micro;
+                        color: Theme.warning;
+                        wrap: word-wrap;
+                    }
+
+                    Text {
+                        width: root.side-w - 2 * Spacing.md;
+                        text: TypingView.legacy-reading;
+                        font-family: Typography.family-devanagari;
+                        font-size: Typography.size-body-sm;
+                        color: Theme.text-primary;
+                        wrap: word-wrap;
+                    }
+                }
+            }
+        }
+    }
+
+    // =========================================================================
+    // Bottom dock (TY-06): classic "Exercise : n/total" picker and actions
+    // =========================================================================
+    Rectangle {
+        x: 0px;
+        y: root.height - root.dock-h;
+        width: root.width;
+        height: root.dock-h;
+        background: Theme.bg-surface;
+
+        Rectangle {
+            x: 0px;
+            y: 0px;
+            width: parent.width;
+            height: 1px;
+            background: Theme.border-soft;
+        }
+
+        HorizontalLayout {
+            padding-left: root.pad;
+            padding-right: root.pad;
+            spacing: Spacing.xs;
+            alignment: center;
+
+            VerticalLayout {
+                alignment: center;
+                visible: TypingView.picker-visible;
+                Text {
+                    text: "Exercise :";
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-caption;
+                    font-weight: Typography.weight-semibold;
+                    color: Theme.text-secondary;
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                visible: TypingView.picker-visible;
+                DropButton {
+                    width: 112px;
+                    height: 32px;
+                    text: TypingView.exercise-counter;
+                    font: Typography.family-mono;
+                    open: root.ex-open && root.ex-from-dock;
+                    clicked => {
+                        root.open-exercises(true);
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "<<";
+                    variant: ButtonVariant.Ghost;
+                    compact: true;
+                    enabled: TypingView.has-prev;
+                    clicked => {
+                        TypingView.prev();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: ">>";
+                    variant: ButtonVariant.Secondary;
+                    compact: true;
+                    enabled: TypingView.has-next;
+                    clicked => {
+                        TypingView.next();
+                    }
+                }
+            }
+
+            Rectangle {
+                width: 1px;
+                background: Theme.border-soft;
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "Restart";
+                    variant: ButtonVariant.Secondary;
+                    compact: true;
+                    clicked => {
+                        TypingView.restart();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: TypingView.paused ? "Resume" : "Pause";
+                    variant: ButtonVariant.Secondary;
+                    compact: true;
+                    enabled: !TypingView.idle;
+                    clicked => {
+                        TypingView.toggle-pause();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "Submit";
+                    compact: true;
+                    enabled: !TypingView.idle;
+                    clicked => {
+                        TypingView.finish();
+                    }
+                }
+            }
+
+            Rectangle {
+                width: 1px;
+                background: Theme.border-soft;
+            }
+
+            VerticalLayout {
+                alignment: center;
+                Stepper {
+                    value: "A " + TypingView.font-label;
+                    step(d) => {
+                        TypingView.font-step(d);
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                Text {
+                    text: TypingView.idle ? "Select test duration and start typing. Timer will start automatically" : "Esc pause · Ctrl+R restart · F11 focus";
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-micro;
+                    color: Theme.text-tertiary;
+                }
+            }
+        }
+    }
+
+    // =========================================================================
+    // Dropdowns and the Add Exercise dialog (on top of everything)
+    // =========================================================================
+    TouchArea {
+        visible: root.ex-open || root.lay-open || root.timer-open;
+        clicked => {
+            root.close-menus();
+        }
+    }
+
+    // Exercise list: a virtualised ListView (only visible rows exist).
+    Panel {
+        x: root.ex-x;
+        y: root.ex-from-dock ? root.height - root.dock-h - root.ex-h - Spacing.xs : root.head-h - Spacing.xs;
+        width: root.ex-w;
+        height: root.ex-h;
+        visible: root.ex-open;
+
+        Text {
+            x: Spacing.md;
+            y: Spacing.sm;
+            width: parent.width - 2 * Spacing.md;
+            height: 20px;
+            text: "SELECT EXERCISE · " + TypingView.exercise-counter + " · loads at once, the timer starts on your first key";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-micro;
+            font-weight: Typography.weight-semibold;
+            color: Theme.text-tertiary;
+            overflow: elide;
+        }
+
+        exlist := ListView {
+            x: Spacing.xs;
+            y: 32px;
+            width: parent.width - 2 * Spacing.xs;
+            height: parent.height - 36px;
+
+            for item[i] in TypingView.exercises: Rectangle {
+                height: 34px;
+                border-radius: Radius.sm;
+                background: i == TypingView.exercise-pos ? Theme.primary-subtle : rowtouch.has-hover ? Theme.bg-raised : transparent;
+
+                Text {
+                    x: Spacing.sm;
+                    width: parent.width - 2 * Spacing.sm;
+                    height: parent.height;
+                    text: item.label;
+                    font-family: TypingView.devanagari || TypingView.legacy ? Typography.family-devanagari : Typography.family-ui;
+                    font-size: Typography.size-body-sm;
+                    font-weight: i == TypingView.exercise-pos ? Typography.weight-bold : Typography.weight-regular;
+                    color: i == TypingView.exercise-pos ? Theme.primary : Theme.text-primary;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+
+                rowtouch := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => {
+                        root.ex-open = false;
+                        TypingView.pick-exercise(i);
+                    }
+                }
+            }
+        }
+    }
+
+    // Layout list.
+    Panel {
+        x: Math.min(root.width - 260px - root.pad, root.pad + 150px + Math.min(440px, root.width / 3) + Spacing.sm);
+        y: root.head-h - Spacing.xs;
+        width: 260px;
+        height: 16px + TypingView.layout-options.length * 34px;
+        visible: root.lay-open;
+
+        VerticalLayout {
+            padding: Spacing.sm;
+            for o in TypingView.layout-options: Rectangle {
+                height: 34px;
+                border-radius: Radius.sm;
+                background: o.id == TypingView.layout-id ? Theme.primary-subtle : laytouch.has-hover ? Theme.bg-raised : transparent;
+
+                Text {
+                    x: Spacing.sm;
+                    height: parent.height;
+                    text: o.label;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-body-sm;
+                    font-weight: o.id == TypingView.layout-id ? Typography.weight-bold : Typography.weight-regular;
+                    color: o.id == TypingView.layout-id ? Theme.primary : Theme.text-primary;
+                    vertical-alignment: center;
+                }
+
+                laytouch := TouchArea {
+                    mouse-cursor: MouseCursor.pointer;
+                    clicked => {
+                        root.lay-open = false;
+                        TypingView.set-layout(o.id);
+                    }
+                }
+            }
+        }
+    }
+
+    // Timer menu: presets, no limit, custom minutes / MM:SS.
+    Panel {
+        property <length> chip-w: (self.width - 2 * Spacing.md - 4 * 6px) / 5;
+        x: (root.width - self.width) / 2 - 160px;
+        y: root.head-h + root.stats-h - Spacing.xs;
+        width: 360px;
+        height: 214px;
+        visible: root.timer-open;
+
+        Text {
+            x: Spacing.md;
+            y: Spacing.sm;
+            text: "TEST DURATION · the session starts again";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-micro;
+            font-weight: Typography.weight-semibold;
+            color: Theme.text-tertiary;
+        }
+
+        for t[i] in TypingView.timer-presets: ChoiceChip {
+            x: Spacing.md + Math.mod(i, 5) * (parent.chip-w + 6px);
+            y: 30px + Math.floor(i / 5) * 36px;
+            width: i == 10 ? 2 * parent.chip-w + 6px : parent.chip-w;
+            text: t.label;
+            selected: t.selected;
+            clicked => {
+                root.timer-open = false;
+                TypingView.choose-timer(i);
+            }
+        }
+
+        HorizontalLayout {
+            x: Spacing.md;
+            y: 30px + 3 * 36px + 4px;
+            width: parent.width - 2 * Spacing.md;
+            height: 32px;
+            spacing: 6px;
+
+            Rectangle {
+                horizontal-stretch: 1;
+                border-radius: Radius.sm;
+                background: tcustom.has-focus ? Theme.bg-surface : Theme.bg-sunken;
+                border-width: tcustom.has-focus || TypingView.timer-error != "" ? Stroke.thick : Stroke.hairline;
+                border-color: TypingView.timer-error != "" ? Theme.error
+                    : tcustom.has-focus ? Theme.primary : Theme.border-soft;
+
+                tcustom := TextInput {
+                    x: Spacing.sm;
+                    y: (parent.height - self.height) / 2;
+                    width: parent.width - 2 * Spacing.sm;
+                    single-line: true;
+                    text <=> TypingView.custom-timer-text;
+                    font-family: Typography.family-mono;
+                    font-size: Typography.size-body-sm;
+                    color: Theme.text-primary;
+                    accepted => {
+                        TypingView.custom-timer(self.text);
+                        if (TypingView.timer-error == "") {
+                            root.timer-open = false;
+                        }
+                    }
+                }
+
+                if tcustom.text == "": Text {
+                    x: Spacing.sm;
+                    y: (parent.height - self.height) / 2;
+                    text: "Custom: minutes (e.g. 7) or MM:SS";
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-caption;
+                    color: Theme.text-tertiary;
+                }
+            }
+
+            RadhaButton {
+                text: "Set";
+                variant: ButtonVariant.Primary;
+                compact: true;
+                clicked => {
+                    TypingView.custom-timer(tcustom.text);
+                    if (TypingView.timer-error == "") {
+                        root.timer-open = false;
+                    }
+                }
+            }
+        }
+
+        Text {
+            x: Spacing.md;
+            y: 30px + 3 * 36px + 40px;
+            width: parent.width - 2 * Spacing.md;
+            text: TypingView.timer-error != "" ? TypingView.timer-error : "1 second to 60 minutes; the clock starts on your first key";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-micro;
+            color: TypingView.timer-error != "" ? Theme.error : Theme.text-tertiary;
+            wrap: word-wrap;
+        }
+    }
+
+    // Add Exercise dialog.
+    Rectangle {
+        width: root.width;
+        height: root.height;
+        visible: root.add-open;
+        background: Theme.shadow.with-alpha(0.35);
+
+        TouchArea { }
+
+        Panel {
+            x: (root.width - self.width) / 2;
+            y: Math.max(Spacing.lg, (root.height - self.height) / 2);
+            width: Math.min(640px, root.width - 2 * root.pad);
+            height: Math.min(470px, root.height - 2 * Spacing.lg);
+
+            VerticalLayout {
+                padding: Spacing.lg;
+                spacing: Spacing.sm;
+
+                Text {
+                    text: "Add Exercise";
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-h3;
+                    font-weight: Typography.weight-bold;
+                    color: Theme.text-primary;
+                }
+
+                Text {
+                    text: "Paste your own passage. It is checked for " + TypingView.layout-name + ", saved on this PC, and typed at once (practice only).";
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-caption;
+                    color: Theme.text-secondary;
+                    wrap: word-wrap;
+                }
+
+                SideLabel {
+                    text: "TITLE";
+                }
+
+                Rectangle {
+                    height: 34px;
+                    border-radius: Radius.sm;
+                    background: Theme.bg-sunken;
+                    border-width: atitle.has-focus ? Stroke.thick : Stroke.hairline;
+                    border-color: atitle.has-focus ? Theme.primary : Theme.border-soft;
+
+                    atitle := TextInput {
+                        x: Spacing.sm;
+                        y: (parent.height - self.height) / 2;
+                        width: parent.width - 2 * Spacing.sm;
+                        single-line: true;
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-body-sm;
+                        color: Theme.text-primary;
+                    }
+                }
+
+                SideLabel {
+                    text: "PASSAGE TEXT · " + atext.text.character-count + " characters";
+                }
+
+                Rectangle {
+                    vertical-stretch: 1;
+                    border-radius: Radius.sm;
+                    background: Theme.bg-sunken;
+                    border-width: atext.has-focus ? Stroke.thick : Stroke.hairline;
+                    border-color: atext.has-focus ? Theme.primary : Theme.border-soft;
+                    clip: true;
+
+                    atext := TextInput {
+                        x: Spacing.sm;
+                        y: Spacing.sm;
+                        width: parent.width - 2 * Spacing.sm;
+                        height: parent.height - 2 * Spacing.sm;
+                        single-line: false;
+                        wrap: word-wrap;
+                        font-family: TypingView.devanagari || TypingView.legacy ? Typography.family-devanagari : Typography.family-ui;
+                        font-size: Typography.size-body-sm;
+                        color: Theme.text-primary;
+                    }
+                }
+
+                Text {
+                    text: TypingView.add-status;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-caption;
+                    color: TypingView.add-ok ? Theme.success : Theme.error;
+                    wrap: word-wrap;
+                }
+
+                HorizontalLayout {
+                    spacing: Spacing.sm;
+                    alignment: end;
+
+                    RadhaButton {
+                        text: "Cancel";
+                        variant: ButtonVariant.Ghost;
+                        compact: true;
+                        clicked => {
+                            root.add-open = false;
+                            TypingView.request-focus();
+                        }
+                    }
+
+                    RadhaButton {
+                        text: "Save & Type";
+                        compact: true;
+                        clicked => {
+                            TypingView.add-exercise(atitle.text, atext.text);
+                            if (TypingView.add-ok) {
+                                atitle.text = "";
+                                atext.text = "";
+                                root.add-open = false;
+                                TypingView.request-focus();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,519 @@
+// ============================================================================
+// Practice view-models — Exercise, Typing and Result screens
+// ============================================================================
+//
+// Rust owns every value here (RULES.MD Rule 16): it writes the globals and
+// handles their callbacks. The screens only draw what they are given and
+// raise requests. All three globals are exported from main.slint so Rust can
+// reach them.
+// ============================================================================
+
+import { SegmentOption } from "../components/segmented_toggle.slint";
+import { FilterPillItem } from "../components/filter_pill.slint";
+
+/// One card of the exercise grid (metadata only; text is loaded lazily).
+/// Rust sends only the cards inside the visible window (RULES.MD Rule 34).
+export struct ExerciseCard {
+    /// Position in the filtered list: places the card in the grid.
+    index: int,
+    /// "EX-012".
+    code: string,
+    title: string,
+    category: string,
+    /// 1-5, 0 when unrated.
+    level: int,
+    /// "6/10", "" when unrated.
+    score: string,
+    /// "25 WPM · 93%" (suggested targets).
+    targets: string,
+    /// "≈ 180 words".
+    length: string,
+    /// "Best 42 WPM · 97%", or "" when never practised.
+    best: string,
+    /// Review status text and tone token.
+    status: string,
+    status-tone: string,
+    completed: bool,
+    selected: bool,
+    /// Typing Flow: "Smooth 94% · best 97%", "—" before a scored rhythm.
+    rhythm: string,
+}
+
+/// A timer preset chip.
+export struct TimerChoice {
+    label: string,
+    selected: bool,
+}
+
+/// One colour run of a passage line. `state`: 0 pending, 1 correct,
+/// 2 wrong, 3 cursor.
+export struct PassageSegment {
+    text: string,
+    state: int,
+}
+
+/// One visible passage line.
+export struct PassageLine {
+    segments: [PassageSegment],
+}
+
+/// A Hindi Learn step chip. `state`: 0 locked, 1 open, 2 passed.
+export struct LearnChip {
+    label: string,
+    glyph: string,
+    state: int,
+    current: bool,
+}
+
+/// One weak key on the Result screen.
+export struct WeakKeyRow {
+    unit: string,
+    keys: string,
+    detail: string,
+}
+
+/// Exercise screen v2 (PRD 17.4, DESIGN 20.6). Rust decides everything:
+/// the mode matrix, the filtered list, the visible window, the timer and
+/// whether START is allowed; the screen draws it and raises requests.
+export global ExerciseView {
+    // --- Header (EX-01, EX-02) --------------------------------------------
+    in-out property <string> product-name;
+    in-out property <string> layout-name;
+    /// "Home / English Typing Mastery / TEST".
+    in-out property <string> breadcrumb;
+    /// Accent token ("primary", "accent", "secondary", "success").
+    in-out property <string> accent: "primary";
+    /// Mode toggle (LEARN | TEST, BEGINNER | CLASSIC, English | Hindi).
+    in-out property <[SegmentOption]> mode-options;
+    in-out property <string> mode-current;
+    /// Hindi exam layout switch (GAIL | CBI | Kruti Dev); empty hides it.
+    in-out property <[SegmentOption]> layout-options;
+    in-out property <string> layout-current;
+    /// "200 exercises · 200 verified".
+    in-out property <string> count-text;
+    /// Notice under the header ("" hides it) and its level:
+    /// "practice" | "provisional" | "generated".
+    in-out property <string> banner;
+    in-out property <string> banner-level;
+    /// Titles are Hindi: use the Devanagari font.
+    in-out property <bool> hindi;
+
+    // --- Toolbar (EX-03) ----------------------------------------------------
+    in-out property <string> search-text;
+    in-out property <string> shown-text;
+    in-out property <string> difficulty: "all";
+    in-out property <[FilterPillItem]> categories;
+    in-out property <string> category: "all";
+
+    // --- Grid (EX-04, EX-05, EX-12) ----------------------------------------
+    /// "ready" | "empty" | "no-match" | "error".
+    in-out property <string> list-state: "ready";
+    in-out property <string> state-title;
+    in-out property <string> state-message;
+    /// The visible window only.
+    in-out property <[ExerciseCard]> cards;
+    in-out property <int> total-rows;
+    in-out property <length> card-height: 132px;
+    in-out property <length> row-pitch: 144px;
+    /// Bumped by Rust to scroll the grid back to the top.
+    in-out property <int> scroll-token;
+
+    // --- Inspector (EX-06) --------------------------------------------------
+    in-out property <bool> insp-visible;
+    in-out property <string> insp-code;
+    in-out property <string> insp-category;
+    in-out property <string> insp-level;
+    in-out property <string> insp-title;
+    in-out property <string> insp-status;
+    in-out property <string> insp-status-tone;
+    in-out property <string> insp-note;
+    in-out property <[string]> insp-keys;
+    in-out property <string> insp-target-wpm;
+    in-out property <string> insp-min-accuracy;
+    in-out property <string> insp-length;
+    in-out property <[string]> insp-fingers;
+    in-out property <string> insp-best;
+    in-out property <string> insp-error;
+
+    // --- Dock (EX-07, EX-08, EX-11) -----------------------------------------
+    /// "timer" | "guide" | "locked".
+    in-out property <string> dock: "timer";
+    in-out property <string> timer-readout: "05:00";
+    in-out property <string> timer-sentence;
+    in-out property <string> timer-kind: "countdown";
+    in-out property <[TimerChoice]> timers;
+    in-out property <string> custom-timer-error;
+    /// The custom field's text (two-way): Rust empties it when a preset,
+    /// the stepper or the kind replaces the custom entry.
+    in-out property <string> custom-timer-text;
+    /// Rules → Key Guide (shared with the Typing screen).
+    in-out property <bool> key-guide;
+    in-out property <bool> no-backspace;
+    in-out property <string> locked-reason;
+    in-out property <string> guide-mode: "full";
+    in-out property <bool> key-mode;
+
+    // --- Hindi Learn beginner path (HL-01, HL-03/04, HL-07, HL-08) -----------
+    /// Empty hides the path block.
+    in-out property <[LearnChip]> learn-steps;
+    in-out property <string> learn-plan;
+    in-out property <string> learn-status;
+
+    // --- START (EX-13) -------------------------------------------------------
+    in-out property <string> start-text;
+    in-out property <bool> can-start;
+    in-out property <string> start-reason;
+
+    callback mode-selected(string);
+    callback layout-selected(string);
+    callback search-edited(string);
+    callback difficulty-selected(string);
+    callback category-selected(string);
+    /// A card was activated: its filtered index.
+    callback select(int);
+    /// Grid geometry: (columns, viewport height, scroll offset).
+    callback grid-scrolled(int, length, length);
+    callback choose-timer(int);
+    callback timer-kind-selected(string);
+    callback step-timer(int);
+    callback custom-timer(string);
+    callback toggle-no-backspace();
+    callback toggle-key-guide();
+    callback guide-mode-selected(string);
+    callback set-key-mode(bool);
+    callback start();
+    /// Start a finger-first step drill (0-based step).
+    callback start-step(int);
+    /// Start a trainer: "matra" | "half" | "weak".
+    callback start-trainer(string);
+}
+
+/// One word of the diff inspector. `kind`: 0 correct, 1 half, 2 full,
+/// 3 omitted.
+export struct DiffWord {
+    expected: string,
+    typed: string,
+    kind: int,
+    label: string,
+}
+
+/// One line of the annotated transcript.
+export struct DiffLine {
+    words: [DiffWord],
+}
+
+/// One heatmap key. `cls`: 0 unused, 1 optimal, 2 warning, 3 critical.
+/// `detail` is the selected-key inspector line.
+export struct HeatKey {
+    legend: string,
+    glyph: string,
+    pct: string,
+    cls: int,
+    detail: string,
+}
+
+/// One finger of the finger balance. `level` 0..1 is its share of presses
+/// relative to the busiest finger; `cls` as for HeatKey.
+export struct FingerBar {
+    label: string,
+    pct: string,
+    level: float,
+    cls: int,
+}
+
+/// One heatmap row.
+export struct HeatRow {
+    keys: [HeatKey],
+}
+
+/// One row of the Typing screen's exercise picker ("07 · Work is Worship").
+export struct PickItem {
+    label: string,
+}
+
+/// Typing screen v3 (PRD 17.5, DESIGN 20.7). Rust writes every value; per
+/// key only the stats, the changed passage lines and the coach change.
+export global TypingView {
+    // --- Header (TY-01) -----------------------------------------------------
+    in-out property <string> title;
+    in-out property <string> subtitle;
+    in-out property <string> mode-label;
+    in-out property <string> timer-label;
+    in-out property <string> layout-name;
+    /// "Practice only" etc.; "" hides the badge.
+    in-out property <string> cert-pill;
+    /// Exercise picker: "07 / 200", the rows (the whole filtered list; the
+    /// popup's ListView only instantiates the visible rows) and the current
+    /// row. Hidden for generated drills and custom passages.
+    in-out property <bool> picker-visible;
+    in-out property <string> exercise-counter;
+    in-out property <[PickItem]> exercises;
+    in-out property <int> exercise-pos;
+    /// Layout switch: the current id ("qwerty" ...) and whether this course
+    /// can change layout (exams on the same language, typing courses).
+    in-out property <string> layout-id;
+    in-out property <bool> layout-switchable;
+    in-out property <[SegmentOption]> layout-options;
+    /// Timer menu: "10:00 Min", the presets and the custom entry.
+    in-out property <string> timer-menu-label;
+    in-out property <[TimerChoice]> timer-presets;
+    in-out property <string> timer-error;
+    in-out property <string> custom-timer-text;
+    /// Exams: the timer is set by the profile.
+    in-out property <bool> timer-locked;
+    /// Timer ring arc (SVG, viewbox 0 0 36 36); "" when empty.
+    in-out property <string> ring-arc;
+    in-out property <bool> ring-visible;
+    /// The ring turns error-toned in the last 10 seconds.
+    in-out property <bool> ring-warning;
+
+    in-out property <string> stat-time: "0:00";
+    in-out property <string> stat-wpm: "0";
+    in-out property <string> stat-net: "0";
+    in-out property <string> stat-accuracy: "100%";
+    in-out property <string> stat-errors: "0";
+    in-out property <string> stat-streak: "0";
+    in-out property <string> stat-words: "0";
+    in-out property <string> stat-kdph: "0";
+    in-out property <string> stat-keys: "0";
+    in-out property <float> progress;
+
+    // --- Passage (TY-03) ------------------------------------------------------
+    in-out property <[PassageLine]> lines;
+    in-out property <bool> devanagari;
+    /// Kruti Dev: the legacy stream is shown raw (font not bundled).
+    in-out property <bool> legacy;
+    /// Kruti Dev: the current line read back as Devanagari.
+    in-out property <string> legacy-reading;
+    in-out property <length> font-size: 22px;
+    in-out property <bool> bold;
+    in-out property <bool> paper;
+    /// "SSC CHSL / CGL Standard Editorial Passage".
+    in-out property <string> passage-subtitle;
+    /// Rule chips: "Full Backspace", "Word + Error Highlight", "Limit: 400 Words".
+    in-out property <string> chip-backspace;
+    in-out property <string> chip-highlight;
+    in-out property <string> chip-limit;
+    /// "Word 6 of 400 (1%)" and its 0..1 fraction.
+    in-out property <string> word-position;
+    in-out property <float> word-progress;
+    /// Scrollbar: first visible line, lines shown, lines in total.
+    in-out property <int> scroll-first;
+    in-out property <int> scroll-rows: 1;
+    in-out property <int> scroll-total: 1;
+    /// `lines` row 0 is passage line `lines-base`: one buffer line above and
+    /// below the visible ones, so a one-line scroll glides instead of
+    /// jumping. `scroll-glide`: animate the next change of `scroll-first`.
+    in-out property <int> lines-base;
+    in-out property <bool> scroll-glide;
+    /// Exam typography, set once at startup from the installed Windows
+    /// fonts (Rust `exam_fonts`): English Arial, Hindi Unicode Mangal; the
+    /// defaults are the embedded fallbacks.
+    in-out property <string> font-latin: "JetBrains Mono";
+    in-out property <string> font-hindi: "Noto Sans Devanagari";
+    /// Mangal is not installed (Windows optional "Hindi Supplemental Fonts").
+    in-out property <bool> mangal-missing;
+
+    // --- Status strip and input pane (TY-04) ---------------------------------
+    in-out property <string> coach-word;
+    /// GAIL/CBI: Esc armed the dead-key layer; the next key types its Esc
+    /// character (the "Esc armed" chip). Written only when it changes.
+    in-out property <bool> esc-armed;
+    /// Rules → Key Guide: the next key, finger and key marks.
+    in-out property <bool> key-guide;
+    in-out property <bool> guide-visible;
+    in-out property <bool> guide-show-key;
+    in-out property <bool> guide-show-finger;
+    in-out property <string> guide-key;
+    in-out property <string> guide-modifiers;
+    in-out property <string> guide-hand;
+    in-out property <string> guide-finger;
+    in-out property <string> guide-output;
+    in-out property <string> guide-meaning;
+    /// Mistake coach line (HL-02); "" hides it.
+    in-out property <string> coach-message;
+    /// The input pane: earlier lines (newline-separated) and the last line.
+    in-out property <string> typed-head;
+    in-out property <string> typed-tail;
+    /// Counts the pane's line wraps (+1 forward, -1 back) so the text
+    /// glides up one line; `typed-glide` false snaps (restart, rewrap).
+    in-out property <int> typed-wraps;
+    in-out property <bool> typed-glide;
+    in-out property <string> preedit;
+    /// Keyboard focus is on the typing scope.
+    in-out property <bool> focused: true;
+    /// One-line notice ("Backspace is locked", "Recovered session").
+    in-out property <string> notice;
+    /// "Live Exam Session in Progress" / "Ready" / "Paused".
+    in-out property <string> live-label;
+    in-out property <bool> live: false;
+
+    // --- Rules panel (TY-05) --------------------------------------------------
+    in-out property <bool> rules-open: true;
+    in-out property <bool> rules-locked;
+    in-out property <string> rules-lock-reason;
+    in-out property <string> backspace: "full";
+    in-out property <string> highlight: "word-error";
+    in-out property <string> guide-mode: "full";
+    in-out property <string> font-label: "22 px";
+    in-out property <bool> show-scrollbar: true;
+    in-out property <bool> auto-scroll: true;
+    in-out property <bool> word-limit-on;
+    in-out property <string> word-limit-text: "400";
+    in-out property <string> word-limit-error;
+    in-out property <string> key-limit: "Off";
+    in-out property <bool> sound: true;
+    in-out property <bool> focus-mode;
+    in-out property <bool> fullscreen;
+    /// Add Exercise result line ("" hides it).
+    in-out property <string> add-status;
+    in-out property <bool> add-ok;
+
+    // --- Hindi Learn strip (HL-01, HL-08) -------------------------------------
+    in-out property <bool> learn-visible;
+    in-out property <string> learn-title;
+    in-out property <string> learn-note;
+    in-out property <[LearnChip]> learn-steps;
+    /// Typing Flow: rhythm-first wording (DESIGN 8.2).
+    in-out property <bool> flow;
+
+    // --- Dock (TY-06) -----------------------------------------------------------
+    in-out property <bool> paused;
+    in-out property <bool> idle: true;
+    in-out property <bool> has-prev;
+    in-out property <bool> has-next;
+
+    callback key-typed(string, bool, bool);
+    callback escape();
+    callback restart();
+    callback toggle-pause();
+    callback finish();
+    callback prev();
+    callback next();
+    /// Give the typing scope focus again (a click on the screen).
+    callback request-focus();
+    /// (has focus, the window itself lost / gained activation).
+    callback focus-changed(bool, bool);
+    /// The passage text area's width changed (rewrap).
+    callback passage-resized(length);
+    /// How many passage lines fit in the card.
+    callback passage-rows(int);
+    /// Mouse wheel / scrollbar: move the passage by this many lines.
+    callback passage-scroll(int);
+    callback pick-exercise(int);
+    callback set-layout(string);
+    callback choose-timer(int);
+    callback custom-timer(string);
+    callback set-backspace(string);
+    callback set-highlight(string);
+    callback set-guide(string);
+    callback font-step(int);
+    callback toggle-bold();
+    callback toggle-paper();
+    callback toggle-scrollbar();
+    callback toggle-auto-scroll();
+    callback toggle-key-guide();
+    /// (on, words typed in the field).
+    callback set-word-limit(bool, string);
+    callback key-limit-step(int);
+    callback toggle-sound();
+    callback toggle-focus-mode();
+    callback toggle-fullscreen();
+    callback toggle-rules();
+    callback printout();
+    /// Add Exercise: (title, text).
+    callback add-exercise(string, string);
+    /// A dialog opened over the session: pause it.
+    callback pause-for-dialog();
+    callback start-step(int);
+}
+
+/// Result v2 (PRD 17.6, DESIGN 20.8): practice-honest figures from the one
+/// scoring module.
+export global ResultView {
+    in-out property <string> title;
+    in-out property <string> subtitle;
+    // --- Verdict card (RS-01) ---------------------------------------------------
+    in-out property <string> headline;
+    in-out property <string> verdict-detail;
+    in-out property <string> cert-pill;
+    /// VerificationBadge level ("practice" | "provisional" | "official").
+    in-out property <string> cert-level: "practice";
+    in-out property <bool> good;
+    // --- KPIs (RS-04) -------------------------------------------------------------
+    in-out property <string> wpm;
+    in-out property <string> net-wpm;
+    in-out property <string> kdph;
+    in-out property <string> words;
+    in-out property <string> full-mistakes;
+    in-out property <string> half-mistakes;
+    in-out property <string> error-pct;
+    in-out property <string> backspaces;
+    in-out property <string> peak-streak;
+    in-out property <string> accuracy;
+    in-out property <float> accuracy-value;
+    in-out property <string> accuracy-arc;
+    in-out property <string> errors;
+    in-out property <string> consistency;
+    in-out property <string> time;
+    in-out property <string> word-accuracy;
+    // --- Minute curve (RS-02) -----------------------------------------------------
+    in-out property <bool> chart-has-data;
+    in-out property <string> chart-line;
+    in-out property <string> chart-area;
+    in-out property <float> chart-peak-x;
+    in-out property <float> chart-peak-y;
+    in-out property <string> chart-value;
+    in-out property <string> chart-footer;
+    /// "wpm" | "kdph".
+    in-out property <string> chart-view: "wpm";
+    in-out property <string> chart-title: "Speed per minute (gross WPM)";
+    // --- Penalty audit (RS-03), from the session's scoring policy -----------------
+    in-out property <string> audit-formula;
+    in-out property <string> audit-worked;
+    in-out property <string> audit-raw;
+    in-out property <string> audit-exempted;
+    in-out property <string> audit-penalised;
+    in-out property <string> audit-note;
+    // --- Exam scorecard (RS-09, RS-10) --------------------------------------------
+    in-out property <bool> exam;
+    /// "Candidate: Asha · Roll R-12", "" hides the row.
+    in-out property <string> candidate;
+    /// "Practice scorecard" unless the rules are Official.
+    in-out property <string> scorecard-title: "Practice scorecard";
+    in-out property <string> export-path;
+    in-out property <string> export-status;
+    in-out property <bool> export-open;
+    // --- Finger balance and selected key (RS-06) -----------------------------------
+    in-out property <[FingerBar]> fingers;
+    in-out property <string> heat-detail;
+    // --- Diff inspector (RS-05) ---------------------------------------------------
+    /// "annotated" | "mistakes" | "table".
+    in-out property <string> diff-view: "annotated";
+    in-out property <[DiffLine]> diff-lines;
+    in-out property <[DiffWord]> diff-rows;
+    in-out property <string> diff-summary;
+    // --- Heatmap (RS-06) ------------------------------------------------------------
+    in-out property <[HeatRow]> heat-rows;
+    in-out property <string> heat-note;
+    // --- Weak keys and recovery drill (RS-07) ----------------------------------------
+    in-out property <[WeakKeyRow]> weak-keys;
+    in-out property <bool> drill-available;
+    in-out property <string> drill-preview;
+    /// Weak-key units are Unicode Devanagari.
+    in-out property <bool> devanagari;
+    in-out property <string> save-status;
+    in-out property <bool> new-best;
+    in-out property <bool> has-next;
+    in-out property <string> next-label: "Next Exercise";
+
+    callback retry();
+    callback next();
+    callback list();
+    callback home();
+    callback drill();
+    callback diff-view-selected(string);
+    callback chart-view-selected(string);
+    /// Write the HTML scorecard to this path (user-chosen).
+    callback export-scorecard(string);
+}

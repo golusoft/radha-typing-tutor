@@ -1,0 +1,58 @@
+# BELTRON (BSEDC) Bihar — Data Entry Operator.
+# Thresholds and the Hindi layout / font are Golu's statement; the primary
+# advertisement is pending (X-03). Adv 8484/23 (S-07) is NOT a DEO typing
+# source (G-09) and the DEO syllabus (S-06) has no typing rule. Duration,
+# language selection, the definition of "correct WPM" and Backspace are not
+# in any source: Configurable, so the profile is Provisional.
+schema_version = 1
+id = "beltron-deo"
+profile_version = 1
+display_name = "BELTRON Bihar — DEO"
+body = "Bihar State Electronics Development Corp."
+
+[notice]
+title = "Data Entry Operator typing test"
+note = "Primary advertisement pending (X-03). Whether candidates take one language or both is not verified."
+
+[[sources]]
+id = "S-06"
+kind = "primary"
+title = "BSEDC DEO syllabus (NIOS Data Entry Operations; no typing speed or layout)"
+url = "https://bsedc.bihar.gov.in/media/letterandcirculars/DEO_Syllabus.pdf"
+read = true
+
+[[sources]]
+id = "S-16"
+kind = "secondary"
+title = "PW — BELTRON DEO notification 2024"
+url = "https://www.pw.live/state-govt-jobs/exams/beltron-deo-notification-2024"
+read = true
+
+[[tests]]
+language = "english"
+layouts = { status = "user_asserted", value = ["qwerty"], note = "Golu" }
+font = { status = "configurable", default = "Arial", note = "not stated; Radha's English exam font" }
+qualification = { status = "user_asserted", value = { min_correct_wpm = 30.0 }, note = "Golu; primary document pending (X-03)" }
+scoring = "correct_wpm_threshold"
+duration_seconds = { status = "configurable", note = "no source; the app runs its practice timer" }
+error_policy = { status = "configurable", note = "how correct words are counted is not verified" }
+backspace = { status = "configurable", note = "not stated" }
+
+[[tests]]
+language = "hindi"
+layouts = { status = "user_asserted", value = ["gail"], note = "Golu: Mangal + Remington Gail (Expert AI calls it 'likely', G-03)" }
+font = { status = "user_asserted", value = "Mangal", note = "Golu" }
+qualification = { status = "user_asserted", value = { min_correct_wpm = 25.0 }, note = "Golu; primary document pending (X-03)" }
+scoring = "correct_wpm_threshold"
+duration_seconds = { status = "configurable", note = "no source; the app runs its practice timer" }
+error_policy = { status = "configurable", note = "how correct words are counted is not verified" }
+backspace = { status = "configurable", note = "not stated" }
+
+[[reference_claims]]
+claim = "DEO CBT and typing notices exist; no single universal typing rule established"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://bsedc.bihar.gov.in/en/letters-and-circulars"
+
+[[reference_claims]]
+claim = "English 30 WPM · Hindi 25 WPM · 10 Min · TCS Pattern · Backspace allowed · Mangal Remington GAIL"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

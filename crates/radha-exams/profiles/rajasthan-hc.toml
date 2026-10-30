@@ -1,0 +1,28 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "rajasthan-hc"
+profile_version = 1
+display_name = "Rajasthan High Court — LDC / JJA"
+body = "High Court of Rajasthan"
+
+[notice]
+title = "LDC / Junior Judicial Assistant — computer typing"
+note = "Primary notification not read in Radha; rules are unknown."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "Historical: computer typing, Hindi Kruti Dev 010"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://hcraj.nic.in/hcraj/hcraj_admin/uploadfile/recruitment/final98.pdf"
+
+[[reference_claims]]
+claim = "English 40+ WPM · Hindi 35+ WPM · Speed + Efficiency · 10 min · Backspace allowed · Kruti Dev 010 · QWERTY"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

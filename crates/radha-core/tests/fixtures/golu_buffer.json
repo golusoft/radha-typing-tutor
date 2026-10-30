@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Engine\\TypingSessionBufferTests.cs",
+    "sha256": "a5faec097f2b98465f341c72b2b47612097f5d63c6515b2e96a8453f88ddd221",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "MultiChar_ProducedText_Appends_All_Units#char",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "\u0915\u093E\u092E", "events": [ { "at_ms": 0, "type": "text", "text": "\u0915\u093E" }, { "at_ms": 0, "type": "text", "text": "\u092E" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Position after first": 2, "IsComplete": true, "CorrectKeystrokes": 3 },
+      "radha_expected": { "outcomes": "ccc", "finished": true, "characters_typed": 3 }
+    },
+    {
+      "name": "MultiChar_ProducedText_Appends_All_Units#akshar",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "RULES 35: Unicode Hindi is matched per akshar, so \u0915\u093E\u092E is 2 units (\u0915\u093E, \u092E), not 3 code points. Speed parity is kept: characters_typed still counts 3 code points.",
+      "input": { "unit": "akshar", "target": "\u0915\u093E\u092E", "events": [ { "at_ms": 0, "type": "text", "text": "\u0915\u093E" }, { "at_ms": 0, "type": "text", "text": "\u092E" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CharStates": 3, "CorrectKeystrokes": 3 },
+      "radha_expected": { "outcomes": "cc", "finished": true, "characters_typed": 3 }
+    },
+    {
+      "name": "ReplacePreviousCount_Rebuilds_The_Cluster",
+      "kind": "session",
+      "tag": "must_match",
+      "reason": "Radha has no composition-replacement API yet (P03); the equivalent is backspace + retype. Only the shared fields are asserted.",
+      "input": { "unit": "char", "target": "\u0916", "events": [ { "at_ms": 0, "type": "text", "text": "\u0915" }, { "at_ms": 0, "type": "backspace" }, { "at_ms": 0, "type": "text", "text": "\u0916" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "FullMistakes after first": 1, "Position": 1, "CorrectKeystrokes": 1, "FullMistakes": 0, "IsComplete": true },
+      "radha_expected": { "cursor": 1, "error_count": 0, "finished": true }
+    },
+    {
+      "name": "Grapheme_Level_Correctness_Is_Per_Unit#char",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "\u0915\u093F", "events": [ { "at_ms": 0, "type": "text", "text": "\u0915\u093F" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CharStates": ["Correct", "Correct"], "IsComplete": true, "CorrectKeystrokes": 2 },
+      "radha_expected": { "outcomes": "cc", "finished": true, "key_states": "CC" }
+    },
+    {
+      "name": "Grapheme_Level_Correctness_Is_Per_Unit#akshar_mid_cluster",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "RULES 35: after \u0915 alone the akshar \u0915\u093F is still being built, so it is pending (no outcome), never wrong and never half-correct. Golu marks the first code point Correct immediately.",
+      "input": { "unit": "akshar", "target": "\u0915\u093F", "events": [ { "at_ms": 0, "type": "text", "text": "\u0915" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CharStates[0]": "Correct" },
+      "radha_expected": { "outcomes": "", "error_count": 0, "key_states": "P", "state": "Active" }
+    },
+    {
+      "name": "Grapheme_Level_Correctness_Is_Per_Unit#akshar_complete",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "RULES 35: \u0915\u093F is one akshar, judged once as one Correct unit; Golu judges 2 code points.",
+      "input": { "unit": "akshar", "target": "\u0915\u093F", "events": [ { "at_ms": 0, "type": "text", "text": "\u0915\u093F" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CharStates": ["Correct", "Correct"], "CorrectKeystrokes": 2 },
+      "radha_expected": { "outcomes": "c", "finished": true, "characters_typed": 2 }
+    },
+    {
+      "name": "Backspace_Removes_Last_Unit",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "abc", "events": [ { "at_ms": 0, "type": "text", "text": "ab" }, { "at_ms": 0, "type": "backspace" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Position": 1, "CharStates[1]": "Pending", "CharStates[0]": "Correct" },
+      "radha_expected": { "cursor": 1, "key_states": "CPP" }
+    },
+    {
+      "name": "Direct_Single_Char_Behaviour_Unchanged",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "hi", "events": [ { "at_ms": 0, "type": "text", "text": "hi" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "IsComplete": true, "TotalKeystrokes": 2, "CorrectKeystrokes": 2 },
+      "radha_expected": { "finished": true, "characters_typed": 2, "outcomes": "cc" }
+    }
+  ]
+}

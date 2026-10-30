@@ -1,0 +1,151 @@
+// DSSSB — LDC / Junior Judicial Assistant (fictional Riverside District Office)
+
+#DSSSB-001 | receiving a departmental file with a diary number
+- Each file that reaches the diary section is given a diary number before anyone reads its contents.
+- The diary register records the number, the date of receipt, the sender and the subject in a single line.
+- The diary number is written on the top right corner of the first page and repeated on the file cover.
+- A file without a covering note is still diarised, and the absence of the note is mentioned in the remarks.
+
+#DSSSB-002 | preparing a government office circular
+- A circular begins with its number, date and a subject line that tells readers at once what it concerns.
+- Instructions in the circular are numbered, so that a reply can refer to a particular point without confusion.
+- The list of offices to which the circular is sent appears at the end, under the signature of the issuing officer.
+- A circular that changes an earlier instruction names the earlier circular and the paragraph being replaced.
+
+#DSSSB-003 | a citizen service application and its status reply
+- When an applicant asks about progress, the clerk first finds the application by its acknowledgement number.
+- The status reply states what has been done, what is still pending and the expected next step.
+- Replies avoid promising a date for a decision that depends on another officer.
+- A copy of every status reply is kept in the application file, so the history can be read in one place.
+
+#DSSSB-004 | a Delhi department meeting record
+- The record of a meeting lists the date, the venue, the officers present and the officers who sent apologies.
+- Each decision is written as a separate numbered item, followed by the name of the officer who will act on it.
+- Discussion is summarised briefly, while decisions are recorded in full and in plain words.
+- The draft record is circulated to members, and corrections received within the given time are included.
+
+#DSSSB-005 | a roster of staff attendance and leave
+- The roster shows each staff member against every working day of the month, with codes for present, leave and tour.
+- Leave entries are made only after the leave has been sanctioned in writing.
+- Half-day leave is marked with its own code, so that the monthly total is calculated correctly.
+- The completed roster is checked against the biometric record before it is sent for salary processing.
+
+#DSSSB-006 | a public works complaint and an action-taken note
+- A complaint about a broken drain or a damaged road is registered with its location described as precisely as possible.
+- The complaint is forwarded to the engineering wing, and the forwarding date is recorded in the register.
+- The action-taken note states what the field staff found, what work was done and on which date.
+- The complainant is informed of the action taken, and the complaint is closed only after that reply is sent.
+
+#DSSSB-007 | verification of school admission records
+- Admission records are checked for the pupil's name, date of birth, class and the name of a parent or guardian.
+- The date of birth in the register is compared with the supporting certificate kept in the admission file.
+- A spelling difference between two documents is noted for correction through the proper procedure.
+- Verified records are initialled by the checking clerk and countersigned by the head of the school office.
+
+#DSSSB-008 | a municipal service request register
+- The register records requests for services such as street lights, sanitation and water connections.
+- Each request is given a running number and the date and time at which it was received.
+- The ward number is entered with every request, so that the field teams can plan their visits by area.
+- At the end of each week, the number of requests received and settled in each ward is totalled.
+
+#DSSSB-009 | a document checklist at a court filing counter
+- The filing clerk checks that a petition carries the correct court fee, the signature of the party and an index.
+- Annexures are counted and matched with the list given in the index before the petition is accepted.
+- Any defect is written on a defect slip, which is handed to the party or the advocate at the counter.
+- An accepted filing receives a filing number, and the date is stamped on every copy.
+
+#DSSSB-010 | preparing a daily cause list summary
+- The cause list summary shows the number of matters listed in each court for the day.
+- Matters are grouped as fresh, after notice, for arguments and for orders.
+- The summary is prepared from the final cause list, not from the draft circulated a day earlier.
+- Any court that does not sit on the day is shown with a short note instead of a blank line.
+
+#DSSSB-011 | a case file index and a pagination check
+- The index of a case file lists every document in order with its date and the page numbers it covers.
+- Pagination starts from the first page of the petition and runs without a gap to the last page.
+- A page inserted later is given a number such as 24A, so that the original sequence is not disturbed.
+- The clerk signs the index after checking that the last page number matches the total page count.
+
+#DSSSB-012 | a summons and notice dispatch register
+- The register records each summons or notice with the case number, the name of the addressee and the mode of service.
+- Notices sent by registered post are entered with the postal receipt number on the same line.
+- The date fixed for the hearing is written in the register so that the return of service can be checked in time.
+- Notices returned unserved are entered again with the reason recorded by the postal or process staff.
+
+#DSSSB-013 | tracking a certified copy application
+- An application for a certified copy is entered with the case number, the documents requested and the fee paid.
+- The copying section records the date on which the copy is prepared and the date on which it is delivered.
+- If the record is not available, the applicant is told the reason and the likely date of availability.
+- The register shows at a glance which applications have waited longer than the usual period.
+
+#DSSSB-014 | courtroom schedule and listing information
+- The listing section publishes the schedule of each court, including the time at which sittings begin.
+- Changes caused by leave or a special sitting are announced on the notice board and on the court website.
+- Advocates are informed of a transfer of matters from one court to another through a separate notice.
+- The schedule is typed in a fixed table so that readers can find a court and its matters quickly.
+
+#DSSSB-015 | receipt of a court order in the registry
+- An order received in the registry is entered with the case number, the date of the order and the court that passed it.
+- The order is placed in the case file and a note of its receipt is made in the order register.
+- Orders that require action by an office, such as issuing a notice, are marked to that section the same day.
+- A certified copy of the order is issued only after the order has been signed and entered.
+
+#DSSSB-016 | judicial office etiquette
+- Court staff speak to litigants and advocates politely, even when the counter is crowded.
+- Information about a case is given only from the official record and never from memory or guesswork.
+- Staff do not comment on the merits of a case, since that belongs to the court alone.
+- Punctual opening of counters and courtrooms is part of the respect owed to everyone who attends.
+
+#DSSSB-017 | document naming and digital record retention
+- Scanned documents are named with the case number, the type of document and the date, in a fixed order.
+- File names avoid spaces and special marks that some systems cannot read correctly.
+- The retention period of each class of records is listed in a schedule that the record keeper follows.
+- Records that reach the end of their retention period are reviewed before any decision is taken about them.
+
+#DSSSB-018 | preparing a formal reply to a legal notice
+- The reply refers to the notice by its date and the name of the advocate who sent it.
+- Each point raised in the notice is answered in the same order, under a matching paragraph number.
+- The reply is approved by the competent officer before it is signed and dispatched.
+- A copy of the reply, with proof of dispatch, is kept on the file for future reference.
+
+#DSSSB-019 | case status information for a litigant
+- A litigant who asks about a case is first asked for the case number and the year of filing.
+- The clerk reads out the stage of the case and the next date of hearing from the electronic register.
+- Litigants are reminded that the online case status service shows the same information.
+- Details of other parties or sealed documents are never disclosed at the counter.
+
+#DSSSB-020 | maintaining confidentiality in court records
+- Files marked confidential are kept in a locked cabinet and issued only on written order.
+- The movement of each confidential file is recorded with the time of issue and the time of return.
+- Staff do not discuss the contents of files outside the office, even with colleagues from other sections.
+- Copies of confidential documents are made only when the court directs it.
+
+#DSSSB-021 | a Delhi public transport service notice
+- The notice announces a change in bus routes or timings and the date from which it applies.
+- Routes are listed by number, with the first and last stops and the main points in between.
+- Alternative arrangements for passengers are described clearly in a separate paragraph.
+- The notice ends with a helpline number and the address of the office that issued it.
+
+#DSSSB-022 | digital governance and online citizen services
+- Online services allow citizens to apply for certificates and track their applications without visiting an office.
+- Each online application receives a reference number that the citizen can use for every later enquiry.
+- Service counters remain open for people who cannot use the online system on their own.
+- Regular reports show how many applications were filed online and how quickly they were settled.
+
+#DSSSB-023 | a spreadsheet report for departmental review
+- The spreadsheet lists each branch with the work received, the work completed and the work pending for the quarter.
+- Formulas calculate the totals and the percentage of completed work, so that no figure is typed by hand.
+- Column headings are kept short and the units are stated in the heading itself.
+- Before the report is shared, a second person checks that every formula refers to the correct cells.
+
+#DSSSB-024 | descriptive writing in an office letter and note
+- An office note sets out the facts of a case, the relevant rule and a clear proposal for decision.
+- An office letter conveys a decision to someone outside the office in polite and direct language.
+- Both the note and the letter use short paragraphs, each dealing with a single point.
+- Dates, amounts and names in the note are checked against the file before it is submitted.
+
+#DSSSB-025 | a post-code configurable typing practice session
+- This practice session does not assume any particular post code; the timer and rules are chosen separately in the app.
+- The passage mixes ordinary office prose with case numbers and dates, which appear in many clerical posts.
+- A candidate can practise at a steady pace and review the number of errors at the end of the session.
+- Rules for a particular post must always be checked in the notice issued for that post code.

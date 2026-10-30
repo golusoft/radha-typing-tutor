@@ -1,0 +1,94 @@
+// ============================================================================
+// CandidateOverlay — optional name and roll number for the scorecard (RS-10)
+// ============================================================================
+//
+// Local only: stored on this PC and printed only on an exported scorecard.
+// Never sent anywhere and never shown as an official registration.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing } from "../theme/metrics.slint";
+import { OverlayPanel } from "../components/overlay_panel.slint";
+import { TextField } from "../components/text_field.slint";
+import { RadhaButton, ButtonVariant } from "../components/button.slint";
+import { UtilityView } from "../data/utility.slint";
+
+export component CandidateOverlay inherits Rectangle {
+    panel := OverlayPanel {
+        width: root.width;
+        height: root.height;
+        max-panel-w: 520px;
+        max-panel-h: 380px;
+        title: "Candidate info";
+        subtitle: "Optional. Kept on this PC and used only on the exported scorecard.";
+        close => {
+            UtilityView.close();
+        }
+
+        VerticalLayout {
+            x: 0px;
+            y: 0px;
+            width: panel.body-w;
+            spacing: Spacing.sm;
+            alignment: start;
+
+            Text {
+                text: "Name";
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                color: Theme.text-tertiary;
+            }
+
+            TextField {
+                width: panel.body-w;
+                text <=> UtilityView.cd-name;
+                placeholder: "Candidate name";
+            }
+
+            Text {
+                text: "Roll number";
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                color: Theme.text-tertiary;
+            }
+
+            TextField {
+                width: panel.body-w;
+                text <=> UtilityView.cd-roll;
+                placeholder: "Optional";
+                mono: true;
+            }
+
+            HorizontalLayout {
+                alignment: start;
+                spacing: Spacing.sm;
+                RadhaButton {
+                    text: "Save";
+                    compact: true;
+                    clicked => {
+                        UtilityView.save-candidate(UtilityView.cd-name, UtilityView.cd-roll);
+                    }
+                }
+
+                RadhaButton {
+                    text: "Clear";
+                    compact: true;
+                    variant: ButtonVariant.Ghost;
+                    clicked => {
+                        UtilityView.clear-candidate();
+                    }
+                }
+            }
+
+            Text {
+                width: panel.body-w;
+                text: UtilityView.cd-status;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                color: Theme.text-secondary;
+                wrap: word-wrap;
+            }
+        }
+    }
+}

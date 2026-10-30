@@ -21,10 +21,25 @@
 
 mod app;
 mod app_state;
+mod audio;
+mod catalog;
+mod contact;
+mod custom;
+mod exam_fonts;
+mod exam_mode;
+mod exercise;
+mod export;
+mod hindi_learn;
 mod logging;
 mod navigation;
+mod passage;
 mod paths;
+mod practice;
+mod recovery;
+mod report;
+mod rhythm;
 mod settings;
+mod typing_rules;
 mod ui;
 
 use std::process::ExitCode;
@@ -90,7 +105,11 @@ fn report_fatal(error: &anyhow::Error) {
     eprintln!("  Reason: {error}");
 
     for (depth, cause) in error.chain().skip(1).enumerate() {
-        eprintln!("  {:>indent$}Caused by: {cause}", "", indent = depth * 2 + 2);
+        eprintln!(
+            "  {:>indent$}Caused by: {cause}",
+            "",
+            indent = depth * 2 + 2
+        );
     }
     eprintln!();
 

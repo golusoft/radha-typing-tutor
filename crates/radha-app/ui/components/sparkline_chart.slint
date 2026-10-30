@@ -1,0 +1,227 @@
+// ============================================================================
+// SparklineChart — small trend card (speed over 7 / 30 days)
+// ============================================================================
+//
+// DESIGN.md Chapter 20.3; look taken from the trend card in
+// design-reference/01-home.html (layout reference only, RULES.MD Rule 26).
+//
+//   Title                         [7D | 30D]
+//   42 WPM
+//   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~●      gradient area + 2 px line + peak dot
+//   footer-left               footer-right (success)
+//
+// The geometry arrives as SVG path commands in a fixed 0 0 360 72 viewbox and is
+// stretched to the chart area (`fit: fill`). Turning session data into those
+// commands is Rust's job (P05), so this component draws and never computes.
+// `peak-x` / `peak-y` are in the same viewbox units.
+//
+// `has-data: false` hides the line, area and dot and shows `empty-text` — the
+// honest empty state, never a fake flat line. Static: no animation.
+// The range toggle only raises `range-requested`; the owner sets `range`.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke } from "../theme/metrics.slint";
+import { SegmentedToggle, SegmentOption } from "segmented_toggle.slint";
+
+export component SparklineChart inherits Rectangle {
+    /// Card title ("Speed trend").
+    in property <string> title;
+    /// Headline figure, already formatted ("42 WPM").
+    in property <string> value-text;
+    /// SVG commands of the line, viewbox 0 0 360 72.
+    in property <string> line-commands;
+    /// SVG commands of the closed area under the line, same viewbox.
+    in property <string> area-commands;
+    /// Peak dot x, in viewbox units (0–360).
+    in property <float> peak-x;
+    /// Peak dot y, in viewbox units (0–72).
+    in property <float> peak-y;
+    /// False shows `empty-text` instead of the chart.
+    in property <bool> has-data: false;
+    /// Message for the empty state.
+    in property <string> empty-text: "No sessions yet";
+    /// Active range: "7d" or "30d" (or an id of `options`).
+    in property <string> range: "7d";
+    /// The toggle's choices; 7D | 30D unless the owner shows other views
+    /// (the Result curve uses WPM | KDPH).
+    in property <[SegmentOption]> options: [
+        { id: "7d", label: "7D", disabled: false },
+        { id: "30d", label: "30D", disabled: false },
+    ];
+    /// Footer text at the left (period, sample size).
+    in property <string> footer-left;
+    /// Footer text at the right, drawn in success (improvement summary).
+    in property <string> footer-right;
+    /// Height of the plot area.
+    in property <length> chart-height: 56px;
+    /// Put the right footer on its own line (narrow charts, where both on
+    /// one line would elide the left one).
+    in property <bool> stacked-footer: false;
+
+    /// The range toggle was clicked. Carries "7d" or "30d".
+    callback range-requested(string);
+
+    border-radius: Radius.lg;
+    background: Theme.bg-sunken;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-soft;
+
+    VerticalLayout {
+        padding: Spacing.lg;
+        spacing: Spacing.sm;
+
+        // --- Header -----------------------------------------------------------
+        HorizontalLayout {
+            spacing: Spacing.sm;
+
+            VerticalLayout {
+                horizontal-stretch: 1;
+                spacing: 1px;
+                alignment: center;
+
+                Text {
+                    text: root.title;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-body-sm;
+                    font-weight: Typography.weight-semibold;
+                    color: Theme.text-primary;
+                    overflow: elide;
+                }
+
+                Text {
+                    text: root.has-data ? root.value-text : "—";
+                    font-family: Typography.family-mono;
+                    font-size: Typography.size-body;
+                    font-weight: Typography.weight-bold;
+                    color: root.has-data ? Theme.primary : Theme.text-disabled;
+                }
+            }
+
+            SegmentedToggle {
+                y: (parent.height - self.height) / 2;
+                compact: true;
+                options: root.options;
+                current: root.range;
+                selected(id) => {
+                    root.range-requested(id);
+                }
+            }
+        }
+
+        // --- Plot -------------------------------------------------------------
+        Rectangle {
+            height: root.chart-height;
+
+            Rectangle {
+                x: 0px;
+                y: parent.height * 0.25;
+                width: parent.width;
+                height: 1px;
+                background: Theme.border-soft;
+            }
+
+            Rectangle {
+                x: 0px;
+                y: parent.height * 0.67;
+                width: parent.width;
+                height: 1px;
+                background: Theme.border-soft;
+            }
+
+            Path {
+                visible: root.has-data;
+                x: 0px;
+                y: 0px;
+                width: parent.width;
+                height: parent.height;
+                commands: root.area-commands;
+                viewbox-width: 360;
+                viewbox-height: 72;
+                fit: fill;
+                fill: @linear-gradient(180deg, Theme.primary.with-alpha(0.22) 0%, Theme.primary.with-alpha(0) 100%);
+            }
+
+            Path {
+                visible: root.has-data;
+                x: 0px;
+                y: 0px;
+                width: parent.width;
+                height: parent.height;
+                commands: root.line-commands;
+                viewbox-width: 360;
+                viewbox-height: 72;
+                fit: fill;
+                fill: transparent;
+                stroke: Theme.primary;
+                stroke-width: 2px;
+                stroke-line-cap: round;
+            }
+
+            Rectangle {
+                visible: root.has-data;
+                x: root.peak-x / 360 * parent.width - 4px;
+                y: root.peak-y / 72 * parent.height - 4px;
+                width: 8px;
+                height: 8px;
+                border-radius: 4px;
+                background: Theme.primary;
+                border-width: 2px;
+                border-color: Theme.bg-surface;
+            }
+
+            Text {
+                visible: !root.has-data;
+                x: 0px;
+                y: 0px;
+                width: parent.width;
+                height: parent.height;
+                text: root.empty-text;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                color: Theme.text-tertiary;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+
+        // --- Footer -----------------------------------------------------------
+        VerticalLayout {
+            spacing: 0px;
+
+            HorizontalLayout {
+                spacing: Spacing.sm;
+
+                Text {
+                    horizontal-stretch: 1;
+                    text: root.footer-left;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-micro;
+                    color: Theme.text-tertiary;
+                    overflow: elide;
+                }
+
+                Text {
+                    text: root.stacked-footer ? "" : root.footer-right;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-micro;
+                    font-weight: Typography.weight-semibold;
+                    color: Theme.success;
+                    horizontal-alignment: right;
+                }
+            }
+
+            // Stacked: the right footer on its own line.
+            Text {
+                visible: root.stacked-footer;
+                height: root.stacked-footer ? Typography.size-micro * 1.6 : 0px;
+                text: root.footer-right;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-micro;
+                font-weight: Typography.weight-semibold;
+                color: Theme.success;
+            }
+        }
+    }
+}

@@ -1,0 +1,1671 @@
+{
+ "schema_version": 1,
+ "layout": "gail",
+ "book": "01_Remington_GAIL_Keyboard_Reference.pdf",
+ "sha256": "f5d48e59f70c66d623503367e1f4c3cbc7e7b8679cb08e8fbd322123ea6ab461",
+ "rows": [
+  {
+   "tc": "GAIL-TC-001",
+   "map": "GAIL-MAP-001",
+   "book_input": "`",
+   "status": "verified",
+   "input": [
+    "`"
+   ],
+   "expect": "़"
+  },
+  {
+   "tc": "GAIL-TC-002",
+   "map": "GAIL-MAP-002",
+   "book_input": "1",
+   "status": "verified",
+   "input": [
+    "1"
+   ],
+   "expect": "1"
+  },
+  {
+   "tc": "GAIL-TC-003",
+   "map": "GAIL-MAP-003",
+   "book_input": "2",
+   "status": "verified",
+   "input": [
+    "2"
+   ],
+   "expect": "2"
+  },
+  {
+   "tc": "GAIL-TC-004",
+   "map": "GAIL-MAP-004",
+   "book_input": "3",
+   "status": "verified",
+   "input": [
+    "3"
+   ],
+   "expect": "3"
+  },
+  {
+   "tc": "GAIL-TC-005",
+   "map": "GAIL-MAP-005",
+   "book_input": "4",
+   "status": "verified",
+   "input": [
+    "4"
+   ],
+   "expect": "4"
+  },
+  {
+   "tc": "GAIL-TC-006",
+   "map": "GAIL-MAP-006",
+   "book_input": "5",
+   "status": "verified",
+   "input": [
+    "5"
+   ],
+   "expect": "5"
+  },
+  {
+   "tc": "GAIL-TC-007",
+   "map": "GAIL-MAP-007",
+   "book_input": "6",
+   "status": "verified",
+   "input": [
+    "6"
+   ],
+   "expect": "6"
+  },
+  {
+   "tc": "GAIL-TC-008",
+   "map": "GAIL-MAP-008",
+   "book_input": "7",
+   "status": "verified",
+   "input": [
+    "7"
+   ],
+   "expect": "7"
+  },
+  {
+   "tc": "GAIL-TC-009",
+   "map": "GAIL-MAP-009",
+   "book_input": "8",
+   "status": "verified",
+   "input": [
+    "8"
+   ],
+   "expect": "8"
+  },
+  {
+   "tc": "GAIL-TC-010",
+   "map": "GAIL-MAP-010",
+   "book_input": "9",
+   "status": "verified",
+   "input": [
+    "9"
+   ],
+   "expect": "9"
+  },
+  {
+   "tc": "GAIL-TC-011",
+   "map": "GAIL-MAP-011",
+   "book_input": "0",
+   "status": "verified",
+   "input": [
+    "0"
+   ],
+   "expect": "0"
+  },
+  {
+   "tc": "GAIL-TC-012",
+   "map": "GAIL-MAP-012",
+   "book_input": "-",
+   "status": "verified",
+   "input": [
+    "-"
+   ],
+   "expect": ";"
+  },
+  {
+   "tc": "GAIL-TC-013",
+   "map": "GAIL-MAP-013",
+   "book_input": "=",
+   "status": "verified",
+   "input": [
+    "="
+   ],
+   "expect": "ृ"
+  },
+  {
+   "tc": "GAIL-TC-014",
+   "map": "GAIL-MAP-014",
+   "book_input": "q",
+   "status": "verified",
+   "input": [
+    "q"
+   ],
+   "expect": "ु"
+  },
+  {
+   "tc": "GAIL-TC-015",
+   "map": "GAIL-MAP-015",
+   "book_input": "w",
+   "status": "verified",
+   "input": [
+    "w"
+   ],
+   "expect": "ू"
+  },
+  {
+   "tc": "GAIL-TC-016",
+   "map": "GAIL-MAP-016",
+   "book_input": "e",
+   "status": "verified",
+   "input": [
+    "e"
+   ],
+   "expect": "म"
+  },
+  {
+   "tc": "GAIL-TC-017",
+   "map": "GAIL-MAP-017",
+   "book_input": "r",
+   "status": "verified",
+   "input": [
+    "r"
+   ],
+   "expect": "त"
+  },
+  {
+   "tc": "GAIL-TC-018",
+   "map": "GAIL-MAP-018",
+   "book_input": "t",
+   "status": "verified",
+   "input": [
+    "t"
+   ],
+   "expect": "ज"
+  },
+  {
+   "tc": "GAIL-TC-019",
+   "map": "GAIL-MAP-019",
+   "book_input": "y",
+   "status": "verified",
+   "input": [
+    "y"
+   ],
+   "expect": "ल"
+  },
+  {
+   "tc": "GAIL-TC-020",
+   "map": "GAIL-MAP-020",
+   "book_input": "u",
+   "status": "verified",
+   "input": [
+    "u"
+   ],
+   "expect": "न"
+  },
+  {
+   "tc": "GAIL-TC-021",
+   "map": "GAIL-MAP-021",
+   "book_input": "i",
+   "status": "verified",
+   "input": [
+    "i"
+   ],
+   "expect": "प"
+  },
+  {
+   "tc": "GAIL-TC-022",
+   "map": "GAIL-MAP-022",
+   "book_input": "o",
+   "status": "verified",
+   "input": [
+    "o"
+   ],
+   "expect": "व"
+  },
+  {
+   "tc": "GAIL-TC-023",
+   "map": "GAIL-MAP-023",
+   "book_input": "p",
+   "status": "verified",
+   "input": [
+    "p"
+   ],
+   "expect": "च"
+  },
+  {
+   "tc": "GAIL-TC-024",
+   "map": "GAIL-MAP-024",
+   "book_input": "[",
+   "status": "verified",
+   "input": [
+    "["
+   ],
+   "expect": "ख्"
+  },
+  {
+   "tc": "GAIL-TC-025",
+   "map": "GAIL-MAP-025",
+   "book_input": "]",
+   "status": "verified",
+   "input": [
+    "]"
+   ],
+   "expect": ","
+  },
+  {
+   "tc": "GAIL-TC-026",
+   "map": "GAIL-MAP-026",
+   "book_input": "\\",
+   "status": "verified",
+   "input": [
+    "\\"
+   ],
+   "expect": "("
+  },
+  {
+   "tc": "GAIL-TC-027",
+   "map": "GAIL-MAP-027",
+   "book_input": "a",
+   "status": "verified",
+   "input": [
+    "a"
+   ],
+   "expect": "ं"
+  },
+  {
+   "tc": "GAIL-TC-028",
+   "map": "GAIL-MAP-028",
+   "book_input": "s",
+   "status": "verified",
+   "input": [
+    "s"
+   ],
+   "expect": "े"
+  },
+  {
+   "tc": "GAIL-TC-029",
+   "map": "GAIL-MAP-029",
+   "book_input": "d",
+   "status": "verified",
+   "input": [
+    "d"
+   ],
+   "expect": "क"
+  },
+  {
+   "tc": "GAIL-TC-030",
+   "map": "GAIL-MAP-030",
+   "book_input": "f",
+   "status": "verified",
+   "input": [
+    "f"
+   ],
+   "expect": "ि"
+  },
+  {
+   "tc": "GAIL-TC-031",
+   "map": "GAIL-MAP-031",
+   "book_input": "g",
+   "status": "verified",
+   "input": [
+    "g"
+   ],
+   "expect": "ह"
+  },
+  {
+   "tc": "GAIL-TC-032",
+   "map": "GAIL-MAP-032",
+   "book_input": "h",
+   "status": "verified",
+   "input": [
+    "h"
+   ],
+   "expect": "ी"
+  },
+  {
+   "tc": "GAIL-TC-033",
+   "map": "GAIL-MAP-033",
+   "book_input": "j",
+   "status": "verified",
+   "input": [
+    "j"
+   ],
+   "expect": "र"
+  },
+  {
+   "tc": "GAIL-TC-034",
+   "map": "GAIL-MAP-034",
+   "book_input": "k",
+   "status": "verified",
+   "input": [
+    "k"
+   ],
+   "expect": "ा"
+  },
+  {
+   "tc": "GAIL-TC-035",
+   "map": "GAIL-MAP-035",
+   "book_input": "l",
+   "status": "verified",
+   "input": [
+    "l"
+   ],
+   "expect": "स"
+  },
+  {
+   "tc": "GAIL-TC-036",
+   "map": "GAIL-MAP-036",
+   "book_input": ";",
+   "status": "verified",
+   "input": [
+    ";"
+   ],
+   "expect": "य"
+  },
+  {
+   "tc": "GAIL-TC-037",
+   "map": "GAIL-MAP-037",
+   "book_input": "'",
+   "status": "verified",
+   "input": [
+    "'"
+   ],
+   "expect": "श्"
+  },
+  {
+   "tc": "GAIL-TC-038",
+   "map": "GAIL-MAP-038",
+   "book_input": "z",
+   "status": "verified",
+   "input": [
+    "z"
+   ],
+   "expect": "्र"
+  },
+  {
+   "tc": "GAIL-TC-039",
+   "map": "GAIL-MAP-039",
+   "book_input": "x",
+   "status": "verified",
+   "input": [
+    "x"
+   ],
+   "expect": "ग"
+  },
+  {
+   "tc": "GAIL-TC-040",
+   "map": "GAIL-MAP-040",
+   "book_input": "c",
+   "status": "verified",
+   "input": [
+    "c"
+   ],
+   "expect": "ब"
+  },
+  {
+   "tc": "GAIL-TC-041",
+   "map": "GAIL-MAP-041",
+   "book_input": "v",
+   "status": "verified",
+   "input": [
+    "v"
+   ],
+   "expect": "अ"
+  },
+  {
+   "tc": "GAIL-TC-042",
+   "map": "GAIL-MAP-042",
+   "book_input": "b",
+   "status": "verified",
+   "input": [
+    "b"
+   ],
+   "expect": "इ"
+  },
+  {
+   "tc": "GAIL-TC-043",
+   "map": "GAIL-MAP-043",
+   "book_input": "n",
+   "status": "verified",
+   "input": [
+    "n"
+   ],
+   "expect": "द"
+  },
+  {
+   "tc": "GAIL-TC-044",
+   "map": "GAIL-MAP-044",
+   "book_input": "m",
+   "status": "verified",
+   "input": [
+    "m"
+   ],
+   "expect": "उ"
+  },
+  {
+   "tc": "GAIL-TC-045",
+   "map": "GAIL-MAP-045",
+   "book_input": ",",
+   "status": "verified",
+   "input": [
+    ","
+   ],
+   "expect": "ए"
+  },
+  {
+   "tc": "GAIL-TC-046",
+   "map": "GAIL-MAP-046",
+   "book_input": ".",
+   "status": "verified",
+   "input": [
+    "."
+   ],
+   "expect": "ण्"
+  },
+  {
+   "tc": "GAIL-TC-047",
+   "map": "GAIL-MAP-047",
+   "book_input": "/",
+   "status": "verified",
+   "input": [
+    "/"
+   ],
+   "expect": "ध्"
+  },
+  {
+   "tc": "GAIL-TC-048",
+   "map": "GAIL-MAP-048",
+   "book_input": "Shift+`",
+   "status": "verified",
+   "input": [
+    "~"
+   ],
+   "expect": "द्य"
+  },
+  {
+   "tc": "GAIL-TC-049",
+   "map": "GAIL-MAP-049",
+   "book_input": "Shift+1",
+   "status": "verified",
+   "input": [
+    "!"
+   ],
+   "expect": "।"
+  },
+  {
+   "tc": "GAIL-TC-050",
+   "map": "GAIL-MAP-050",
+   "book_input": "Shift+2",
+   "status": "verified",
+   "input": [
+    "@"
+   ],
+   "expect": "/"
+  },
+  {
+   "tc": "GAIL-TC-051",
+   "map": "GAIL-MAP-051",
+   "book_input": "Shift+3",
+   "status": "verified",
+   "input": [
+    "#"
+   ],
+   "expect": "ः"
+  },
+  {
+   "tc": "GAIL-TC-052",
+   "map": "GAIL-MAP-052",
+   "book_input": "Shift+4",
+   "status": "verified",
+   "input": [
+    "$"
+   ],
+   "expect": "*"
+  },
+  {
+   "tc": "GAIL-TC-053",
+   "map": "GAIL-MAP-053",
+   "book_input": "Shift+5",
+   "status": "verified",
+   "input": [
+    "%"
+   ],
+   "expect": "-"
+  },
+  {
+   "tc": "GAIL-TC-054",
+   "map": "GAIL-MAP-054",
+   "book_input": "Shift+6",
+   "status": "verified",
+   "input": [
+    "^"
+   ],
+   "expect": "‘"
+  },
+  {
+   "tc": "GAIL-TC-055",
+   "map": "GAIL-MAP-055",
+   "book_input": "Shift+7",
+   "status": "verified",
+   "input": [
+    "&"
+   ],
+   "expect": "’"
+  },
+  {
+   "tc": "GAIL-TC-056",
+   "map": "GAIL-MAP-056",
+   "book_input": "Shift+8",
+   "status": "verified",
+   "input": [
+    "*"
+   ],
+   "expect": "द्ध"
+  },
+  {
+   "tc": "GAIL-TC-057",
+   "map": "GAIL-MAP-057",
+   "book_input": "Shift+9",
+   "status": "verified",
+   "input": [
+    "("
+   ],
+   "expect": "त्र"
+  },
+  {
+   "tc": "GAIL-TC-058",
+   "map": "GAIL-MAP-058",
+   "book_input": "Shift+0",
+   "status": "verified",
+   "input": [
+    ")"
+   ],
+   "expect": "ऋ"
+  },
+  {
+   "tc": "GAIL-TC-059",
+   "map": "GAIL-MAP-059",
+   "book_input": "Shift+-",
+   "status": "verified",
+   "input": [
+    "_"
+   ],
+   "expect": "."
+  },
+  {
+   "tc": "GAIL-TC-060",
+   "map": "GAIL-MAP-060",
+   "book_input": "Shift+=",
+   "status": "verified",
+   "input": [
+    "+"
+   ],
+   "expect": "्"
+  },
+  {
+   "tc": "GAIL-TC-061",
+   "map": "GAIL-MAP-061",
+   "book_input": "Shift+Q",
+   "status": "verified",
+   "input": [
+    "Q"
+   ],
+   "expect": "फ"
+  },
+  {
+   "tc": "GAIL-TC-062",
+   "map": "GAIL-MAP-062",
+   "book_input": "Shift+W",
+   "status": "verified",
+   "input": [
+    "W"
+   ],
+   "expect": "ॅ"
+  },
+  {
+   "tc": "GAIL-TC-063",
+   "map": "GAIL-MAP-063",
+   "book_input": "Shift+E",
+   "status": "verified",
+   "input": [
+    "E"
+   ],
+   "expect": "म्"
+  },
+  {
+   "tc": "GAIL-TC-064",
+   "map": "GAIL-MAP-064",
+   "book_input": "Shift+R",
+   "status": "verified",
+   "input": [
+    "R"
+   ],
+   "expect": "त्"
+  },
+  {
+   "tc": "GAIL-TC-065",
+   "map": "GAIL-MAP-065",
+   "book_input": "Shift+T",
+   "status": "verified",
+   "input": [
+    "T"
+   ],
+   "expect": "ज्"
+  },
+  {
+   "tc": "GAIL-TC-066",
+   "map": "GAIL-MAP-066",
+   "book_input": "Shift+Y",
+   "status": "verified",
+   "input": [
+    "Y"
+   ],
+   "expect": "ल्"
+  },
+  {
+   "tc": "GAIL-TC-067",
+   "map": "GAIL-MAP-067",
+   "book_input": "Shift+U",
+   "status": "verified",
+   "input": [
+    "U"
+   ],
+   "expect": "न्"
+  },
+  {
+   "tc": "GAIL-TC-068",
+   "map": "GAIL-MAP-068",
+   "book_input": "Shift+I",
+   "status": "verified",
+   "input": [
+    "I"
+   ],
+   "expect": "प्"
+  },
+  {
+   "tc": "GAIL-TC-069",
+   "map": "GAIL-MAP-069",
+   "book_input": "Shift+O",
+   "status": "verified",
+   "input": [
+    "O"
+   ],
+   "expect": "व्"
+  },
+  {
+   "tc": "GAIL-TC-070",
+   "map": "GAIL-MAP-070",
+   "book_input": "Shift+P",
+   "status": "verified",
+   "input": [
+    "P"
+   ],
+   "expect": "च्"
+  },
+  {
+   "tc": "GAIL-TC-071",
+   "map": "GAIL-MAP-071",
+   "book_input": "Shift+[",
+   "status": "verified",
+   "input": [
+    "{"
+   ],
+   "expect": "क्ष्"
+  },
+  {
+   "tc": "GAIL-TC-072",
+   "map": "GAIL-MAP-072",
+   "book_input": "Shift+]",
+   "status": "verified",
+   "input": [
+    "}"
+   ],
+   "expect": "द्व"
+  },
+  {
+   "tc": "GAIL-TC-073",
+   "map": "GAIL-MAP-073",
+   "book_input": "Shift+\\",
+   "status": "verified",
+   "input": [
+    "|"
+   ],
+   "expect": ")"
+  },
+  {
+   "tc": "GAIL-TC-074",
+   "map": "GAIL-MAP-074",
+   "book_input": "Shift+A",
+   "status": "verified",
+   "input": [
+    "A"
+   ],
+   "expect": "ा"
+  },
+  {
+   "tc": "GAIL-TC-075",
+   "map": "GAIL-MAP-075",
+   "book_input": "Shift+S",
+   "status": "verified",
+   "input": [
+    "S"
+   ],
+   "expect": "ै"
+  },
+  {
+   "tc": "GAIL-TC-076",
+   "map": "GAIL-MAP-076",
+   "book_input": "Shift+D",
+   "status": "verified",
+   "input": [
+    "D"
+   ],
+   "expect": "क्"
+  },
+  {
+   "tc": "GAIL-TC-077",
+   "map": "GAIL-MAP-077",
+   "book_input": "Shift+F",
+   "status": "verified",
+   "input": [
+    "F"
+   ],
+   "expect": "थ्"
+  },
+  {
+   "tc": "GAIL-TC-078",
+   "map": "GAIL-MAP-078",
+   "book_input": "Shift+G",
+   "status": "verified",
+   "input": [
+    "G"
+   ],
+   "expect": "ळ"
+  },
+  {
+   "tc": "GAIL-TC-079",
+   "map": "GAIL-MAP-079",
+   "book_input": "Shift+H",
+   "status": "verified",
+   "input": [
+    "H"
+   ],
+   "expect": "भ्"
+  },
+  {
+   "tc": "GAIL-TC-080",
+   "map": "GAIL-MAP-080",
+   "book_input": "Shift+J",
+   "status": "verified",
+   "input": [
+    "J"
+   ],
+   "expect": "श्र"
+  },
+  {
+   "tc": "GAIL-TC-081",
+   "map": "GAIL-MAP-081",
+   "book_input": "Shift+K",
+   "status": "verified",
+   "input": [
+    "K"
+   ],
+   "expect": "ज्ञ"
+  },
+  {
+   "tc": "GAIL-TC-082",
+   "map": "GAIL-MAP-082",
+   "book_input": "Shift+L",
+   "status": "verified",
+   "input": [
+    "L"
+   ],
+   "expect": "स्"
+  },
+  {
+   "tc": "GAIL-TC-083",
+   "map": "GAIL-MAP-083",
+   "book_input": "Shift+;",
+   "status": "verified",
+   "input": [
+    ":"
+   ],
+   "expect": "रू"
+  },
+  {
+   "tc": "GAIL-TC-084",
+   "map": "GAIL-MAP-084",
+   "book_input": "Shift+'",
+   "status": "verified",
+   "input": [
+    "\""
+   ],
+   "expect": "ष्"
+  },
+  {
+   "tc": "GAIL-TC-085",
+   "map": "GAIL-MAP-085",
+   "book_input": "Shift+Z",
+   "status": "verified",
+   "input": [
+    "Z"
+   ],
+   "expect": "र्"
+  },
+  {
+   "tc": "GAIL-TC-086",
+   "map": "GAIL-MAP-086",
+   "book_input": "Shift+X",
+   "status": "verified",
+   "input": [
+    "X"
+   ],
+   "expect": "ग्"
+  },
+  {
+   "tc": "GAIL-TC-087",
+   "map": "GAIL-MAP-087",
+   "book_input": "Shift+C",
+   "status": "verified",
+   "input": [
+    "C"
+   ],
+   "expect": "ब्"
+  },
+  {
+   "tc": "GAIL-TC-088",
+   "map": "GAIL-MAP-088",
+   "book_input": "Shift+V",
+   "status": "verified",
+   "input": [
+    "V"
+   ],
+   "expect": "ट"
+  },
+  {
+   "tc": "GAIL-TC-089",
+   "map": "GAIL-MAP-089",
+   "book_input": "Shift+B",
+   "status": "verified",
+   "input": [
+    "B"
+   ],
+   "expect": "ठ"
+  },
+  {
+   "tc": "GAIL-TC-090",
+   "map": "GAIL-MAP-090",
+   "book_input": "Shift+N",
+   "status": "verified",
+   "input": [
+    "N"
+   ],
+   "expect": "छ"
+  },
+  {
+   "tc": "GAIL-TC-091",
+   "map": "GAIL-MAP-091",
+   "book_input": "Shift+M",
+   "status": "verified",
+   "input": [
+    "M"
+   ],
+   "expect": "ड"
+  },
+  {
+   "tc": "GAIL-TC-092",
+   "map": "GAIL-MAP-092",
+   "book_input": "Shift+,",
+   "status": "verified",
+   "input": [
+    "<"
+   ],
+   "expect": "ढ"
+  },
+  {
+   "tc": "GAIL-TC-093",
+   "map": "GAIL-MAP-093",
+   "book_input": "Shift+.",
+   "status": "verified",
+   "input": [
+    ">"
+   ],
+   "expect": "झ"
+  },
+  {
+   "tc": "GAIL-TC-094",
+   "map": "GAIL-MAP-094",
+   "book_input": "Shift+/",
+   "status": "verified",
+   "input": [
+    "?"
+   ],
+   "expect": "घ्"
+  },
+  {
+   "tc": "GAIL-TC-095",
+   "map": "GAIL-MAP-095",
+   "book_input": "Esc then 3",
+   "status": "verified",
+   "input": [
+    "ESC",
+    "3"
+   ],
+   "expect": "-"
+  },
+  {
+   "tc": "GAIL-TC-096",
+   "map": "GAIL-MAP-096",
+   "book_input": "Esc then 4",
+   "status": "verified",
+   "input": [
+    "ESC",
+    "4"
+   ],
+   "expect": "ऋ"
+  },
+  {
+   "tc": "GAIL-TC-097",
+   "map": "GAIL-MAP-097",
+   "book_input": "Esc then 5",
+   "status": "verified",
+   "input": [
+    "ESC",
+    "5"
+   ],
+   "expect": "ृ"
+  },
+  {
+   "tc": "GAIL-TC-098",
+   "map": "GAIL-MAP-098",
+   "book_input": "Esc then 7",
+   "status": "verified",
+   "input": [
+    "ESC",
+    "7"
+   ],
+   "expect": "÷"
+  },
+  {
+   "tc": "GAIL-TC-099",
+   "map": "GAIL-MAP-099",
+   "book_input": "Esc then 8",
+   "status": "verified",
+   "input": [
+    "ESC",
+    "8"
+   ],
+   "expect": "×"
+  },
+  {
+   "tc": "GAIL-TC-100",
+   "map": "GAIL-MAP-100",
+   "book_input": "Esc then I",
+   "status": "verified",
+   "input": [
+    "ESC",
+    "i"
+   ],
+   "expect": "फ़"
+  },
+  {
+   "tc": "GAIL-TC-101",
+   "map": "GAIL-MAP-101",
+   "book_input": "Esc then P",
+   "status": "verified",
+   "input": [
+    "ESC",
+    "p"
+   ],
+   "expect": "ढ़"
+  },
+  {
+   "tc": "GAIL-TC-102",
+   "map": "GAIL-MAP-102",
+   "book_input": "Esc then A",
+   "status": "verified",
+   "input": [
+    "ESC",
+    "a"
+   ],
+   "expect": "ख़"
+  },
+  {
+   "tc": "GAIL-TC-103",
+   "map": "GAIL-MAP-103",
+   "book_input": "Esc then X",
+   "status": "verified",
+   "input": [
+    "ESC",
+    "x"
+   ],
+   "expect": "ग़"
+  },
+  {
+   "tc": "GAIL-TC-104",
+   "map": "GAIL-MAP-104",
+   "book_input": "Esc then C",
+   "status": "verified",
+   "input": [
+    "ESC",
+    "c"
+   ],
+   "expect": "ज़"
+  },
+  {
+   "tc": "GAIL-TC-105",
+   "map": "GAIL-MAP-105",
+   "book_input": "Esc then V",
+   "status": "verified",
+   "input": [
+    "ESC",
+    "v"
+   ],
+   "expect": "!"
+  },
+  {
+   "tc": "GAIL-TC-106",
+   "map": "GAIL-MAP-106",
+   "book_input": "Esc then B",
+   "status": "verified",
+   "input": [
+    "ESC",
+    "b"
+   ],
+   "expect": "*"
+  },
+  {
+   "tc": "GAIL-TC-107",
+   "map": "GAIL-MAP-107",
+   "book_input": "Esc then M",
+   "status": "verified",
+   "input": [
+    "ESC",
+    "m"
+   ],
+   "expect": "ड़"
+  },
+  {
+   "tc": "GAIL-TC-108",
+   "map": "GAIL-MAP-108",
+   "book_input": "AltGr+`",
+   "status": "verified",
+   "input": [
+    "G:`"
+   ],
+   "expect": "‌"
+  },
+  {
+   "tc": "GAIL-TC-109",
+   "map": "GAIL-MAP-109",
+   "book_input": "AltGr+Shift+`",
+   "status": "verified",
+   "input": [
+    "G:~"
+   ],
+   "expect": "‍"
+  },
+  {
+   "tc": "GAIL-TC-110",
+   "map": "GAIL-MAP-110",
+   "book_input": "AltGr+Shift+1",
+   "status": "verified",
+   "input": [
+    "G:!"
+   ],
+   "expect": "ङ"
+  },
+  {
+   "tc": "GAIL-TC-111",
+   "map": "GAIL-MAP-111",
+   "book_input": "AltGr+-",
+   "status": "verified",
+   "input": [
+    "G:-"
+   ],
+   "expect": "ञ"
+  },
+  {
+   "tc": "GAIL-TC-112",
+   "map": "GAIL-MAP-112",
+   "book_input": "AltGr+Q",
+   "status": "verified",
+   "input": [
+    "G:q"
+   ],
+   "expect": "फ्"
+  },
+  {
+   "tc": "GAIL-TC-113",
+   "map": "GAIL-MAP-113",
+   "book_input": "AltGr+W",
+   "status": "verified",
+   "input": [
+    "G:w"
+   ],
+   "expect": "ॄ"
+  },
+  {
+   "tc": "GAIL-TC-114",
+   "map": "GAIL-MAP-114",
+   "book_input": "AltGr+Shift+R",
+   "status": "verified",
+   "input": [
+    "G:R"
+   ],
+   "expect": "त्त्"
+  },
+  {
+   "tc": "GAIL-TC-115",
+   "map": "GAIL-MAP-115",
+   "book_input": "AltGr+Y",
+   "status": "verified",
+   "input": [
+    "G:y"
+   ],
+   "expect": "द्द"
+  },
+  {
+   "tc": "GAIL-TC-116",
+   "map": "GAIL-MAP-116",
+   "book_input": "AltGr+Shift+Y",
+   "status": "verified",
+   "input": [
+    "G:Y"
+   ],
+   "expect": "द्भ"
+  },
+  {
+   "tc": "GAIL-TC-117",
+   "map": "GAIL-MAP-117",
+   "book_input": "AltGr+S",
+   "status": "verified",
+   "input": [
+    "G:s"
+   ],
+   "expect": "भ"
+  },
+  {
+   "tc": "GAIL-TC-118",
+   "map": "GAIL-MAP-118",
+   "book_input": "AltGr+Shift+S",
+   "status": "verified",
+   "input": [
+    "G:S"
+   ],
+   "expect": "ष्ट"
+  },
+  {
+   "tc": "GAIL-TC-119",
+   "map": "GAIL-MAP-119",
+   "book_input": "AltGr+D",
+   "status": "verified",
+   "input": [
+    "G:d"
+   ],
+   "expect": "ध"
+  },
+  {
+   "tc": "GAIL-TC-120",
+   "map": "GAIL-MAP-120",
+   "book_input": "AltGr+Shift+D",
+   "status": "verified",
+   "input": [
+    "G:D"
+   ],
+   "expect": "ष्ठ"
+  },
+  {
+   "tc": "GAIL-TC-121",
+   "map": "GAIL-MAP-121",
+   "book_input": "AltGr+F",
+   "status": "verified",
+   "input": [
+    "G:f"
+   ],
+   "expect": "य्"
+  },
+  {
+   "tc": "GAIL-TC-122",
+   "map": "GAIL-MAP-122",
+   "book_input": "AltGr+B",
+   "status": "verified",
+   "input": [
+    "G:b"
+   ],
+   "expect": "ई"
+  },
+  {
+   "tc": "GAIL-TC-123",
+   "map": "GAIL-MAP-123",
+   "book_input": "AltGr+M",
+   "status": "verified",
+   "input": [
+    "G:m"
+   ],
+   "expect": "ऊ"
+  },
+  {
+   "tc": "GAIL-TC-124",
+   "map": "GAIL-MAP-124",
+   "book_input": "AltGr+Shift+M",
+   "status": "verified",
+   "input": [
+    "G:M"
+   ],
+   "expect": "ड्ड"
+  },
+  {
+   "tc": "GAIL-TC-125",
+   "map": "GAIL-MAP-125",
+   "book_input": "AltGr+Shift+,",
+   "status": "verified",
+   "input": [
+    "G:<"
+   ],
+   "expect": "ढ्ढ"
+  },
+  {
+   "tc": "GAIL-TC-126",
+   "map": "GAIL-MAP-126",
+   "book_input": "v + k",
+   "status": "verified",
+   "input": [
+    "v",
+    "k"
+   ],
+   "expect": "आ"
+  },
+  {
+   "tc": "GAIL-TC-127",
+   "map": "GAIL-MAP-127",
+   "book_input": "b + Shift+Z",
+   "status": "verified",
+   "input": [
+    "b",
+    "Z"
+   ],
+   "expect": "ई"
+  },
+  {
+   "tc": "GAIL-TC-128",
+   "map": "GAIL-MAP-128",
+   "book_input": "m + Shift+Q (or m + q)",
+   "status": "verified",
+   "input": [
+    "m",
+    "Q"
+   ],
+   "expect": "ऊ"
+  },
+  {
+   "tc": "GAIL-TC-129",
+   "map": "GAIL-MAP-129",
+   "book_input": ", + s",
+   "status": "verified",
+   "input": [
+    ",",
+    "s"
+   ],
+   "expect": "ऐ"
+  },
+  {
+   "tc": "GAIL-TC-130",
+   "map": "GAIL-MAP-130",
+   "book_input": ", + Shift+W",
+   "status": "verified",
+   "input": [
+    ",",
+    "W"
+   ],
+   "expect": "ऍ"
+  },
+  {
+   "tc": "GAIL-TC-131",
+   "map": "GAIL-MAP-131",
+   "book_input": "v + k + s",
+   "status": "verified",
+   "input": [
+    "v",
+    "k",
+    "s"
+   ],
+   "expect": "ओ"
+  },
+  {
+   "tc": "GAIL-TC-132",
+   "map": "GAIL-MAP-132",
+   "book_input": "v + k + Shift+S",
+   "status": "verified",
+   "input": [
+    "v",
+    "k",
+    "S"
+   ],
+   "expect": "औ"
+  },
+  {
+   "tc": "GAIL-TC-133",
+   "map": "GAIL-MAP-133",
+   "book_input": "v + k + Shift+W",
+   "status": "verified",
+   "input": [
+    "v",
+    "k",
+    "W"
+   ],
+   "expect": "ऑ"
+  },
+  {
+   "tc": "GAIL-TC-134",
+   "map": "GAIL-MAP-134",
+   "book_input": "k + s",
+   "status": "verified",
+   "input": [
+    "k",
+    "s"
+   ],
+   "expect": "ो"
+  },
+  {
+   "tc": "GAIL-TC-135",
+   "map": "GAIL-MAP-135",
+   "book_input": "k + Shift+S",
+   "status": "verified",
+   "input": [
+    "k",
+    "S"
+   ],
+   "expect": "ौ"
+  },
+  {
+   "tc": "GAIL-TC-136",
+   "map": "GAIL-MAP-136",
+   "book_input": "k + Shift+W",
+   "status": "verified",
+   "input": [
+    "k",
+    "W"
+   ],
+   "expect": "ॉ"
+  },
+  {
+   "tc": "GAIL-TC-137",
+   "map": "GAIL-MAP-137",
+   "book_input": "Shift+W + a",
+   "status": "verified",
+   "input": [
+    "W",
+    "a"
+   ],
+   "expect": "ँ"
+  },
+  {
+   "tc": "GAIL-TC-138",
+   "map": "GAIL-MAP-138",
+   "book_input": "[ + k",
+   "status": "verified",
+   "input": [
+    "[",
+    "k"
+   ],
+   "expect": "ख"
+  },
+  {
+   "tc": "GAIL-TC-139",
+   "map": "GAIL-MAP-139",
+   "book_input": "Shift+/ + k",
+   "status": "verified",
+   "input": [
+    "?",
+    "k"
+   ],
+   "expect": "घ"
+  },
+  {
+   "tc": "GAIL-TC-140",
+   "map": "GAIL-MAP-140",
+   "book_input": ". + k",
+   "status": "verified",
+   "input": [
+    ".",
+    "k"
+   ],
+   "expect": "ण"
+  },
+  {
+   "tc": "GAIL-TC-141",
+   "map": "GAIL-MAP-141",
+   "book_input": "Shift+F + k",
+   "status": "verified",
+   "input": [
+    "F",
+    "k"
+   ],
+   "expect": "थ"
+  },
+  {
+   "tc": "GAIL-TC-142",
+   "map": "GAIL-MAP-142",
+   "book_input": "/ + k",
+   "status": "verified",
+   "input": [
+    "/",
+    "k"
+   ],
+   "expect": "ध"
+  },
+  {
+   "tc": "GAIL-TC-143",
+   "map": "GAIL-MAP-143",
+   "book_input": "Shift+H + k",
+   "status": "verified",
+   "input": [
+    "H",
+    "k"
+   ],
+   "expect": "भ"
+  },
+  {
+   "tc": "GAIL-TC-144",
+   "map": "GAIL-MAP-144",
+   "book_input": "' + k",
+   "status": "verified",
+   "input": [
+    "'",
+    "k"
+   ],
+   "expect": "श"
+  },
+  {
+   "tc": "GAIL-TC-145",
+   "map": "GAIL-MAP-145",
+   "book_input": "Shift+' + k",
+   "status": "verified",
+   "input": [
+    "\"",
+    "k"
+   ],
+   "expect": "ष"
+  },
+  {
+   "tc": "GAIL-TC-146",
+   "map": "GAIL-MAP-146",
+   "book_input": "Shift+[ + k",
+   "status": "verified",
+   "input": [
+    "{",
+    "k"
+   ],
+   "expect": "क्ष"
+  },
+  {
+   "tc": "GAIL-TC-147",
+   "map": "GAIL-MAP-147",
+   "book_input": "j + Shift+Q (or j + q)",
+   "status": "verified",
+   "input": [
+    "j",
+    "Q"
+   ],
+   "expect": "रु"
+  },
+  {
+   "tc": "GAIL-TC-148",
+   "map": "GAIL-MAP-148",
+   "book_input": "f + d",
+   "status": "verified",
+   "input": [
+    "f",
+    "d"
+   ],
+   "expect": "कि"
+  },
+  {
+   "tc": "GAIL-TC-149",
+   "map": "GAIL-MAP-149",
+   "book_input": "f + Shift+L + r",
+   "status": "verified",
+   "input": [
+    "f",
+    "L",
+    "r"
+   ],
+   "expect": "स्ति"
+  },
+  {
+   "tc": "GAIL-TC-150",
+   "map": "GAIL-MAP-150",
+   "book_input": "d + z",
+   "status": "verified",
+   "input": [
+    "d",
+    "z"
+   ],
+   "expect": "क्र"
+  },
+  {
+   "tc": "GAIL-TC-151",
+   "map": "GAIL-MAP-151",
+   "book_input": "Shift+V + z",
+   "status": "verified",
+   "input": [
+    "V",
+    "z"
+   ],
+   "expect": "ट्र"
+  },
+  {
+   "tc": "GAIL-TC-152",
+   "map": "GAIL-MAP-152",
+   "book_input": "g + =",
+   "status": "verified",
+   "input": [
+    "g",
+    "="
+   ],
+   "expect": "हृ"
+  },
+  {
+   "tc": "GAIL-TC-153",
+   "map": "GAIL-MAP-153",
+   "book_input": "n + Shift+= + n",
+   "status": "verified",
+   "input": [
+    "n",
+    "+",
+    "n"
+   ],
+   "expect": "द्द"
+  },
+  {
+   "tc": "GAIL-TC-154",
+   "map": "GAIL-MAP-154",
+   "book_input": "Shift+Q + Shift+=",
+   "status": "verified",
+   "input": [
+    "Q",
+    "+"
+   ],
+   "expect": "फ्"
+  },
+  {
+   "tc": "GAIL-TC-155",
+   "map": "GAIL-MAP-155",
+   "book_input": "Alt+33",
+   "status": "verified",
+   "input": [
+    "ALT:33"
+   ],
+   "expect": "!"
+  },
+  {
+   "tc": "GAIL-TC-156",
+   "map": "GAIL-MAP-156",
+   "book_input": "Alt+43",
+   "status": "verified",
+   "input": [
+    "ALT:43"
+   ],
+   "expect": "+"
+  },
+  {
+   "tc": "GAIL-TC-157",
+   "map": "GAIL-MAP-157",
+   "book_input": "Alt+61",
+   "status": "verified",
+   "input": [
+    "ALT:61"
+   ],
+   "expect": "="
+  },
+  {
+   "tc": "GAIL-TC-158",
+   "map": "GAIL-MAP-158",
+   "book_input": "Alt+63",
+   "status": "verified",
+   "input": [
+    "ALT:63"
+   ],
+   "expect": "?"
+  },
+  {
+   "tc": "GAIL-TC-159",
+   "map": "GAIL-MAP-159",
+   "book_input": "Space",
+   "status": "verified",
+   "input": [
+    " "
+   ],
+   "expect": " "
+  },
+  {
+   "tc": "GAIL-TC-160",
+   "map": "GAIL-MAP-160",
+   "book_input": "Backspace",
+   "status": "verified",
+   "input": [
+    "BS"
+   ],
+   "expect": ""
+  },
+  {
+   "tc": "GAIL-TC-161",
+   "map": "GAIL-MAP-161",
+   "book_input": "Enter",
+   "status": "verified",
+   "input": [
+    "ENTER"
+   ],
+   "expect": "\n"
+  },
+  {
+   "tc": "GAIL-TC-162",
+   "map": "GAIL-MAP-162",
+   "book_input": "Esc then [ / ]",
+   "status": "not_mapped"
+  }
+ ]
+}

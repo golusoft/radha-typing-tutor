@@ -1,0 +1,2527 @@
+{
+  "schema_version": 1,
+  "layout": "krutidev",
+  "value_field": "meaning",
+  "references": [
+    {
+      "id": "mapping_s2",
+      "role": "primary",
+      "path": "docs\\krutidev-cbi-mapping-conversion.md",
+      "region": "section 2 key table (L71-L111)",
+      "sha256": "d28290757430fe3a71c17cdbc8e15f2d237230fbf16f5688ba3eeea640135fc3"
+    },
+    {
+      "id": "complete_ref_devanagari",
+      "role": "secondary",
+      "path": "docs\\HINDI-KEYBOARD-LAYOUTS-COMPLETE-REFERENCE.md",
+      "region": "Layout 5 Devanagari lines",
+      "sha256": "0f43766a24a1ff0d23ba0d9f10276926a5f67762971a3694261ced8cf87ea168"
+    },
+    {
+      "id": "code_keymap",
+      "role": "code",
+      "path": "tools\\content-engine\\krutidev-keymap.js",
+      "region": "KD table",
+      "sha256": "ab1aed7c656168b76c8ea0bfca222c2d1e30412d2fae1f114b710d2c8a0d4396"
+    },
+    {
+      "id": "book",
+      "role": "book",
+      "path": "04_Kruti_Dev_010_Keyboard_Reference.pdf",
+      "region": "Chapter 11 master table / Chapter 23 test suite (single-key rows)",
+      "sha256": "192a3e7f093b7b5e6f2e160efc7424e676ae509961a55c56f8b433a63472871f"
+    }
+  ],
+  "entries": [
+    {
+      "key": "0",
+      "layer": "base",
+      "output": "0",
+      "kind": "digit",
+      "value": "0",
+      "refs": {
+        "mapping_s2": "0",
+        "complete_ref_devanagari": "0",
+        "code_keymap": "0",
+        "book": "0"
+      },
+      "ref_kinds": {
+        "mapping_s2": "digit",
+        "code_keymap": "digit"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "0"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "1",
+      "layer": "base",
+      "output": "1",
+      "kind": "digit",
+      "value": "1",
+      "refs": {
+        "mapping_s2": "1",
+        "complete_ref_devanagari": "1",
+        "code_keymap": "1",
+        "book": "1"
+      },
+      "ref_kinds": {
+        "mapping_s2": "digit",
+        "code_keymap": "digit"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "1"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "2",
+      "layer": "base",
+      "output": "2",
+      "kind": "digit",
+      "value": "2",
+      "refs": {
+        "mapping_s2": "2",
+        "complete_ref_devanagari": "2",
+        "code_keymap": "2",
+        "book": "2"
+      },
+      "ref_kinds": {
+        "mapping_s2": "digit",
+        "code_keymap": "digit"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "2"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "3",
+      "layer": "base",
+      "output": "3",
+      "kind": "digit",
+      "value": "3",
+      "refs": {
+        "mapping_s2": "3",
+        "complete_ref_devanagari": "3",
+        "code_keymap": "3",
+        "book": "3"
+      },
+      "ref_kinds": {
+        "mapping_s2": "digit",
+        "code_keymap": "digit"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "3"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "4",
+      "layer": "base",
+      "output": "4",
+      "kind": "digit",
+      "value": "4",
+      "refs": {
+        "mapping_s2": "4",
+        "complete_ref_devanagari": "4",
+        "code_keymap": "4",
+        "book": "4"
+      },
+      "ref_kinds": {
+        "mapping_s2": "digit",
+        "code_keymap": "digit"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "4"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "5",
+      "layer": "base",
+      "output": "5",
+      "kind": "digit",
+      "value": "5",
+      "refs": {
+        "mapping_s2": "5",
+        "complete_ref_devanagari": "5",
+        "code_keymap": "5",
+        "book": "5"
+      },
+      "ref_kinds": {
+        "mapping_s2": "digit",
+        "code_keymap": "digit"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "5"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "6",
+      "layer": "base",
+      "output": "6",
+      "kind": "digit",
+      "value": "6",
+      "refs": {
+        "mapping_s2": "6",
+        "complete_ref_devanagari": "6",
+        "code_keymap": "6",
+        "book": "6"
+      },
+      "ref_kinds": {
+        "mapping_s2": "digit",
+        "code_keymap": "digit"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "6"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "7",
+      "layer": "base",
+      "output": "7",
+      "kind": "digit",
+      "value": "7",
+      "refs": {
+        "mapping_s2": "7",
+        "complete_ref_devanagari": "7",
+        "code_keymap": "7",
+        "book": "7"
+      },
+      "ref_kinds": {
+        "mapping_s2": "digit",
+        "code_keymap": "digit"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "7"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "8",
+      "layer": "base",
+      "output": "8",
+      "kind": "digit",
+      "value": "8",
+      "refs": {
+        "mapping_s2": "8",
+        "complete_ref_devanagari": "8",
+        "code_keymap": "8",
+        "book": "8"
+      },
+      "ref_kinds": {
+        "mapping_s2": "digit",
+        "code_keymap": "digit"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "8"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "9",
+      "layer": "base",
+      "output": "9",
+      "kind": "digit",
+      "value": "9",
+      "refs": {
+        "mapping_s2": "9",
+        "complete_ref_devanagari": "9",
+        "code_keymap": "9",
+        "book": "9"
+      },
+      "ref_kinds": {
+        "mapping_s2": "digit",
+        "code_keymap": "digit"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "9"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "a",
+      "layer": "base",
+      "output": "a",
+      "kind": "matra",
+      "value": "ं",
+      "refs": {
+        "mapping_s2": "ं",
+        "complete_ref_devanagari": "ं",
+        "code_keymap": "ं",
+        "book": "ं"
+      },
+      "ref_kinds": {
+        "mapping_s2": "matra",
+        "code_keymap": "matra"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "a"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "a",
+      "layer": "shift",
+      "output": "A",
+      "kind": "punctuation",
+      "value": "।",
+      "refs": {
+        "mapping_s2": "।",
+        "complete_ref_devanagari": "।",
+        "code_keymap": "।",
+        "book": "।"
+      },
+      "ref_kinds": {
+        "mapping_s2": "punct",
+        "code_keymap": "punct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "A"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "b",
+      "layer": "base",
+      "output": "b",
+      "kind": "vowel",
+      "value": "इ",
+      "refs": {
+        "mapping_s2": "इ",
+        "complete_ref_devanagari": "इ",
+        "code_keymap": "इ",
+        "book": "इ"
+      },
+      "ref_kinds": {
+        "mapping_s2": "vowel",
+        "code_keymap": "vowel"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "b"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "b",
+      "layer": "shift",
+      "output": "B",
+      "kind": "consonant",
+      "value": "ठ",
+      "refs": {
+        "mapping_s2": "ठ",
+        "complete_ref_devanagari": "ठ",
+        "code_keymap": "ठ",
+        "book": "ठ"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "B"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "`",
+      "layer": "base",
+      "output": "`",
+      "kind": "matra",
+      "value": "ृ",
+      "refs": {
+        "mapping_s2": "ृ",
+        "complete_ref_devanagari": "ृ",
+        "code_keymap": "ृ",
+        "book": "ृ"
+      },
+      "ref_kinds": {
+        "mapping_s2": "matra",
+        "code_keymap": "matra"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "`"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "c",
+      "layer": "base",
+      "output": "c",
+      "kind": "consonant",
+      "value": "ब",
+      "refs": {
+        "mapping_s2": "ब",
+        "complete_ref_devanagari": "ब",
+        "code_keymap": "ब",
+        "book": "ब"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "c"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "c",
+      "layer": "shift",
+      "output": "C",
+      "kind": "half",
+      "value": "ब्",
+      "refs": {
+        "mapping_s2": "ब्",
+        "complete_ref_devanagari": "ब्",
+        "code_keymap": "ब्",
+        "book": "ब्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "C"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "-",
+      "layer": "base",
+      "output": "-",
+      "kind": "punctuation",
+      "value": ".",
+      "refs": {
+        "mapping_s2": ".",
+        "complete_ref_devanagari": ".",
+        "code_keymap": ".",
+        "book": "."
+      },
+      "ref_kinds": {
+        "mapping_s2": "punct",
+        "code_keymap": "punct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "-"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "d",
+      "layer": "base",
+      "output": "d",
+      "kind": "consonant",
+      "value": "क",
+      "refs": {
+        "mapping_s2": "क",
+        "complete_ref_devanagari": "क",
+        "code_keymap": "क",
+        "book": "क"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "d"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "d",
+      "layer": "shift",
+      "output": "D",
+      "kind": "half",
+      "value": "क्",
+      "refs": {
+        "mapping_s2": "क्",
+        "complete_ref_devanagari": "क्",
+        "code_keymap": "क्",
+        "book": "क्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "D"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "=",
+      "layer": "base",
+      "output": "=",
+      "kind": "conjunct",
+      "value": "त्र",
+      "refs": {
+        "mapping_s2": "त्र",
+        "complete_ref_devanagari": "त्र",
+        "code_keymap": "त्र",
+        "book": "त्र"
+      },
+      "ref_kinds": {
+        "mapping_s2": "conj",
+        "code_keymap": "conjunct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "="
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "e",
+      "layer": "base",
+      "output": "e",
+      "kind": "consonant",
+      "value": "म",
+      "refs": {
+        "mapping_s2": "म",
+        "complete_ref_devanagari": "म",
+        "code_keymap": "म",
+        "book": "म"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "e"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "e",
+      "layer": "shift",
+      "output": "E",
+      "kind": "half",
+      "value": "म्",
+      "refs": {
+        "mapping_s2": "म्",
+        "complete_ref_devanagari": "म्",
+        "code_keymap": "म्",
+        "book": "म्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "E"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "[",
+      "layer": "base",
+      "output": "[",
+      "kind": "half",
+      "value": "ख्",
+      "refs": {
+        "mapping_s2": "ख्",
+        "complete_ref_devanagari": "ख्",
+        "code_keymap": "ख्",
+        "book": "ख्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "["
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "f",
+      "layer": "base",
+      "output": "f",
+      "kind": "preposed",
+      "value": "ि",
+      "refs": {
+        "mapping_s2": "ि",
+        "complete_ref_devanagari": "ि",
+        "code_keymap": "ि",
+        "book": "ि"
+      },
+      "ref_kinds": {
+        "mapping_s2": "pre",
+        "code_keymap": "preposed"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "f"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "f",
+      "layer": "shift",
+      "output": "F",
+      "kind": "half",
+      "value": "थ्",
+      "refs": {
+        "mapping_s2": "थ्",
+        "complete_ref_devanagari": "थ्",
+        "code_keymap": "थ्",
+        "book": "थ्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "F"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "]",
+      "layer": "base",
+      "output": "]",
+      "kind": "punctuation",
+      "value": ",",
+      "refs": {
+        "mapping_s2": ",",
+        "complete_ref_devanagari": ",",
+        "code_keymap": ",",
+        "book": ","
+      },
+      "ref_kinds": {
+        "mapping_s2": "punct",
+        "code_keymap": "punct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "]"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "g",
+      "layer": "base",
+      "output": "g",
+      "kind": "consonant",
+      "value": "ह",
+      "refs": {
+        "mapping_s2": "ह",
+        "complete_ref_devanagari": "ह",
+        "code_keymap": "ह",
+        "book": "ह"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "g"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "g",
+      "layer": "shift",
+      "output": "G",
+      "kind": "consonant",
+      "value": "ळ",
+      "refs": {
+        "mapping_s2": "ळ",
+        "complete_ref_devanagari": "ळ",
+        "code_keymap": "ळ",
+        "book": "ळ"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "G"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "\\",
+      "layer": "base",
+      "output": "\\",
+      "kind": "punctuation",
+      "value": "?",
+      "refs": {
+        "mapping_s2": "?",
+        "complete_ref_devanagari": "?",
+        "code_keymap": "?",
+        "book": "?"
+      },
+      "ref_kinds": {
+        "mapping_s2": "punct",
+        "code_keymap": "punct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "\\"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "h",
+      "layer": "base",
+      "output": "h",
+      "kind": "matra",
+      "value": "ी",
+      "refs": {
+        "mapping_s2": "ी",
+        "complete_ref_devanagari": "ी",
+        "code_keymap": "ी",
+        "book": "ी"
+      },
+      "ref_kinds": {
+        "mapping_s2": "matra",
+        "code_keymap": "matra"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "h"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "h",
+      "layer": "shift",
+      "output": "H",
+      "kind": "half",
+      "value": "भ्",
+      "refs": {
+        "mapping_s2": "भ्",
+        "complete_ref_devanagari": "भ्",
+        "code_keymap": "भ्",
+        "book": "भ्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "H"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": ";",
+      "layer": "base",
+      "output": ";",
+      "kind": "consonant",
+      "value": "य",
+      "refs": {
+        "mapping_s2": "य",
+        "complete_ref_devanagari": "य",
+        "code_keymap": "य",
+        "book": "य"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": ";"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "i",
+      "layer": "base",
+      "output": "i",
+      "kind": "consonant",
+      "value": "प",
+      "refs": {
+        "mapping_s2": "प",
+        "complete_ref_devanagari": "प",
+        "code_keymap": "प",
+        "book": "प"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "i"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "i",
+      "layer": "shift",
+      "output": "I",
+      "kind": "half",
+      "value": "प्",
+      "refs": {
+        "mapping_s2": "प्",
+        "complete_ref_devanagari": "प्",
+        "code_keymap": "प्",
+        "book": "प्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "I"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "'",
+      "layer": "base",
+      "output": "'",
+      "kind": "half",
+      "value": "श्",
+      "refs": {
+        "mapping_s2": "श्",
+        "complete_ref_devanagari": "श्",
+        "code_keymap": "श्",
+        "book": "श्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "'"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "j",
+      "layer": "base",
+      "output": "j",
+      "kind": "consonant",
+      "value": "र",
+      "refs": {
+        "mapping_s2": "र",
+        "complete_ref_devanagari": "र",
+        "code_keymap": "र",
+        "book": "र"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "j"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "j",
+      "layer": "shift",
+      "output": "J",
+      "kind": "conjunct",
+      "value": "श्र",
+      "refs": {
+        "mapping_s2": "श्र",
+        "complete_ref_devanagari": "श्र",
+        "code_keymap": "श्र",
+        "book": "श्र"
+      },
+      "ref_kinds": {
+        "mapping_s2": "conj",
+        "code_keymap": "conjunct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "J"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": ",",
+      "layer": "base",
+      "output": ",",
+      "kind": "vowel",
+      "value": "ए",
+      "refs": {
+        "mapping_s2": "ए",
+        "complete_ref_devanagari": "ए",
+        "code_keymap": "ए",
+        "book": "ए"
+      },
+      "ref_kinds": {
+        "mapping_s2": "vowel",
+        "code_keymap": "vowel"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": ","
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "k",
+      "layer": "base",
+      "output": "k",
+      "kind": "completer",
+      "value": "ा",
+      "refs": {
+        "mapping_s2": "ा",
+        "complete_ref_devanagari": "ा",
+        "code_keymap": "ा",
+        "book": "ा"
+      },
+      "ref_kinds": {
+        "mapping_s2": "comp",
+        "code_keymap": "completer"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "k"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "k",
+      "layer": "shift",
+      "output": "K",
+      "kind": "conjunct",
+      "value": "ज्ञ",
+      "refs": {
+        "mapping_s2": "ज्ञ",
+        "complete_ref_devanagari": "ज्ञ",
+        "code_keymap": "ज्ञ",
+        "book": "ज्ञ"
+      },
+      "ref_kinds": {
+        "mapping_s2": "conj",
+        "code_keymap": "conjunct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "K"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": ".",
+      "layer": "base",
+      "output": ".",
+      "kind": "half",
+      "value": "ण्",
+      "refs": {
+        "mapping_s2": "ण्",
+        "complete_ref_devanagari": "ण्",
+        "code_keymap": "ण्",
+        "book": "ण्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "."
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "l",
+      "layer": "base",
+      "output": "l",
+      "kind": "consonant",
+      "value": "स",
+      "refs": {
+        "mapping_s2": "स",
+        "complete_ref_devanagari": "स",
+        "code_keymap": "स",
+        "book": "स"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "l"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "l",
+      "layer": "shift",
+      "output": "L",
+      "kind": "half",
+      "value": "स्",
+      "refs": {
+        "mapping_s2": "स्",
+        "complete_ref_devanagari": "स्",
+        "code_keymap": "स्",
+        "book": "स्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "L"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "/",
+      "layer": "base",
+      "output": "/",
+      "kind": "half",
+      "value": "ध्",
+      "refs": {
+        "mapping_s2": "ध्",
+        "complete_ref_devanagari": "ध्",
+        "code_keymap": "ध्",
+        "book": "ध्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "/"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "m",
+      "layer": "base",
+      "output": "m",
+      "kind": "vowel",
+      "value": "उ",
+      "refs": {
+        "mapping_s2": "उ",
+        "complete_ref_devanagari": "उ",
+        "code_keymap": "उ",
+        "book": "उ"
+      },
+      "ref_kinds": {
+        "mapping_s2": "vowel",
+        "code_keymap": "vowel"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "n"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "majority mapping_s2, complete_ref_devanagari, code_keymap; complete_ref_ascii swaps n/m (L777) against the identity rule (LegacyDevanagariKeyMap.cs)"
+    },
+    {
+      "key": "m",
+      "layer": "shift",
+      "output": "M",
+      "kind": "consonant",
+      "value": "ड",
+      "refs": {
+        "mapping_s2": "ड",
+        "complete_ref_devanagari": "ड",
+        "code_keymap": "ड",
+        "book": "ड"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "M"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "1",
+      "layer": "shift",
+      "output": "!",
+      "kind": "punctuation",
+      "value": "!",
+      "refs": {
+        "mapping_s2": "!",
+        "complete_ref_devanagari": "!",
+        "code_keymap": "!",
+        "book": "!"
+      },
+      "ref_kinds": {
+        "mapping_s2": "punct",
+        "code_keymap": "punct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "!"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "n",
+      "layer": "base",
+      "output": "n",
+      "kind": "consonant",
+      "value": "द",
+      "refs": {
+        "mapping_s2": "द",
+        "complete_ref_devanagari": "द",
+        "code_keymap": "द",
+        "book": "द"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "m"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "majority mapping_s2, complete_ref_devanagari, code_keymap; complete_ref_ascii swaps n/m (L777) against the identity rule (LegacyDevanagariKeyMap.cs)"
+    },
+    {
+      "key": "n",
+      "layer": "shift",
+      "output": "N",
+      "kind": "consonant",
+      "value": "छ",
+      "refs": {
+        "mapping_s2": "छ",
+        "complete_ref_devanagari": "छ",
+        "code_keymap": "छ",
+        "book": "छ"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "N"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "2",
+      "layer": "shift",
+      "output": "@",
+      "kind": "punctuation",
+      "value": "/",
+      "refs": {
+        "mapping_s2": "/",
+        "complete_ref_devanagari": "/",
+        "code_keymap": "/",
+        "book": "/"
+      },
+      "ref_kinds": {
+        "mapping_s2": "punct",
+        "code_keymap": "punct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "@"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "o",
+      "layer": "base",
+      "output": "o",
+      "kind": "consonant",
+      "value": "व",
+      "refs": {
+        "mapping_s2": "व",
+        "complete_ref_devanagari": "व",
+        "code_keymap": "व",
+        "book": "व"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "o"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "o",
+      "layer": "shift",
+      "output": "O",
+      "kind": "half",
+      "value": "व्",
+      "refs": {
+        "mapping_s2": "व्",
+        "complete_ref_devanagari": "व्",
+        "code_keymap": "व्",
+        "book": "व्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "O"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "3",
+      "layer": "shift",
+      "output": "#",
+      "kind": "conjunct",
+      "value": "रु",
+      "refs": {
+        "mapping_s2": "रु",
+        "complete_ref_devanagari": "रु",
+        "code_keymap": "रु",
+        "book": "रु"
+      },
+      "ref_kinds": {
+        "mapping_s2": "conj",
+        "code_keymap": "conjunct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "#"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "p",
+      "layer": "base",
+      "output": "p",
+      "kind": "consonant",
+      "value": "च",
+      "refs": {
+        "mapping_s2": "च",
+        "complete_ref_devanagari": "च",
+        "code_keymap": "च",
+        "book": "च"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "p"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "p",
+      "layer": "shift",
+      "output": "P",
+      "kind": "half",
+      "value": "च्",
+      "refs": {
+        "mapping_s2": "च्",
+        "complete_ref_devanagari": "च्",
+        "code_keymap": "च्",
+        "book": "च्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "P"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "q",
+      "layer": "base",
+      "output": "q",
+      "kind": "matra",
+      "value": "ु",
+      "refs": {
+        "mapping_s2": "ु",
+        "complete_ref_devanagari": "ु",
+        "code_keymap": "ु",
+        "book": "ु"
+      },
+      "ref_kinds": {
+        "mapping_s2": "matra",
+        "code_keymap": "matra"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "q"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "q",
+      "layer": "shift",
+      "output": "Q",
+      "kind": "consonant",
+      "value": "फ",
+      "refs": {
+        "mapping_s2": "फ",
+        "complete_ref_devanagari": "फ",
+        "code_keymap": "फ",
+        "book": "फ"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "Q"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "5",
+      "layer": "shift",
+      "output": "%",
+      "kind": "matra",
+      "value": "ः",
+      "refs": {
+        "mapping_s2": "ः",
+        "complete_ref_devanagari": "ः",
+        "code_keymap": "ः",
+        "book": "ः"
+      },
+      "ref_kinds": {
+        "mapping_s2": "matra",
+        "code_keymap": "matra"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "%"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "r",
+      "layer": "base",
+      "output": "r",
+      "kind": "consonant",
+      "value": "त",
+      "refs": {
+        "mapping_s2": "त",
+        "complete_ref_devanagari": "त",
+        "code_keymap": "त",
+        "book": "त"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "r"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "r",
+      "layer": "shift",
+      "output": "R",
+      "kind": "half",
+      "value": "त्",
+      "refs": {
+        "mapping_s2": "त्",
+        "complete_ref_devanagari": "त्",
+        "code_keymap": "त्",
+        "book": "त्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "R"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "6",
+      "layer": "shift",
+      "output": "^",
+      "kind": "punctuation",
+      "value": "‘",
+      "refs": {
+        "mapping_s2": "‘",
+        "complete_ref_devanagari": "'",
+        "code_keymap": "‘",
+        "book": "‘"
+      },
+      "ref_kinds": {
+        "mapping_s2": "punct",
+        "code_keymap": "punct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "^"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "\"assigned by key order, not proven\" docs\\krutidev-cbi-mapping-conversion.md L311-L313 (quote direction)"
+    },
+    {
+      "key": "s",
+      "layer": "base",
+      "output": "s",
+      "kind": "matra",
+      "value": "े",
+      "refs": {
+        "mapping_s2": "े",
+        "complete_ref_devanagari": "े",
+        "code_keymap": "े",
+        "book": "े"
+      },
+      "ref_kinds": {
+        "mapping_s2": "matra",
+        "code_keymap": "matra"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "s"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "s",
+      "layer": "shift",
+      "output": "S",
+      "kind": "matra",
+      "value": "ै",
+      "refs": {
+        "mapping_s2": "ै",
+        "complete_ref_devanagari": "ै",
+        "code_keymap": "ै",
+        "book": "ै"
+      },
+      "ref_kinds": {
+        "mapping_s2": "matra",
+        "code_keymap": "matra"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "S"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "7",
+      "layer": "shift",
+      "output": "&",
+      "kind": "punctuation",
+      "value": "-",
+      "refs": {
+        "mapping_s2": "-",
+        "complete_ref_devanagari": "-",
+        "code_keymap": "-",
+        "book": "-"
+      },
+      "ref_kinds": {
+        "mapping_s2": "punct",
+        "code_keymap": "punct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "&"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "t",
+      "layer": "base",
+      "output": "t",
+      "kind": "consonant",
+      "value": "ज",
+      "refs": {
+        "mapping_s2": "ज",
+        "complete_ref_devanagari": "ज",
+        "code_keymap": "ज",
+        "book": "ज"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "t"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "t",
+      "layer": "shift",
+      "output": "T",
+      "kind": "half",
+      "value": "ज्",
+      "refs": {
+        "mapping_s2": "ज्",
+        "complete_ref_devanagari": "ज्",
+        "code_keymap": "ज्",
+        "book": "ज्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "T"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "8",
+      "layer": "shift",
+      "output": "*",
+      "kind": "punctuation",
+      "value": "’",
+      "refs": {
+        "mapping_s2": "’",
+        "complete_ref_devanagari": "'",
+        "code_keymap": "’",
+        "book": "’"
+      },
+      "ref_kinds": {
+        "mapping_s2": "punct",
+        "code_keymap": "punct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "*"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "\"assigned by key order, not proven\" docs\\krutidev-cbi-mapping-conversion.md L311-L313 (quote direction)"
+    },
+    {
+      "key": "u",
+      "layer": "base",
+      "output": "u",
+      "kind": "consonant",
+      "value": "न",
+      "refs": {
+        "mapping_s2": "न",
+        "complete_ref_devanagari": "न",
+        "code_keymap": "न",
+        "book": "न"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "u"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "u",
+      "layer": "shift",
+      "output": "U",
+      "kind": "half",
+      "value": "न्",
+      "refs": {
+        "mapping_s2": "न्",
+        "complete_ref_devanagari": "न्",
+        "code_keymap": "न्",
+        "book": "न्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "U"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "9",
+      "layer": "shift",
+      "output": "(",
+      "kind": "punctuation",
+      "value": ";",
+      "refs": {
+        "mapping_s2": ";",
+        "complete_ref_devanagari": ";",
+        "code_keymap": ";",
+        "book": ";"
+      },
+      "ref_kinds": {
+        "mapping_s2": "punct",
+        "code_keymap": "punct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "("
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "v",
+      "layer": "base",
+      "output": "v",
+      "kind": "vowel",
+      "value": "अ",
+      "refs": {
+        "mapping_s2": "अ",
+        "complete_ref_devanagari": "अ",
+        "code_keymap": "अ",
+        "book": "अ"
+      },
+      "ref_kinds": {
+        "mapping_s2": "vowel",
+        "code_keymap": "vowel"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "v"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "v",
+      "layer": "shift",
+      "output": "V",
+      "kind": "consonant",
+      "value": "ट",
+      "refs": {
+        "mapping_s2": "ट",
+        "complete_ref_devanagari": "ट",
+        "code_keymap": "ट",
+        "book": "ट"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "V"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "0",
+      "layer": "shift",
+      "output": ")",
+      "kind": "conjunct",
+      "value": "द्ध",
+      "refs": {
+        "mapping_s2": "द्ध",
+        "complete_ref_devanagari": "द्ध",
+        "code_keymap": "द्ध",
+        "book": "द्ध"
+      },
+      "ref_kinds": {
+        "mapping_s2": "conj",
+        "code_keymap": "conjunct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": ")"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "w",
+      "layer": "base",
+      "output": "w",
+      "kind": "matra",
+      "value": "ू",
+      "refs": {
+        "mapping_s2": "ू",
+        "complete_ref_devanagari": "ू",
+        "code_keymap": "ू",
+        "book": "ू"
+      },
+      "ref_kinds": {
+        "mapping_s2": "matra",
+        "code_keymap": "matra"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "w"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "w",
+      "layer": "shift",
+      "output": "W",
+      "kind": "matra",
+      "value": "ॅ",
+      "refs": {
+        "mapping_s2": "ॅ",
+        "complete_ref_devanagari": "ॅ",
+        "code_keymap": "ॅ",
+        "book": "ॅ"
+      },
+      "ref_kinds": {
+        "mapping_s2": "matra",
+        "code_keymap": "matra"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "W"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "-",
+      "layer": "shift",
+      "output": "_",
+      "kind": "vowel",
+      "value": "ऋ",
+      "refs": {
+        "mapping_s2": "ऋ",
+        "complete_ref_devanagari": "ऋ",
+        "code_keymap": "ऋ",
+        "book": "ऋ"
+      },
+      "ref_kinds": {
+        "mapping_s2": "vowel",
+        "code_keymap": "vowel"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "_"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "x",
+      "layer": "base",
+      "output": "x",
+      "kind": "consonant",
+      "value": "ग",
+      "refs": {
+        "mapping_s2": "ग",
+        "complete_ref_devanagari": "ग",
+        "code_keymap": "ग",
+        "book": "ग"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "x"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "x",
+      "layer": "shift",
+      "output": "X",
+      "kind": "half",
+      "value": "ग्",
+      "refs": {
+        "mapping_s2": "ग्",
+        "complete_ref_devanagari": "ग्",
+        "code_keymap": "ग्",
+        "book": "ग्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "X"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "=",
+      "layer": "shift",
+      "output": "+",
+      "kind": "nukta",
+      "value": "़",
+      "refs": {
+        "mapping_s2": "़",
+        "complete_ref_devanagari": "़",
+        "code_keymap": "़",
+        "book": "़"
+      },
+      "ref_kinds": {
+        "mapping_s2": "nukta",
+        "code_keymap": "nukta"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "+"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "y",
+      "layer": "base",
+      "output": "y",
+      "kind": "consonant",
+      "value": "ल",
+      "refs": {
+        "mapping_s2": "ल",
+        "complete_ref_devanagari": "ल",
+        "code_keymap": "ल",
+        "book": "ल"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "y"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "y",
+      "layer": "shift",
+      "output": "Y",
+      "kind": "half",
+      "value": "ल्",
+      "refs": {
+        "mapping_s2": "ल्",
+        "complete_ref_devanagari": "ल्",
+        "code_keymap": "ल्",
+        "book": "ल्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "Y"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "[",
+      "layer": "shift",
+      "output": "{",
+      "kind": "half",
+      "value": "क्ष्",
+      "refs": {
+        "mapping_s2": "क्ष्",
+        "complete_ref_devanagari": "क्ष्",
+        "code_keymap": "क्ष्",
+        "book": "क्ष्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "{"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "z",
+      "layer": "base",
+      "output": "z",
+      "kind": "rakar",
+      "value": "्र",
+      "refs": {
+        "mapping_s2": "्र",
+        "complete_ref_devanagari": "्र",
+        "code_keymap": "्र",
+        "book": "्र"
+      },
+      "ref_kinds": {
+        "mapping_s2": "rakar",
+        "code_keymap": "rakar"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "z"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "z",
+      "layer": "shift",
+      "output": "Z",
+      "kind": "reph",
+      "value": "र्",
+      "refs": {
+        "mapping_s2": "र्",
+        "complete_ref_devanagari": "र्",
+        "code_keymap": "र्",
+        "book": "र्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "reph",
+        "code_keymap": "reph"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "Z"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "]",
+      "layer": "shift",
+      "output": "}",
+      "kind": "conjunct",
+      "value": "द्व",
+      "refs": {
+        "mapping_s2": "द्व",
+        "complete_ref_devanagari": "द्व",
+        "code_keymap": "द्व",
+        "book": "द्व"
+      },
+      "ref_kinds": {
+        "mapping_s2": "conj",
+        "code_keymap": "conjunct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "}"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "\\",
+      "layer": "shift",
+      "output": "|",
+      "kind": "conjunct",
+      "value": "द्य",
+      "refs": {
+        "mapping_s2": "द्य",
+        "complete_ref_devanagari": "द्य",
+        "code_keymap": "द्य",
+        "book": "द्य"
+      },
+      "ref_kinds": {
+        "mapping_s2": "conj",
+        "code_keymap": "conjunct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "|"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": ";",
+      "layer": "shift",
+      "output": ":",
+      "kind": "conjunct",
+      "value": "रू",
+      "refs": {
+        "mapping_s2": "रू",
+        "complete_ref_devanagari": "रू",
+        "code_keymap": "रू",
+        "book": "रू"
+      },
+      "ref_kinds": {
+        "mapping_s2": "conj",
+        "code_keymap": "conjunct"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": ":"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "'",
+      "layer": "shift",
+      "output": "\"",
+      "kind": "half",
+      "value": "ष्",
+      "refs": {
+        "mapping_s2": "ष्",
+        "complete_ref_devanagari": "ष्",
+        "code_keymap": "ष्",
+        "book": "ष्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "\""
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": ",",
+      "layer": "shift",
+      "output": "<",
+      "kind": "consonant",
+      "value": "ढ",
+      "refs": {
+        "mapping_s2": "ढ",
+        "complete_ref_devanagari": "ष",
+        "code_keymap": "ढ",
+        "book": "ढ"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "<"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "majority mapping_s2, code_keymap"
+    },
+    {
+      "key": ".",
+      "layer": "shift",
+      "output": ">",
+      "kind": "consonant",
+      "value": "झ",
+      "refs": {
+        "mapping_s2": "झ",
+        "complete_ref_devanagari": "ढ",
+        "code_keymap": "झ",
+        "book": "झ"
+      },
+      "ref_kinds": {
+        "mapping_s2": "cons",
+        "code_keymap": "consonant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": ">"
+      },
+      "flags": {
+        "conflict": true,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": "majority mapping_s2, code_keymap"
+    },
+    {
+      "key": "/",
+      "layer": "shift",
+      "output": "?",
+      "kind": "half",
+      "value": "घ्",
+      "refs": {
+        "mapping_s2": "घ्",
+        "complete_ref_devanagari": "घ्",
+        "code_keymap": "घ्",
+        "book": "घ्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "half",
+        "code_keymap": "half"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "?"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    },
+    {
+      "key": "`",
+      "layer": "shift",
+      "output": "~",
+      "kind": "halant",
+      "value": "्",
+      "refs": {
+        "mapping_s2": "्",
+        "complete_ref_devanagari": "्",
+        "code_keymap": "्",
+        "book": "्"
+      },
+      "ref_kinds": {
+        "mapping_s2": "halant",
+        "code_keymap": "halant"
+      },
+      "ascii_refs": {
+        "complete_ref_ascii": "~"
+      },
+      "flags": {
+        "conflict": false,
+        "unverified": false,
+        "primary_missing": false
+      },
+      "evidence": ""
+    }
+  ],
+  "summary": {
+    "entries": 93,
+    "no_flag": 87,
+    "conflict": 6,
+    "unverified": 0,
+    "primary_missing": 0
+  },
+  "alt_codes": [
+    131,
+    132,
+    133,
+    134,
+    135,
+    136,
+    137,
+    138,
+    139,
+    150,
+    151,
+    153,
+    161,
+    165,
+    170,
+    171,
+    179,
+    182,
+    183,
+    184,
+    188,
+    189,
+    190,
+    191,
+    192,
+    193,
+    197,
+    198,
+    199,
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    209,
+    210,
+    211,
+    212,
+    214,
+    216,
+    217,
+    221,
+    222,
+    223,
+    224,
+    225,
+    226,
+    227,
+    228,
+    229,
+    230,
+    231,
+    233,
+    241,
+    244
+  ],
+  "unresolved": [
+    "ॐ",
+    "₹",
+    "*"
+  ]
+}

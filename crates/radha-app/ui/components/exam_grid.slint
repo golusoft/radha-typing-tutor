@@ -1,0 +1,75 @@
+// ============================================================================
+// ExamGrid — the Exam Hub's wrapping card grid
+// ============================================================================
+//
+// Unlike ProductGrid (always one row of three), the Hub shows up to 21 filtered
+// cards, so it must wrap. Slint has no auto-wrap, so cards are placed at computed
+// x / y positions.
+//
+// Why absolute positioning and not a GridLayout
+// ---------------------------------------------
+// A first version used a GridLayout with an explicit width on every card. A layout
+// feeds its children's sizes back into its own minimum size, and the card width was
+// itself computed from the window width, so the page's minimum width became "the
+// width the cards were given" - a self-confirming loop. The Home screen then laid
+// itself out at ~1650 px inside a 1024 px window and clipped the right-hand columns.
+//
+// Plain positioned elements with explicit width AND height contribute nothing to
+// any layout's minimum size, so the loop cannot form. The grid's own size is
+// computed from its two inputs (`grid-width`, `columns`) and the number of cards.
+//
+// Card height is fixed (see `card-height`); ExamCard is built to fit it at the
+// narrowest card width the layout produces (about 290 px).
+// ============================================================================
+
+import { ExamEntry } from "../data/exams.slint";
+import { Accents } from "../data/products.slint";
+import { ExamCard } from "exam_card.slint";
+import { Spacing } from "../theme/metrics.slint";
+
+export component ExamGrid inherits Rectangle {
+    in property <[ExamEntry]> exams;
+    /// Total width available to the grid, computed by the caller from the window.
+    in property <length> grid-width;
+    in property <int> columns: 3;
+
+    /// A launch button was pressed. Carries the exam id and "eng" / "hin".
+    callback launch-requested(string, string);
+
+    private property <length> gap: Spacing.lg;
+    private property <length> card-height: 352px;
+    private property <length> card-width:
+        (root.grid-width - root.gap * (root.columns - 1)) / root.columns;
+    private property <int> rows: Math.ceil(root.exams.length / root.columns);
+
+    background: transparent;
+    width: root.grid-width;
+    height: root.rows > 0
+        ? root.rows * root.card-height + (root.rows - 1) * root.gap
+        : 0px;
+
+    for exam[i] in root.exams: ExamCard {
+        x: Math.mod(i, root.columns) * (root.card-width + root.gap);
+        y: Math.floor(i / root.columns) * (root.card-height + root.gap);
+        width: root.card-width;
+        height: root.card-height;
+
+        crest: exam.crest;
+        dept: exam.dept;
+        tag: exam.tag;
+        title: exam.title;
+        org: exam.org;
+        description: exam.description;
+        eng-speed: exam.eng-speed;
+        hin-speed: exam.hin-speed;
+        font-layout: exam.font-layout;
+        rule: exam.rule;
+        level: exam.level;
+        hindi-only: exam.hindi-only;
+        accent: Accents.resolve(exam.accent);
+
+        launch-requested(language) => {
+            root.launch-requested(exam.id, language);
+        }
+    }
+}

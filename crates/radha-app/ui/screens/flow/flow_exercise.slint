@@ -1,0 +1,783 @@
+// ============================================================================
+// FlowExerciseScreen — Typing Flow chooser + timer (DESIGN 8.3, FL-04)
+// ============================================================================
+//
+//   ← Home   TRACK 02 · Typing Flow                          100 exercises  ☀
+//   ┌ search ─────────────────────┐ [All|Easy|Medium|Hard]  ┌ SELECTED FLOW ─┐
+//   (All chapters) (Chapter 1 · 10) (Chapter 2 · 10) …       │ title, level   │
+//   ┌ card ┐ ┌ card ┐ ┌ card ┐   virtualised grid           │ your rhythm    │
+//   │ EX-01 · title · chapter · Smooth 94% · best 97%│      │ DURATION       │
+//   …                                                        │ BEGIN FLOW     │
+//
+// The grid is the shared ExerciseView window: Rust sends only the visible
+// cards (RULES.MD Rule 34), filters by search, level band and chapter, and
+// decides the selection, the timer and START. The screen draws and asks.
+// Geometry comes from the screen size only.
+// ============================================================================
+
+import { ScrollView } from "std-widgets.slint";
+import { Theme } from "../../theme/palette.slint";
+import { Typography } from "../../theme/typography.slint";
+import { Spacing, Radius, Stroke, Motion, WindowMetrics } from "../../theme/metrics.slint";
+import { AppHeader } from "../../components/app_header.slint";
+import { RadhaButton, ButtonVariant } from "../../components/button.slint";
+import { SegmentedToggle } from "../../components/segmented_toggle.slint";
+import { SearchField } from "../../components/search_field.slint";
+import { FilterPill } from "../../components/filter_pill.slint";
+import { ChoiceChip } from "../../components/choice_chip.slint";
+import { RadhaBadge, BadgeTone } from "../../components/badge.slint";
+import { ThemeToggle } from "../../components/theme_toggle.slint";
+import { ExerciseView, ExerciseCard } from "../../data/practice.slint";
+import { FlowView } from "../../data/flow.slint";
+
+component Eyebrow inherits Text {
+    font-family: Typography.family-ui;
+    font-size: Typography.size-micro;
+    font-weight: Typography.weight-semibold;
+    letter-spacing: Typography.tracking-wide;
+    color: Theme.text-tertiary;
+    overflow: elide;
+}
+
+// One flow in the grid. `w` / `h` come from the screen.
+component FlowCard inherits Rectangle {
+    in property <ExerciseCard> card;
+    in property <length> w;
+    in property <length> h;
+
+    callback activated();
+
+    private property <length> inner: root.w - 2 * Spacing.md;
+    private property <bool> rated: root.card.rhythm != "—";
+
+    width: root.w;
+    height: root.h;
+    border-radius: Radius.lg;
+    background: root.card.selected ? Theme.accent-subtle
+        : (touch.has-hover ? Theme.bg-raised : Theme.bg-surface);
+    border-width: root.card.selected || focus.has-focus ? Stroke.thick : Stroke.hairline;
+    border-color: root.card.selected ? Theme.accent
+        : focus.has-focus ? Theme.accent-light
+        : (touch.has-hover ? Theme.border-strong : Theme.border-soft);
+    animate background { duration: Motion.fast; }
+
+    // Code chip.
+    Rectangle {
+        x: Spacing.md;
+        y: Spacing.md;
+        width: 54px;
+        height: 20px;
+        border-radius: Radius.sm;
+        background: root.card.selected ? Theme.accent : Theme.bg-sunken;
+        Text {
+            text: root.card.code;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-micro;
+            font-weight: Typography.weight-bold;
+            color: root.card.selected ? Theme.text-on-primary : Theme.accent;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+
+    // Level dots.
+    for d in 5: Rectangle {
+        x: Spacing.md + 62px + d * 9px;
+        y: Spacing.md + 7px;
+        width: 6px;
+        height: 6px;
+        border-radius: 3px;
+        background: d < root.card.level ? Theme.accent : Theme.border-soft;
+    }
+
+    Text {
+        x: Spacing.md + 62px + 48px;
+        y: Spacing.md;
+        width: root.inner - 62px - 48px - 26px;
+        height: 20px;
+        text: root.card.length;
+        font-family: Typography.family-mono;
+        font-size: Typography.size-micro;
+        color: Theme.text-tertiary;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+
+    if root.card.completed: Rectangle {
+        x: root.w - Spacing.md - 20px;
+        y: Spacing.md;
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        background: Theme.success-subtle;
+        Text {
+            text: "✓";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            font-weight: Typography.weight-bold;
+            color: Theme.success;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+
+    Text {
+        x: Spacing.md;
+        y: Spacing.md + 28px;
+        width: root.inner;
+        text: root.card.title;
+        font-family: Typography.family-ui;
+        font-size: Typography.size-body;
+        font-weight: Typography.weight-semibold;
+        color: Theme.text-primary;
+        overflow: elide;
+    }
+
+    Text {
+        x: Spacing.md;
+        y: Spacing.md + 52px;
+        width: root.inner;
+        text: root.card.category + (root.card.targets != "" ? "  ·  " + root.card.targets : "");
+        font-family: Typography.family-ui;
+        font-size: Typography.size-caption;
+        color: Theme.text-tertiary;
+        overflow: elide;
+    }
+
+    // Rhythm and speed history (real data or a dash).
+    Rectangle {
+        x: Spacing.md;
+        y: root.h - Spacing.md - 26px;
+        width: root.inner;
+        height: 26px;
+        border-radius: Radius.sm;
+        background: root.rated ? Theme.accent-subtle : Theme.bg-sunken;
+
+        Text {
+            x: Spacing.sm;
+            width: parent.width * 0.55 - Spacing.sm;
+            height: parent.height;
+            text: root.rated ? root.card.rhythm : "— no rhythm yet";
+            font-family: Typography.family-mono;
+            font-size: Typography.size-micro;
+            font-weight: root.rated ? Typography.weight-semibold : Typography.weight-regular;
+            color: root.rated ? Theme.accent : Theme.text-disabled;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+
+        Text {
+            x: parent.width * 0.55;
+            width: parent.width * 0.45 - Spacing.sm;
+            height: parent.height;
+            text: root.card.best == "" ? "—" : root.card.best;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-micro;
+            color: root.card.best == "" ? Theme.text-disabled : Theme.success;
+            horizontal-alignment: right;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+    }
+
+    focus := FocusScope {
+        key-pressed(event) => {
+            if (event.text == " " || event.text == "\n") {
+                root.activated();
+                return EventResult.accept;
+            }
+            return EventResult.reject;
+        }
+    }
+
+    touch := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => {
+            focus.focus();
+            root.activated();
+        }
+    }
+}
+
+export component FlowExerciseScreen inherits Rectangle {
+    callback back-requested();
+    callback theme-toggle-requested();
+
+    // --- Geometry (outside-in, from the screen size) -----------------------
+    property <length> pad: root.width < 1100px ? Spacing.lg : Spacing.xl;
+    property <length> header-h: 64px;
+    property <length> gap: Spacing.md;
+    property <length> body-w: Math.min(root.width, WindowMetrics.content-max-width) - 2 * root.pad;
+    property <length> body-x: (root.width - root.body-w) / 2;
+    property <length> body-y: root.header-h + Spacing.lg;
+    property <length> body-h: root.height - root.body-y - root.pad;
+    property <length> side-w: Math.max(320px, Math.min(400px, root.body-w * 0.34));
+    property <length> main-w: root.body-w - Spacing.lg - root.side-w;
+    property <length> toolbar-h: 36px;
+    property <length> pills-h: 30px;
+    property <length> grid-y: root.toolbar-h + Spacing.md + root.pills-h + Spacing.sm + 18px;
+    property <length> grid-h: root.body-h - root.grid-y;
+    property <length> scrollbar: 14px;
+    property <int> columns: root.main-w >= 900px ? 3 : (root.main-w >= 520px ? 2 : 1);
+    property <length> card-w: (root.main-w - root.scrollbar - (root.columns - 1) * root.gap) / root.columns;
+    property <length> difficulty-w: 252px;
+    property <length> search-w: root.main-w - root.difficulty-w - Spacing.sm;
+    property <length> side-inner: root.side-w - 2 * Spacing.lg;
+    property <length> chip-w: (root.side-inner - 4 * 6px) / 5;
+
+    property <int> scroll-token: ExerciseView.scroll-token;
+    changed scroll-token => {
+        grid.content-y = 0px;
+        root.report-grid();
+    }
+    changed columns => {
+        root.report-grid();
+    }
+    changed grid-h => {
+        root.report-grid();
+    }
+    changed visible => {
+        root.report-grid();
+    }
+
+    function report-grid() {
+        if (root.visible) {
+            ExerciseView.grid-scrolled(root.columns, root.grid-h, -grid.content-y);
+        }
+    }
+
+    background: Theme.bg-base;
+
+    // =====================================================================
+    // Header
+    // =====================================================================
+    AppHeader {
+        x: 0px;
+        y: 0px;
+        width: root.width;
+        height: root.header-h;
+        content-padding: root.pad;
+
+        VerticalLayout {
+            alignment: center;
+            RadhaButton {
+                text: "← Home";
+                variant: ButtonVariant.Ghost;
+                compact: true;
+                clicked => {
+                    root.back-requested();
+                }
+            }
+        }
+
+        VerticalLayout {
+            alignment: center;
+            spacing: Spacing.xxs;
+            horizontal-stretch: 1;
+            min-width: 120px;
+
+            Eyebrow {
+                text: "TRACK 02 · RHYTHM ENGINE";
+                color: Theme.accent;
+            }
+
+            Text {
+                text: "Typing Flow · choose a flow";
+                font-family: Typography.family-ui;
+                font-size: Typography.size-h3;
+                font-weight: Typography.weight-bold;
+                color: Theme.text-primary;
+                overflow: elide;
+            }
+        }
+
+        VerticalLayout {
+            alignment: center;
+            Text {
+                text: ExerciseView.count-text;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                color: Theme.text-tertiary;
+                overflow: elide;
+            }
+        }
+
+        VerticalLayout {
+            alignment: center;
+            ThemeToggle {
+                toggle-requested => {
+                    root.theme-toggle-requested();
+                }
+            }
+        }
+    }
+
+    // =====================================================================
+    // Left: search, level, chapters, the grid
+    // =====================================================================
+    Rectangle {
+        x: root.body-x;
+        y: root.body-y;
+        width: root.main-w;
+        height: root.body-h;
+
+        SearchField {
+            x: 0px;
+            y: 0px;
+            width: root.search-w;
+            text <=> ExerciseView.search-text;
+            placeholder: "Search a flow: title, chapter or number (12, EX-012)";
+            hint: "";
+            edited(text) => {
+                ExerciseView.search-edited(text);
+            }
+        }
+
+        Rectangle {
+            x: root.main-w - root.difficulty-w;
+            y: 1px;
+            width: root.difficulty-w;
+            height: root.toolbar-h;
+            HorizontalLayout {
+                alignment: end;
+                SegmentedToggle {
+                    options: [
+                        { id: "all", label: "All" },
+                        { id: "easy", label: "Easy" },
+                        { id: "medium", label: "Medium" },
+                        { id: "hard", label: "Hard" },
+                    ];
+                    current: ExerciseView.difficulty;
+                    selected(id) => {
+                        ExerciseView.difficulty-selected(id);
+                    }
+                }
+            }
+        }
+
+        // Chapters (the content's categories), scrolling sideways.
+        Flickable {
+            x: 0px;
+            y: root.toolbar-h + Spacing.md;
+            width: root.main-w;
+            height: root.pills-h;
+            interactive: true;
+
+            HorizontalLayout {
+                spacing: Spacing.sm;
+                alignment: start;
+
+                FilterPill {
+                    label: "All chapters";
+                    active: ExerciseView.category == "all";
+                    clicked => {
+                        ExerciseView.category-selected("all");
+                    }
+                }
+
+                for item in ExerciseView.categories: FilterPill {
+                    label: item.label;
+                    count-text: item.count-text;
+                    active: ExerciseView.category == item.id;
+                    clicked => {
+                        ExerciseView.category-selected(item.id);
+                    }
+                }
+            }
+        }
+
+        Text {
+            x: 0px;
+            y: root.toolbar-h + Spacing.md + root.pills-h + Spacing.xs;
+            width: root.main-w;
+            height: 16px;
+            text: ExerciseView.shown-text + "  ·  " + FlowView.position
+                + "  ·  ← → browse · Enter begins · Esc goes home";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-micro;
+            color: Theme.text-tertiary;
+            overflow: elide;
+        }
+
+        // --- The virtualised grid -----------------------------------------
+        grid := ScrollView {
+            x: 0px;
+            y: root.grid-y;
+            width: root.main-w;
+            height: root.grid-h;
+            visible: ExerciseView.list-state == "ready";
+            content-width: root.main-w - root.scrollbar;
+            content-height: Math.max(root.grid-h, ExerciseView.total-rows * ExerciseView.row-pitch);
+
+            changed content-y => {
+                root.report-grid();
+            }
+
+            for card in ExerciseView.cards: FlowCard {
+                x: Math.mod(card.index, root.columns) * (root.card-w + root.gap);
+                y: Math.floor(card.index / root.columns) * ExerciseView.row-pitch + 4px;
+                card: card;
+                w: root.card-w;
+                h: ExerciseView.card-height;
+                activated => {
+                    ExerciseView.select(card.index);
+                }
+            }
+        }
+
+        // --- Empty / no match / error ----------------------------------------
+        Rectangle {
+            x: 0px;
+            y: root.grid-y;
+            width: root.main-w;
+            height: Math.min(root.grid-h, 180px);
+            visible: ExerciseView.list-state != "ready";
+            border-radius: Radius.lg;
+            background: ExerciseView.list-state == "error" ? Theme.error-subtle : Theme.bg-sunken;
+            border-width: Stroke.hairline;
+            border-color: Theme.border-soft;
+
+            Text {
+                x: Spacing.xl;
+                y: Spacing.xl;
+                width: parent.width - 2 * Spacing.xl;
+                text: ExerciseView.state-title;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-h3;
+                font-weight: Typography.weight-bold;
+                color: ExerciseView.list-state == "error" ? Theme.error : Theme.text-primary;
+                overflow: elide;
+            }
+
+            Text {
+                x: Spacing.xl;
+                y: Spacing.xl + 34px;
+                width: parent.width - 2 * Spacing.xl;
+                height: 60px;
+                text: ExerciseView.state-message;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-body-sm;
+                color: Theme.text-secondary;
+                wrap: word-wrap;
+            }
+        }
+    }
+
+    // =====================================================================
+    // Right: the selected flow, its rhythm history, the timer, BEGIN
+    // =====================================================================
+    side := Rectangle {
+        property <length> title-y: Spacing.lg + 40px;
+        property <length> meta-y: self.title-y + 62px;
+        property <length> hist-y: self.meta-y + 26px;
+        property <length> focus-y: self.hist-y + 70px;
+        property <bool> roomy: root.body-h >= 640px;
+        property <length> dur-y: self.roomy ? self.focus-y + 50px : self.focus-y;
+        property <length> cta-y: self.height - Spacing.lg - 44px - 20px;
+
+        x: root.body-x + root.main-w + Spacing.lg;
+        y: root.body-y;
+        width: root.side-w;
+        height: root.body-h;
+        border-radius: Radius.xl;
+        background: Theme.bg-surface;
+        border-width: Stroke.hairline;
+        border-color: Theme.border-soft;
+        clip: true;
+
+        // Saffron rhythm stripe.
+        Rectangle {
+            x: 0px;
+            y: 0px;
+            width: parent.width;
+            height: 4px;
+            background: @linear-gradient(90deg, Theme.accent 0%, Theme.accent-light 100%);
+        }
+
+        Eyebrow {
+            x: Spacing.lg;
+            y: Spacing.lg;
+            width: root.side-inner - 110px;
+            text: "SELECTED FLOW";
+            color: Theme.accent;
+        }
+
+        HorizontalLayout {
+            x: Spacing.lg;
+            y: Spacing.lg - 3px;
+            width: root.side-inner;
+            height: 22px;
+            alignment: end;
+            visible: ExerciseView.insp-visible;
+            RadhaBadge {
+                text: ExerciseView.insp-status;
+                tone: ExerciseView.insp-status-tone == "success" ? BadgeTone.Success
+                    : ExerciseView.insp-status-tone == "warning" ? BadgeTone.Warning
+                    : BadgeTone.Secondary;
+            }
+        }
+
+        Text {
+            x: Spacing.lg;
+            y: Spacing.lg + 20px;
+            width: root.side-inner;
+            visible: ExerciseView.insp-visible;
+            text: ExerciseView.insp-code + "  ·  " + ExerciseView.insp-category;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-micro;
+            font-weight: Typography.weight-semibold;
+            color: Theme.text-secondary;
+            overflow: elide;
+        }
+
+        Text {
+            x: Spacing.lg;
+            y: side.title-y;
+            width: root.side-inner;
+            height: 58px;
+            text: !ExerciseView.insp-visible
+                ? (ExerciseView.insp-error != "" ? ExerciseView.insp-error
+                    : ExerciseView.state-title != "" ? ExerciseView.state-title : "Choose a flow")
+                : ExerciseView.insp-title;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-h2;
+            font-weight: Typography.weight-bold;
+            letter-spacing: Typography.tracking-tight;
+            color: Theme.text-primary;
+            wrap: word-wrap;
+            overflow: elide;
+        }
+
+        Text {
+            x: Spacing.lg;
+            y: side.meta-y;
+            width: root.side-inner;
+            visible: ExerciseView.insp-visible;
+            text: ExerciseView.insp-level + (ExerciseView.insp-level != "" ? "   ·   " : "") + ExerciseView.insp-length;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            color: Theme.text-secondary;
+            overflow: elide;
+        }
+
+        // Rhythm history on this flow (real figures or an honest "none").
+        Rectangle {
+            x: Spacing.lg;
+            y: side.hist-y;
+            width: root.side-inner;
+            height: 60px;
+            visible: ExerciseView.insp-visible;
+            border-radius: Radius.md;
+            background: Theme.bg-sunken;
+            border-width: Stroke.hairline;
+            border-color: Theme.border-soft;
+
+            Eyebrow {
+                x: Spacing.md;
+                y: Spacing.sm;
+                width: parent.width - 2 * Spacing.md;
+                text: "YOUR RHYTHM ON THIS FLOW";
+            }
+
+            Text {
+                x: Spacing.md;
+                y: Spacing.sm + 16px;
+                width: parent.width - 2 * Spacing.md;
+                text: FlowView.sel-rhythm;
+                font-family: Typography.family-mono;
+                font-size: Typography.size-body-sm;
+                font-weight: Typography.weight-bold;
+                color: FlowView.sel-rhythm == "No Flow rhythm on this one yet" ? Theme.text-tertiary : Theme.accent;
+                overflow: elide;
+            }
+
+            Text {
+                x: Spacing.md;
+                y: Spacing.sm + 36px;
+                width: parent.width - 2 * Spacing.md;
+                text: ExerciseView.insp-best;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-micro;
+                color: Theme.text-secondary;
+                overflow: elide;
+            }
+        }
+
+        Text {
+            x: Spacing.lg;
+            y: side.focus-y;
+            width: root.side-inner;
+            height: 40px;
+            visible: side.roomy && ExerciseView.insp-visible;
+            text: "Focus: an even cadence. Aim for " + ExerciseView.insp-target-wpm
+                + " at " + ExerciseView.insp-min-accuracy + " accuracy, without hurrying the hard words.";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            color: Theme.text-tertiary;
+            wrap: word-wrap;
+        }
+
+        // --- Duration ------------------------------------------------------
+        Rectangle {
+            x: Spacing.lg;
+            y: side.dur-y - Spacing.sm;
+            width: root.side-inner;
+            height: 1px;
+            background: Theme.border-soft;
+        }
+
+        Eyebrow {
+            x: Spacing.lg;
+            y: side.dur-y + 4px;
+            width: root.side-inner / 2;
+            text: "FLOW DURATION";
+        }
+
+        Text {
+            x: Spacing.lg + root.side-inner / 2;
+            y: side.dur-y;
+            width: root.side-inner / 2;
+            text: ExerciseView.timer-readout;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-h3;
+            font-weight: Typography.weight-bold;
+            color: ExerciseView.timer-kind == "countdown" ? Theme.accent : Theme.text-secondary;
+            horizontal-alignment: right;
+        }
+
+        HorizontalLayout {
+            x: Spacing.lg;
+            y: side.dur-y + 30px;
+            width: root.side-inner;
+            height: 30px;
+            alignment: start;
+            SegmentedToggle {
+                compact: true;
+                options: [
+                    { id: "countdown", label: "Countdown" },
+                    { id: "stopwatch", label: "Stopwatch" },
+                    { id: "off", label: "Off" },
+                ];
+                current: ExerciseView.timer-kind;
+                selected(id) => {
+                    ExerciseView.timer-kind-selected(id);
+                }
+            }
+        }
+
+        for t[i] in ExerciseView.timers: ChoiceChip {
+            x: Spacing.lg + Math.mod(i, 5) * (root.chip-w + 6px);
+            y: side.dur-y + 70px + Math.floor(i / 5) * 36px;
+            width: root.chip-w;
+            text: t.label;
+            selected: t.selected;
+            accent: Theme.accent;
+            clicked => {
+                ExerciseView.choose-timer(i);
+            }
+        }
+
+        Rectangle {
+            x: Spacing.lg;
+            y: side.dur-y + 70px + 2 * 36px + 4px;
+            width: root.side-inner;
+            height: 32px;
+
+            HorizontalLayout {
+                spacing: 6px;
+
+                RadhaButton {
+                    text: "−30s";
+                    variant: ButtonVariant.Secondary;
+                    compact: true;
+                    clicked => {
+                        ExerciseView.step-timer(-30);
+                    }
+                }
+
+                Rectangle {
+                    horizontal-stretch: 1;
+                    border-radius: Radius.sm;
+                    background: custom.has-focus ? Theme.bg-surface : Theme.bg-sunken;
+                    border-width: custom.has-focus || ExerciseView.custom-timer-error != "" ? Stroke.thick : Stroke.hairline;
+                    border-color: ExerciseView.custom-timer-error != "" ? Theme.error
+                        : (custom.has-focus ? Theme.accent : Theme.border-soft);
+
+                    custom := TextInput {
+                        text <=> ExerciseView.custom-timer-text;
+                        x: Spacing.sm;
+                        y: (parent.height - self.height) / 2;
+                        width: parent.width - 2 * Spacing.sm;
+                        single-line: true;
+                        font-family: Typography.family-mono;
+                        font-size: Typography.size-body-sm;
+                        color: Theme.text-primary;
+                        accepted => {
+                            ExerciseView.custom-timer(self.text);
+                        }
+                        edited => {
+                            ExerciseView.custom-timer(self.text);
+                        }
+                    }
+
+                    if custom.text == "": Text {
+                        x: Spacing.sm;
+                        y: (parent.height - self.height) / 2;
+                        text: "custom: 7, 45s, 2:30";
+                        font-family: Typography.family-mono;
+                        font-size: Typography.size-caption;
+                        color: Theme.text-tertiary;
+                    }
+                }
+
+                RadhaButton {
+                    text: "+30s";
+                    variant: ButtonVariant.Secondary;
+                    compact: true;
+                    clicked => {
+                        ExerciseView.step-timer(30);
+                    }
+                }
+            }
+        }
+
+        Text {
+            x: Spacing.lg;
+            y: side.dur-y + 70px + 2 * 36px + 42px;
+            width: root.side-inner;
+            height: 34px;
+            text: ExerciseView.custom-timer-error != "" ? ExerciseView.custom-timer-error : ExerciseView.timer-sentence;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            color: ExerciseView.custom-timer-error != "" ? Theme.error : Theme.text-secondary;
+            wrap: word-wrap;
+            overflow: elide;
+        }
+
+        // --- BEGIN FLOW ----------------------------------------------------
+        RadhaButton {
+            x: Spacing.lg;
+            y: side.cta-y;
+            width: root.side-inner;
+            text: ExerciseView.start-text;
+            enabled: ExerciseView.can-start;
+            clicked => {
+                ExerciseView.start();
+            }
+        }
+
+        Text {
+            x: Spacing.lg;
+            y: side.cta-y + 48px;
+            width: root.side-inner;
+            height: 16px;
+            text: ExerciseView.start-reason != "" ? ExerciseView.start-reason
+                : "The clock starts on your first key";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-micro;
+            color: ExerciseView.start-reason != "" ? Theme.warning : Theme.text-tertiary;
+            horizontal-alignment: center;
+            overflow: elide;
+        }
+    }
+}

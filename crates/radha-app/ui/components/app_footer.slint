@@ -30,6 +30,8 @@ component SocialLink inherits Rectangle {
     in property <image> icon;
     in property <string> label;
 
+    callback triggered();
+
     width: 30px;
     height: 30px;
     border-radius: Radius.sm;
@@ -48,29 +50,44 @@ component SocialLink inherits Rectangle {
 
     touch := TouchArea {
         mouse-cursor: MouseCursor.pointer;
+        clicked => {
+            root.triggered();
+        }
     }
 }
 
-component FooterInfo inherits HorizontalLayout {
+// A contact detail; clicking it asks Rust to open the matching link.
+component FooterInfo inherits Rectangle {
     in property <string> text;
     in property <image> icon;
 
-    spacing: Spacing.xs;
+    callback triggered();
 
-    Image {
-        source: root.icon;
-        width: 14px;
-        height: 14px;
-        y: (parent.height - self.height) / 2;
-        colorize: Theme.text-disabled;
+    HorizontalLayout {
+        spacing: Spacing.xs;
+
+        Image {
+            source: root.icon;
+            width: 14px;
+            height: 14px;
+            y: (parent.height - self.height) / 2;
+            colorize: touch.has-hover ? Theme.primary : Theme.text-disabled;
+        }
+
+        Text {
+            text: root.text;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            color: touch.has-hover ? Theme.primary : Theme.text-tertiary;
+            vertical-alignment: center;
+        }
     }
 
-    Text {
-        text: root.text;
-        font-family: Typography.family-ui;
-        font-size: Typography.size-caption;
-        color: Theme.text-tertiary;
-        vertical-alignment: center;
+    touch := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => {
+            root.triggered();
+        }
     }
 }
 
@@ -79,6 +96,10 @@ export component AppFooter inherits Rectangle {
     in property <string> copyright: "© 2026 Radha Typing Tutor. All rights reserved.";
     in property <string> contact-number;
     in property <string> website-url;
+
+    /// A contact or social link was clicked: "phone" | "website" |
+    /// "whatsapp" | "facebook" | "instagram". Rust owns the URLs.
+    callback link-requested(string);
 
     height: 84px;
     background: transparent;
@@ -112,14 +133,20 @@ export component AppFooter inherits Rectangle {
 
             if root.contact-number != "": FooterInfo {
                 text: root.contact-number;
-                icon: @image-url("../../../../assets/icons/profile.svg");
+                icon: @image-url("../../../../assets/icons/phone.svg");
                 y: (parent.height - self.height) / 2;
+                triggered => {
+                    root.link-requested("phone");
+                }
             }
 
             if root.website-url != "": FooterInfo {
                 text: root.website-url;
-                icon: @image-url("../../../../assets/icons/analytics.svg");
+                icon: @image-url("../../../../assets/icons/globe.svg");
                 y: (parent.height - self.height) / 2;
+                triggered => {
+                    root.link-requested("website");
+                }
             }
 
             Rectangle {
@@ -132,16 +159,25 @@ export component AppFooter inherits Rectangle {
                 y: (parent.height - self.height) / 2;
 
                 SocialLink {
+                    icon: @image-url("../../../../assets/icons/message-circle.svg");
+                    label: "WhatsApp";
+                    triggered => {
+                        root.link-requested("whatsapp");
+                    }
+                }
+                SocialLink {
                     icon: @image-url("../../../../assets/icons/facebook.svg");
                     label: "Facebook";
+                    triggered => {
+                        root.link-requested("facebook");
+                    }
                 }
                 SocialLink {
                     icon: @image-url("../../../../assets/icons/instagram.svg");
                     label: "Instagram";
-                }
-                SocialLink {
-                    icon: @image-url("../../../../assets/icons/youtube.svg");
-                    label: "YouTube";
+                    triggered => {
+                        root.link-requested("instagram");
+                    }
                 }
             }
         }

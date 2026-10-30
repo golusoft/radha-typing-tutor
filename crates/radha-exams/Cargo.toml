@@ -1,0 +1,18 @@
+[package]
+name = "radha-exams"
+description = "Radha Typing Tutor — exam profiles (data-driven). Exam names are allowed only in this crate."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+radha-core.workspace = true
+# Layout ids a profile allows (`LayoutId::parse`); no exam logic flows back.
+radha-layouts.workspace = true
+# Exact pins equal to the versions already resolved in Cargo.lock (P01 rule:
+# new crates pin exact versions; no lock churn for existing packages).
+serde = { version = "=1.0.229", features = ["derive"] }
+toml = "=0.8.23"

@@ -48,6 +48,21 @@ const MIGRATIONS: &[Migration] = &[
         name: "0002_core_schema.sql",
         sql: include_str!("../../../migrations/0002_core_schema.sql"),
     },
+    Migration {
+        version: 3,
+        name: "0003_content_v2.sql",
+        sql: include_str!("../../../migrations/0003_content_v2.sql"),
+    },
+    Migration {
+        version: 4,
+        name: "0004_flow_rhythm.sql",
+        sql: include_str!("../../../migrations/0004_flow_rhythm.sql"),
+    },
+    Migration {
+        version: 5,
+        name: "0005_inscript.sql",
+        sql: include_str!("../../../migrations/0005_inscript.sql"),
+    },
 ];
 
 /// The highest applied migration version, or `0` on a fresh database.
@@ -278,7 +293,7 @@ mod tests {
     }
 
     #[test]
-    fn fresh_database_applies_both_migrations_and_ends_at_version_two() {
+    fn fresh_database_applies_every_migration_and_ends_at_the_latest_version() {
         let mut conn = fresh();
         run(&mut conn).unwrap();
 
@@ -296,9 +311,145 @@ mod tests {
             vec![
                 (1, "0001_init.sql".to_owned()),
                 (2, "0002_core_schema.sql".to_owned()),
+                (3, "0003_content_v2.sql".to_owned()),
+                (4, "0004_flow_rhythm.sql".to_owned()),
+                (5, "0005_inscript.sql".to_owned()),
             ]
         );
-        assert_eq!(current_version(&conn).unwrap(), 2);
+        assert_eq!(current_version(&conn).unwrap(), 5);
+    }
+
+    /// Apply migrations up to `version` only (simulates an older install).
+    fn run_up_to(conn: &mut Connection, version: i64) {
+        for m in MIGRATIONS.iter().filter(|m| m.version <= version) {
+            let tx = conn.transaction().unwrap();
+            tx.execute_batch(m.sql).unwrap();
+            tx.execute(
+                "INSERT INTO schema_migrations (version, name) VALUES (?1, ?2)",
+                rusqlite::params![m.version, m.name],
+            )
+            .unwrap();
+            tx.commit().unwrap();
+        }
+    }
+
+    #[test]
+    fn content_v2_upgrades_a_version_two_database_without_losing_rows() {
+        let mut conn = fresh();
+        run_up_to(&mut conn, 2);
+        conn.execute_batch(
+            "INSERT INTO profiles (id, display_name) VALUES (1, 'Test Profile');
+             INSERT INTO exercises (id, product_id, number, title)
+                 VALUES (7, (SELECT id FROM products WHERE slug = 'english-classic'), 1, 'Old');
+             INSERT INTO exercise_content (exercise_id, content) VALUES (7, 'old text');
+             INSERT INTO typing_sessions (profile_id, exercise_id, started_at, completed_at,
+                                          elapsed_secs)
+                 VALUES (1, 7, '2026-01-01T00:00:00Z', '2026-01-01T00:01:00Z', 60);",
+        )
+        .unwrap();
+
+        assert_eq!(
+            run(&mut conn).unwrap(),
+            3,
+            "only 0003, 0004 and 0005 are pending"
+        );
+        assert_eq!(current_version(&conn).unwrap(), 5);
+
+        // Old rows survive with honest defaults.
+        let (status, track, content): (String, Option<String>, String) = conn
+            .query_row(
+                "SELECT e.status, e.track, c.content FROM exercises e
+                   JOIN exercise_content c ON c.exercise_id = e.id WHERE e.id = 7",
+                [],
+                |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)),
+            )
+            .unwrap();
+        assert_eq!(status, "provisional");
+        assert_eq!(track, None);
+        assert_eq!(content, "old text");
+        let mode: Option<String> = conn
+            .query_row("SELECT mode FROM typing_sessions", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(mode, None, "pre-0003 sessions have no mode");
+
+        // New tables exist; the two pools are seeded.
+        for table in [
+            "exercise_text",
+            "exam_pools",
+            "exam_passages",
+            "exam_passage_text",
+            "exam_profile_pools",
+            "content_provenance",
+            "content_imports",
+        ] {
+            let found: i64 = conn
+                .query_row(
+                    "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = ?1",
+                    [table],
+                    |r| r.get(0),
+                )
+                .unwrap();
+            assert_eq!(found, 1, "{table}");
+        }
+        let pools: i64 = conn
+            .query_row("SELECT COUNT(*) FROM exam_pools", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(pools, 2);
+        // The new constraints hold.
+        assert!(conn
+            .execute("UPDATE exercises SET status = 'official' WHERE id = 7", [])
+            .is_err());
+        assert!(conn
+            .execute("UPDATE typing_sessions SET mode = 'race'", [])
+            .is_err());
+        conn.execute("UPDATE typing_sessions SET mode = 'test'", [])
+            .unwrap();
+    }
+
+    #[test]
+    fn flow_rhythm_upgrades_a_version_three_database_without_losing_rows() {
+        let mut conn = fresh();
+        run_up_to(&mut conn, 3);
+        conn.execute_batch(
+            "INSERT INTO profiles (id, display_name) VALUES (1, 'Test Profile');
+             INSERT INTO exercises (id, product_id, number, title)
+                 VALUES (7, (SELECT id FROM products WHERE slug = 'typing-flow'), 1, 'Old');
+             INSERT INTO typing_sessions (id, profile_id, exercise_id, started_at, completed_at,
+                                          elapsed_secs, mode)
+                 VALUES (3, 1, 7, '2026-01-01T00:00:00Z', '2026-01-01T00:01:00Z', 60, 'flow');",
+        )
+        .unwrap();
+        assert_eq!(run(&mut conn).unwrap(), 2, "only 0004 and 0005 are pending");
+        conn.execute_batch("PRAGMA foreign_keys = ON;").unwrap();
+        assert_eq!(current_version(&conn).unwrap(), 5);
+        let sessions: i64 = conn
+            .query_row("SELECT COUNT(*) FROM typing_sessions", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(sessions, 1, "old sessions survive");
+        // Old sessions simply have no rhythm row; the constraints hold.
+        conn.execute(
+            "INSERT INTO flow_rhythm (session_id, engine_schema, smoothness) VALUES (3, 1, 94.5)",
+            [],
+        )
+        .unwrap();
+        assert!(conn
+            .execute(
+                "UPDATE flow_rhythm SET smoothness = 120 WHERE session_id = 3",
+                []
+            )
+            .is_err());
+        assert!(conn
+            .execute(
+                "INSERT INTO flow_rhythm (session_id, engine_schema) VALUES (99, 1)",
+                []
+            )
+            .is_err());
+        conn.execute(
+            "INSERT INTO flow_rhythm (session_id, engine_schema) VALUES (3, 1)
+             ON CONFLICT (session_id) DO NOTHING",
+            [],
+        )
+        .unwrap();
     }
 
     #[test]
@@ -349,7 +500,9 @@ mod tests {
         let mut conn = fresh();
         run(&mut conn).unwrap();
 
-        for (index, product) in ProductId::all().into_iter().enumerate() {
+        // The nine Home products in Home order, then InScript Mastery (0005,
+        // no Home card) as display_order 10.
+        for (index, product) in ProductId::every().into_iter().enumerate() {
             let slug = product.slug();
             let (display_name, layout_slug, is_beginner, display_order) = conn
                 .query_row(
@@ -369,9 +522,17 @@ mod tests {
                 )
                 .unwrap_or_else(|e| panic!("product `{slug}` should be seeded: {e}"));
 
-            assert_eq!(display_name, product.display_name(), "display name of {slug}");
+            assert_eq!(
+                display_name,
+                product.display_name(),
+                "display name of {slug}"
+            );
             assert_eq!(layout_slug, product.layout().as_str(), "layout of {slug}");
-            assert_eq!(is_beginner, product.is_beginner(), "beginner flag of {slug}");
+            assert_eq!(
+                is_beginner,
+                product.is_beginner(),
+                "beginner flag of {slug}"
+            );
             assert_eq!(display_order as usize, index + 1, "Home order of {slug}");
         }
 
@@ -380,7 +541,7 @@ mod tests {
             .unwrap();
         assert_eq!(
             count as usize,
-            ProductId::all().len(),
+            ProductId::every().len(),
             "no products beyond the Rust enum"
         );
     }

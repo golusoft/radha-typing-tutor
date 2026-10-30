@@ -2,17 +2,19 @@
 // Radha Typing Tutor — Typography
 // ============================================================================
 //
-// Font families are resolved by name. The binaries are registered at startup by
-// `ui.rs::register_fonts` from `assets/fonts/`; until those are bundled (see
-// assets/README.md) the listed fallbacks apply, so the UI is never unstyled.
+// Font families are resolved by name. The font files are embedded at compile
+// time by the imports in `theme/fonts.slint` (see assets/README.md).
+//
+// Slint's `font-family` takes ONE family name, not a CSS-style fallback list —
+// a comma list never matches and silently falls back to the system default.
+// So each family below is a single exact name of a bundled font.
 // ============================================================================
 
 export global Typography {
     // --- Families ---
 
-    // UI text. Inter once bundled; Segoe UI is present on every supported
-    // Windows version, so the fallback is safe rather than theoretical.
-    out property <string> family-ui: "Inter, Segoe UI, sans-serif";
+    // UI text (bundled Inter 400/500/600/700).
+    out property <string> family-ui: "Inter";
 
     // Typing target and user input.
     //
@@ -20,10 +22,10 @@ export global Typography {
     // Section 8.3 highlights per-character correctness by drawing the target row
     // above the typed row, and those rows only align if every glyph has the same
     // advance width. A proportional font would misalign the highlight.
-    out property <string> family-mono: "JetBrains Mono, Cascadia Mono, Consolas, monospace";
+    out property <string> family-mono: "JetBrains Mono";
 
-    // Hindi (GAIL / CBI) — Unicode Devanagari.
-    out property <string> family-devanagari: "Noto Sans Devanagari, Mangal, sans-serif";
+    // Hindi (GAIL / CBI) — Unicode Devanagari (bundled Noto Sans Devanagari).
+    out property <string> family-devanagari: "Noto Sans Devanagari";
 
     // Hindi (Kruti Dev) — legacy font encoding. Must be bundled; unlike the
     // others there is no safe system fallback, because a machine without the

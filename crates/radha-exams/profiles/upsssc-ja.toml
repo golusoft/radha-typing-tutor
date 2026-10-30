@@ -1,0 +1,23 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "upsssc-ja"
+profile_version = 1
+display_name = "UPSSSC Junior Assistant"
+body = "UP Subordinate Services Selection Commission"
+
+[notice]
+title = "Junior Assistant — typing test"
+note = "Primary notification not read in Radha; rules are unknown."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "English 30 WPM · Hindi 25 WPM · Both Compulsory · 10 min · Backspace allowed · InScript · Kruti Dev 010"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

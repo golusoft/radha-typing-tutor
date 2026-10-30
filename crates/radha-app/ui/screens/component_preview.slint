@@ -1,0 +1,438 @@
+// ============================================================================
+// ComponentPreviewScreen — debug-only gallery of the v2 shared components
+// ============================================================================
+//
+// P01 (DESIGN.md Chapter 20.3). Opened only by a debug build started with
+// RADHA_START_SCREEN=preview (`navigation::component_preview_requested`); release
+// builds never show it. It is an overlay drawn above Home, not a screen, so it
+// never enters navigation (RULES.MD Rules 1 and 21).
+//
+// Run it:
+//   $env:RADHA_START_SCREEN='preview'; cargo run -p radha-app
+//   Remove-Item Env:RADHA_START_SCREEN
+//
+// Everything fits a 1024x768 window without scrolling; the ScrollView is only a
+// safety net. Geometry comes from `root.width` alone (never from content or the
+// ScrollView's visible-width), the same rule Home follows.
+//
+// The small pieces of state below (selected track, mode, range) are local demo
+// state for this debug gallery only; real screens keep such state in Rust.
+// ============================================================================
+
+import { ScrollView } from "std-widgets.slint";
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing } from "../theme/metrics.slint";
+import { Fonts } from "../theme/fonts.slint";
+import { RadhaButton, ButtonVariant } from "../components/button.slint";
+import { ThemeToggle } from "../components/theme_toggle.slint";
+import { SearchField } from "../components/search_field.slint";
+import { SegmentedToggle } from "../components/segmented_toggle.slint";
+import { TrackFilterBar } from "../components/filter_pill.slint";
+import { KpiPill, KpiTone } from "../components/kpi_pill.slint";
+import { KeyCap, KeyDeck, KeyCapState } from "../components/key_deck.slint";
+import { CadenceBars } from "../components/cadence_bars.slint";
+import { CrestBadge } from "../components/crest_badge.slint";
+import { VerificationBadge } from "../components/verification_badge.slint";
+import { SparklineChart } from "../components/sparkline_chart.slint";
+
+// Small caps caption above each demo group.
+component PreviewLabel inherits Text {
+    font-family: Typography.family-ui;
+    font-size: Typography.size-micro;
+    font-weight: Typography.weight-semibold;
+    letter-spacing: Typography.tracking-wide;
+    color: Theme.text-tertiary;
+}
+
+// One KeyCap with its state name underneath.
+component StateCap inherits VerticalLayout {
+    in property <string> glyph;
+    in property <KeyCapState> state;
+    in property <string> caption;
+    in property <string> name;
+
+    spacing: 2px;
+    alignment: start;
+
+    HorizontalLayout {
+        alignment: center;
+
+        KeyCap {
+            glyph: root.glyph;
+            state: root.state;
+            caption: root.caption;
+        }
+    }
+
+    Text {
+        text: root.name;
+        font-family: Typography.family-ui;
+        font-size: 9px;
+        color: Theme.text-tertiary;
+        horizontal-alignment: center;
+    }
+}
+
+export component ComponentPreviewScreen inherits Rectangle {
+    /// The theme toggle was used; the shell forwards it to Rust.
+    callback theme-toggle-requested();
+    /// "Close preview" was pressed; the shell hides the overlay.
+    callback close-requested();
+
+    // --- Geometry (outside-in, from root.width only) -------------------------
+    private property <length> content-width: root.width - 16px;
+    private property <length> gutter: Spacing.xl;
+    private property <length> row-width: root.content-width - root.gutter * 2;
+    private property <length> col-width: (root.row-width - Spacing.xl) / 2;
+    private property <length> kpi-width: (root.row-width - Spacing.lg * 2) / 3;
+
+    // --- Local demo state (debug gallery only) -------------------------------
+    private property <string> track: "all";
+    private property <string> mode: "learn";
+    private property <string> spark-range: "7d";
+
+    background: Theme.bg-base;
+
+    // Swallow clicks so nothing reaches the Home screen underneath.
+    TouchArea {
+        width: root.width;
+        height: root.height;
+    }
+
+    ScrollView {
+        x: 0px;
+        y: 0px;
+        width: root.width;
+        height: root.height;
+
+        VerticalLayout {
+            width: root.content-width;
+            padding-left: root.gutter;
+            padding-right: root.gutter;
+            padding-top: Spacing.lg;
+            padding-bottom: Spacing.lg;
+            spacing: Spacing.lg;
+            alignment: start;
+
+            // --- 1. Header --------------------------------------------------
+            HorizontalLayout {
+                width: root.row-width;
+                spacing: Spacing.md;
+
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 2px;
+                    alignment: center;
+
+                    Text {
+                        text: "Component preview (debug only)";
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-h2;
+                        font-weight: Typography.weight-semibold;
+                        color: Theme.text-primary;
+                        overflow: elide;
+                    }
+
+                    Text {
+                        text: Fonts.status + " · Inter / JetBrains Mono / Noto Sans Devanagari";
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-caption;
+                        color: Theme.text-secondary;
+                        overflow: elide;
+                    }
+                }
+
+                HorizontalLayout {
+                    horizontal-stretch: 0;
+                    spacing: Spacing.sm;
+                    alignment: end;
+
+                    ThemeToggle {
+                        y: (parent.height - self.height) / 2;
+                        toggle-requested => {
+                            root.theme-toggle-requested();
+                        }
+                    }
+
+                    RadhaButton {
+                        y: (parent.height - self.height) / 2;
+                        text: "Close preview";
+                        variant: ButtonVariant.Ghost;
+                        compact: true;
+                        clicked => {
+                            root.close-requested();
+                        }
+                    }
+                }
+            }
+
+            // --- 2. SearchField + SegmentedToggle ---------------------------
+            VerticalLayout {
+                width: root.row-width;
+                spacing: Spacing.xs;
+
+                PreviewLabel { text: "SEARCHFIELD · SEGMENTEDTOGGLE (ACTIVE / DISABLED OPTION / DISABLED)"; }
+
+                HorizontalLayout {
+                    spacing: Spacing.lg;
+                    alignment: start;
+
+                    SearchField {
+                        width: 380px;
+                        placeholder: "Search courses and exams";
+                    }
+
+                    SegmentedToggle {
+                        y: (parent.height - self.height) / 2;
+                        options: [
+                            { id: "learn", label: "LEARN", disabled: false },
+                            { id: "test", label: "TEST", disabled: false },
+                        ];
+                        current: root.mode;
+                        selected(id) => {
+                            root.mode = id;
+                        }
+                    }
+
+                    SegmentedToggle {
+                        y: (parent.height - self.height) / 2;
+                        options: [
+                            { id: "timed", label: "Timed", disabled: false },
+                            { id: "words", label: "Words", disabled: false },
+                            { id: "custom", label: "Custom", disabled: true },
+                        ];
+                        current: "timed";
+                    }
+
+                    SegmentedToggle {
+                        y: (parent.height - self.height) / 2;
+                        enabled: false;
+                        options: [
+                            { id: "eng", label: "ENG", disabled: false },
+                            { id: "hin", label: "HIN", disabled: false },
+                        ];
+                        current: "eng";
+                    }
+                }
+            }
+
+            // --- 3. TrackFilterBar ------------------------------------------
+            VerticalLayout {
+                width: root.row-width;
+                spacing: Spacing.xs;
+
+                PreviewLabel { text: "TRACKFILTERBAR / FILTERPILL"; }
+
+                TrackFilterBar {
+                    items: [
+                        { id: "all", label: "All tracks", count-text: "9" },
+                        { id: "english", label: "English", count-text: "3" },
+                        { id: "hindi", label: "Hindi", count-text: "3" },
+                        { id: "beginner", label: "Beginner", count-text: "3" },
+                        { id: "exams", label: "Exam Hub", count-text: "21" },
+                    ];
+                    current: root.track;
+                    selected(id) => {
+                        root.track = id;
+                    }
+                }
+            }
+
+            // --- 4. KpiPill -------------------------------------------------
+            VerticalLayout {
+                width: root.row-width;
+                spacing: Spacing.xs;
+
+                PreviewLabel { text: "KPIPILL (NEUTRAL / POSITIVE / EMPTY)"; }
+
+                HorizontalLayout {
+                    spacing: Spacing.lg;
+
+                    KpiPill {
+                        width: root.kpi-width;
+                        label: "PRACTICE TIME";
+                        value: "2h 40m";
+                        delta: "this week";
+                        delta-tone: KpiTone.Neutral;
+                    }
+
+                    KpiPill {
+                        width: root.kpi-width;
+                        label: "PEAK SPEED";
+                        value: "48 WPM";
+                        delta: "+6.2 WPM";
+                        delta-tone: KpiTone.Positive;
+                    }
+
+                    KpiPill {
+                        width: root.kpi-width;
+                        label: "ACCURACY";
+                        value: "97%";
+                        delta: "-1%";
+                        delta-tone: KpiTone.Negative;
+                        empty: true;
+                    }
+                }
+            }
+
+            // --- 5. Keys | Cadence, crests, verification ---------------------
+            HorizontalLayout {
+                width: root.row-width;
+                spacing: Spacing.xl;
+
+                VerticalLayout {
+                    width: root.col-width;
+                    spacing: Spacing.xs;
+                    alignment: start;
+
+                    PreviewLabel { text: "KEYDECK · KEYCAP STATES · DEVANAGARI"; }
+
+                    KeyDeck {
+                        keys: ["A", "S", "D", "F", "·", "J", "K", "L", ";"];
+                        active-index: 0;
+                    }
+
+                    HorizontalLayout {
+                        spacing: Spacing.sm;
+                        alignment: start;
+
+                        StateCap { glyph: "A"; state: KeyCapState.Normal; name: "Normal"; }
+                        StateCap { glyph: "S"; state: KeyCapState.Active; name: "Active"; }
+                        StateCap { glyph: "D"; state: KeyCapState.Optimal; caption: "98%"; name: "Optimal"; }
+                        StateCap { glyph: "F"; state: KeyCapState.Warning; caption: "81%"; name: "Warning"; }
+                        StateCap { glyph: "J"; state: KeyCapState.Critical; caption: "54%"; name: "Critical"; }
+                    }
+
+                    KeyDeck {
+                        keys: ["क", "ि", "ह", "ी", "|", "श", "स", "य"];
+                        devanagari: true;
+                        active-index: -1;
+                        states: [
+                            KeyCapState.Optimal,
+                            KeyCapState.Normal,
+                            KeyCapState.Warning,
+                            KeyCapState.Normal,
+                            KeyCapState.Normal,
+                            KeyCapState.Critical,
+                            KeyCapState.Normal,
+                            KeyCapState.Optimal,
+                        ];
+                    }
+                }
+
+                VerticalLayout {
+                    width: root.col-width;
+                    spacing: Spacing.xs;
+                    alignment: start;
+
+                    PreviewLabel { text: "CADENCEBARS · CRESTBADGE · VERIFICATIONBADGE"; }
+
+                    HorizontalLayout {
+                        spacing: Spacing.lg;
+                        alignment: start;
+
+                        CadenceBars { }
+
+                        CadenceBars {
+                            accent: Theme.primary;
+                            accent-light: Theme.primary-light;
+                            levels: [0.3, 0.5, 0.9, 0.6, 1.0, 0.4];
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: Spacing.sm;
+                        alignment: start;
+
+                        CrestBadge { code: "SSC"; accent: Theme.primary; }
+                        CrestBadge { code: "CPCT"; accent: Theme.accent; }
+                        CrestBadge { code: "AIIMS"; accent: Theme.secondary; }
+                    }
+
+                    HorizontalLayout {
+                        spacing: Spacing.xs;
+                        alignment: start;
+
+                        VerificationBadge { level: "official"; }
+                        VerificationBadge { level: "provisional"; }
+                        VerificationBadge { level: "practice-only"; }
+                    }
+                }
+            }
+
+            // --- 6. SparklineChart (data | empty) ---------------------------
+            HorizontalLayout {
+                width: root.row-width;
+                spacing: Spacing.xl;
+
+                SparklineChart {
+                    width: root.col-width;
+                    title: "Speed trend";
+                    value-text: "48 WPM";
+                    has-data: true;
+                    line-commands: "M 0 56 C 45 52 65 34 110 36 C 155 38 180 20 230 22 C 275 24 310 10 360 12";
+                    area-commands: "M 0 56 C 45 52 65 34 110 36 C 155 38 180 20 230 22 C 275 24 310 10 360 12 L 360 68 L 0 68 Z";
+                    peak-x: 360;
+                    peak-y: 12;
+                    range: root.spark-range;
+                    footer-left: root.spark-range == "7d" ? "Last 7 days · demo data" : "Last 30 days · demo data";
+                    footer-right: "+6.2 WPM";
+                    range-requested(r) => {
+                        root.spark-range = r;
+                    }
+                }
+
+                SparklineChart {
+                    width: root.col-width;
+                    title: "Accuracy trend";
+                    has-data: false;
+                    footer-left: "Complete a session to see your trend";
+                }
+            }
+
+            // --- 7. Lucide icons (also compile-checks every SVG) -------------
+            VerticalLayout {
+                width: root.row-width;
+                spacing: Spacing.xs;
+
+                PreviewLabel { text: "LUCIDE ICONS (28, 0.344.0, COLORIZE TEXT-SECONDARY)"; }
+
+                HorizontalLayout {
+                    spacing: 8px;
+                    alignment: start;
+
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/globe.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/message-circle.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/phone.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/lightbulb.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/share-2.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/shield-check.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/search.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/bar-chart-2.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/user.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/settings.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/play.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/arrow-right.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/check-circle.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/zap.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/hash.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/keyboard.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/award.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/lock.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/rotate-ccw.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/pause.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/skip-back.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/skip-forward.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/printer.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/maximize-2.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/sliders-horizontal.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/x.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/copy.svg"); }
+                    Image { width: 20px; height: 20px; colorize: Theme.text-secondary; source: @image-url("../../../../assets/icons/volume-2.svg"); }
+                }
+            }
+        }
+    }
+}

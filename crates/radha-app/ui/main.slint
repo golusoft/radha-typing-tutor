@@ -23,14 +23,40 @@
 import { Theme } from "theme/palette.slint";
 import { Motion, WindowMetrics } from "theme/metrics.slint";
 import { HomeScreen } from "screens/home.slint";
-import { ExerciseStubScreen } from "screens/exercise_stub.slint";
+import { ExerciseScreen } from "screens/exercise.slint";
+import { TypingScreen } from "screens/typing.slint";
+import { ResultScreen } from "screens/result.slint";
+import { FlowExerciseScreen } from "screens/flow/flow_exercise.slint";
+import { FlowTypingScreen } from "screens/flow/flow_typing.slint";
+import { FlowResultScreen } from "screens/flow/flow_result.slint";
+import { ComponentPreviewScreen } from "screens/component_preview.slint";
 import { AppErrorView } from "components/error_view.slint";
 import { AppLoadingView } from "components/loading_view.slint";
 
 // Re-export the globals Rust needs to write. Slint only generates Rust accessors
 // for globals exported from the entry file, so without this the
 // `window.global::<Theme>()` call has nothing to bind to.
-export { Theme, Motion }
+//
+// `Products` and `Exams` are exported for the same reason: Rust keeps the master
+// catalogues and rewrites the displayed models when the Home search changes
+// (`src/catalog.rs`, `ui.rs`).
+import { Products } from "data/products.slint";
+import { Exams } from "data/exams.slint";
+// `Fonts` is imported for a second reason besides the status accessor: this
+// import is what pulls `theme/fonts.slint` — and therefore its font file
+// imports — into the build, embedding the bundled fonts in the binary.
+import { Fonts } from "theme/fonts.slint";
+// The practice view-models of the Exercise, Typing and Result screens.
+import { ExerciseView, TypingView, ResultView } from "data/practice.slint";
+// The Typing Flow rhythm view-model (P07).
+import { FlowView } from "data/flow.slint";
+// The utility overlays and the Home hero figures (P08).
+import { UtilityView } from "data/utility.slint";
+import { AnalyticsOverlay } from "overlays/analytics_overlay.slint";
+import { ProfileOverlay } from "overlays/profile_overlay.slint";
+import { SettingsOverlay } from "overlays/settings_overlay.slint";
+import { CandidateOverlay } from "overlays/candidate_overlay.slint";
+export { Theme, Motion, Products, Exams, Fonts, ExerciseView, TypingView, ResultView, FlowView, UtilityView }
 
 export component AppWindow inherits Window {
     title: "Radha Typing Tutor";
@@ -71,12 +97,26 @@ export component AppWindow inherits Window {
     in-out property <string> error-log-hint;
 
     // --- Navigation (Task 2.2) ---------------------------------------------
-    /// Active screen slug, written by Rust: "home" or "exercise".
+    /// Give the shell's key scope focus, so typing reaches Rust. Called by
+    /// Rust when the Typing screen opens (a click elsewhere may have moved
+    /// focus into a text field).
+    public function focus-keys() {
+        keys.focus();
+    }
+
+    /// Active screen slug, written by Rust: "home", "exercise", "typing" or
+    /// "result"; Typing Flow has its own dedicated screens, "flow-exercise",
+    /// "flow-typing" and "flow-result" (DESIGN 5.1).
     in-out property <string> active-screen: "home";
     /// Display name of the product the Exercise screen is showing.
     in-out property <string> active-product-name;
     /// Slug of that product.
     in-out property <string> active-product-slug;
+    /// Debug-only component preview overlay (RADHA_START_SCREEN=preview).
+    /// An overlay above the screens, not a screen; Rust sets it before `run()`.
+    in-out property <bool> show-component-preview: false;
+    /// A typing screen (generic or Flow) owns the keys.
+    property <bool> typing-active: root.active-screen == "typing" || root.active-screen == "flow-typing";
 
     /// A Home card was activated. Carries the product slug; Rust resolves it.
     callback navigate-requested(string);
@@ -92,6 +132,14 @@ export component AppWindow inherits Window {
     callback theme-toggle-requested();
     /// Exit after an unrecoverable error.
     callback quit-requested();
+    /// Home search text or Exam Hub category changed. Rust re-filters the catalogue.
+    callback filters-changed(string, string);
+    /// An exam launcher was pressed: (exam id, "eng" | "hin").
+    callback exam-launch-requested(string, string);
+    /// A contact / social link was activated. Carries a fixed link id
+    /// ("website", "whatsapp", "phone", "instagram", "facebook"); Rust owns
+    /// the URLs and opens them.
+    callback open-link-requested(string);
 
     // --- Keyboard shortcuts (Task 2.4) -------------------------------------
     //
@@ -103,9 +151,60 @@ export component AppWindow inherits Window {
     // TASK.MD (Ctrl+R restart, Ctrl+P pause, F11 focus mode) attach here in Phase 5
     // when the screens they act on exist.
     keys := FocusScope {
+        // TY-14 / TY-07: Rust pauses a running session when the window loses
+        // activation and shows a "click to focus" hint when focus moves to a
+        // control; it hands focus back after every control on the screen.
+        focus-lost(reason) => {
+            if (root.typing-active) {
+                TypingView.focus-changed(false, reason == FocusReason.window-activation);
+            }
+        }
+        focus-gained(reason) => {
+            if (root.typing-active) {
+                TypingView.focus-changed(true, reason == FocusReason.window-activation);
+            }
+        }
         key-pressed(event) => {
+            // On the Typing screen every key, Escape included, goes to Rust,
+            // which owns the session (Escape pauses a running session).
+            if (root.typing-active && !root.show-component-preview) {
+                TypingView.key-typed(event.text, event.modifiers.control, event.modifiers.alt);
+                return EventResult.accept;
+            }
+            // An open utility overlay takes Escape first (it closes).
+            if (event.text == Key.Escape && UtilityView.open != "") {
+                UtilityView.close();
+                return EventResult.accept;
+            }
             if (event.text == Key.Escape) {
                 root.back-requested();
+                return EventResult.accept;
+            }
+            // Flow Exercise carousel: arrows browse, Enter begins. Ignored
+            // while a text field (the custom timer) holds focus, because
+            // then the key never reaches this scope.
+            if (root.active-screen == "flow-exercise" && !root.show-component-preview) {
+                if (event.text == Key.LeftArrow) {
+                    FlowView.step(-1);
+                    return EventResult.accept;
+                }
+                if (event.text == Key.RightArrow) {
+                    FlowView.step(1);
+                    return EventResult.accept;
+                }
+                if (event.text == Key.Return && ExerciseView.can-start) {
+                    ExerciseView.start();
+                    return EventResult.accept;
+                }
+            }
+            // Ctrl+K focuses the Home search (HOME-02). Windows may deliver the
+            // control character (U+000B) instead of "k" when Ctrl is held, so both
+            // are accepted. Ignored off Home, where there is no search box, and
+            // while the debug component preview covers Home (focus would land in
+            // a search box the user cannot see).
+            if (event.modifiers.control && (event.text == "k" || event.text == "\u{b}")
+                && root.active-screen == "home" && !root.show-component-preview) {
+                home.focus-search();
                 return EventResult.accept;
             }
             return EventResult.reject;
@@ -126,26 +225,132 @@ export component AppWindow inherits Window {
         // The cost is that every screen stays resident. With a handful of screens
         // that is negligible, and it will be worth re-examining only if a screen
         // ever holds something expensive.
-        HomeScreen {
+        // Both screens are also hidden while the opaque debug component preview
+        // covers them: Tab navigation skips invisible items, so focus cannot
+        // wander into a screen the user cannot see. Their state is kept.
+        home := HomeScreen {
             width: root.width;
             height: root.height;
-            visible: root.active-screen == "home";
+            has-progress-data: UtilityView.hero-has-data;
+            visible: root.active-screen == "home" && !root.show-component-preview;
             open-product-requested(slug) => {
                 root.navigate-requested(slug);
             }
             theme-toggle-requested => {
                 root.theme-toggle-requested();
             }
+            filters-changed(query, category) => {
+                root.filters-changed(query, category);
+            }
+            exam-launch-requested(id, language) => {
+                root.exam-launch-requested(id, language);
+            }
+            open-link-requested(id) => {
+                root.open-link-requested(id);
+            }
         }
 
-        ExerciseStubScreen {
+        ExerciseScreen {
             width: root.width;
             height: root.height;
-            visible: root.active-screen == "exercise";
-            product-name: root.active-product-name;
-            product-slug: root.active-product-slug;
+            visible: root.active-screen == "exercise" && !root.show-component-preview;
             back-requested => {
                 root.back-requested();
+            }
+            theme-toggle-requested => {
+                root.theme-toggle-requested();
+            }
+        }
+
+        TypingScreen {
+            width: root.width;
+            height: root.height;
+            visible: root.active-screen == "typing" && !root.show-component-preview;
+            back-requested => {
+                root.back-requested();
+            }
+            theme-toggle-requested => {
+                root.theme-toggle-requested();
+            }
+        }
+
+        ResultScreen {
+            width: root.width;
+            height: root.height;
+            visible: root.active-screen == "result" && !root.show-component-preview;
+            back-requested => {
+                root.back-requested();
+            }
+        }
+
+        // Typing Flow: three dedicated screens (DESIGN 8).
+        FlowExerciseScreen {
+            width: root.width;
+            height: root.height;
+            visible: root.active-screen == "flow-exercise" && !root.show-component-preview;
+            back-requested => {
+                root.back-requested();
+            }
+            theme-toggle-requested => {
+                root.theme-toggle-requested();
+            }
+        }
+
+        FlowTypingScreen {
+            width: root.width;
+            height: root.height;
+            visible: root.active-screen == "flow-typing" && !root.show-component-preview;
+            back-requested => {
+                root.back-requested();
+            }
+        }
+
+        FlowResultScreen {
+            width: root.width;
+            height: root.height;
+            visible: root.active-screen == "flow-result" && !root.show-component-preview;
+            back-requested => {
+                root.back-requested();
+            }
+        }
+
+        // Utility overlays (P08): Analytics, Profile, Settings, Candidate
+        // info. Rust sets `UtilityView.open` after filling the figures.
+        AnalyticsOverlay {
+            width: root.width;
+            height: root.height;
+            visible: UtilityView.open == "analytics" && !root.show-component-preview;
+        }
+
+        ProfileOverlay {
+            width: root.width;
+            height: root.height;
+            visible: UtilityView.open == "profile" && !root.show-component-preview;
+        }
+
+        SettingsOverlay {
+            width: root.width;
+            height: root.height;
+            visible: UtilityView.open == "settings" && !root.show-component-preview;
+        }
+
+        CandidateOverlay {
+            width: root.width;
+            height: root.height;
+            visible: UtilityView.open == "candidate" && !root.show-component-preview;
+        }
+
+        // Debug-only overlay above whichever screen is active. `visible`, not
+        // `if`, for the same reason as the screens above.
+        ComponentPreviewScreen {
+            width: root.width;
+            height: root.height;
+            visible: root.show-component-preview;
+            theme-toggle-requested => {
+                root.theme-toggle-requested();
+            }
+            close-requested => {
+                root.show-component-preview = false;
             }
         }
     }

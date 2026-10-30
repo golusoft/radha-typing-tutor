@@ -1,34 +1,42 @@
 // ============================================================================
-// HomeScreen — Screen 1 of the four-screen flow
+// HomeScreen — Screen 1 of the four-screen flow (v2)
 // ============================================================================
 //
-// The product dashboard. Structure per PRD.md Section 6 and STRUCTURE.MD Section
-// 01: header, three product sections of three cards each, footer.
+// The product dashboard. Structure per PRD.md Chapter 17.3 (HOME-01..12) and
+// STRUCTURE.MD v2:
+//
+//   MicroBar        status + contact + Tips / Social / Licence   (>= 1280 px only)
+//   Header          brand, search (Ctrl+K), Analytics / Profile / Settings, theme
+//   ScrollView
+//     WelcomePanel  greeting + honest empty-state stats
+//     Track filter  All / English / Hindi / Hindi Beginner / Exam Hub
+//     Sections      English (3), Hindi Mastery (3), Hindi Learn (3), Exam Hub (21)
+//     Footer
 //
 // Composition
 // -----------
 // This file assembles components; it does not define visuals. Cards come from
-// ProductCard via ProductGrid, headings from SectionHeader, and the content itself
-// from the `Products` data global — so the nine cards are nine data entries, not
-// nine blocks of markup.
+// ProductCard via ProductGrid and ExamCard via ExamGrid, headings from
+// SectionHeader, and the content from the `Products` and `Exams` data globals — so
+// the cards are data entries, not blocks of markup.
 //
-// Layout architecture
-// -------------------
-//   AppHeader        fixed height, stays put
-//   ScrollView       everything else, including the footer
-//     page container centred, max-width capped
+// State ownership
+// ---------------
+// The search text and the Exam Hub category are the only state kept here. Neither
+// filters anything by itself: both are reported to Rust (`filters-changed`), which
+// owns the matching rule (`src/catalog.rs`) and rewrites the `Products` / `Exams`
+// models. The track filter, by contrast, is pure presentation (which sections are
+// shown), so it lives here.
 //
-// Two decisions worth stating:
+// Layout architecture (unchanged from v1, and still load-bearing)
+// ---------------------------------------------------------------
+// Widths are computed from `root.width`, an outside-in value, never from content
+// or from the ScrollView's visible-width. Reading either one creates a binding
+// cycle that Slint resolves by ignoring the explicit width, which clipped the
+// third card in every row in an earlier build. See the notes at `row-width`.
 //
-//   * The footer is INSIDE the scroll area. As a fixed band it covered the bottom
-//     row of cards on a 768px-tall window, which is the minimum this product
-//     supports. Inside the flow it cannot overlap anything, and the last card is
-//     always reachable.
-//
-//   * The page content is capped at `WindowMetrics.content-max-width` and centred.
-//     On a 1920px display, cards stretched edge to edge become uncomfortably wide
-//     for their amount of text; capping keeps the reading measure sane while still
-//     using the space on a 1366px window.
+// The footer is INSIDE the scroll area so it can never cover a card on a 768 px
+// tall window.
 // ============================================================================
 
 import { ScrollView } from "std-widgets.slint";
@@ -37,33 +45,62 @@ import { Theme } from "../theme/palette.slint";
 import { Typography } from "../theme/typography.slint";
 import { Spacing, Radius, Stroke, WindowMetrics } from "../theme/metrics.slint";
 import { Products } from "../data/products.slint";
+import { Exams } from "../data/exams.slint";
 import { AppHeader } from "../components/app_header.slint";
 import { AppFooter } from "../components/app_footer.slint";
 import { SectionHeader } from "../components/section_header.slint";
 import { ProductGrid } from "../components/product_grid.slint";
+import { ExamGrid } from "../components/exam_grid.slint";
 import { WelcomePanel } from "../components/welcome_panel.slint";
 import { NavAction } from "../components/nav_action.slint";
 import { ThemeToggle } from "../components/theme_toggle.slint";
 import { RadhaButton, ButtonVariant } from "../components/button.slint";
 import { RadhaModal } from "../components/modal.slint";
+import { MicroBar } from "../components/micro_bar.slint";
+import { SearchField } from "../components/search_field.slint";
+import { PillBar, PillItem } from "../components/pill_bar.slint";
+import { UtilityView } from "../data/utility.slint";
 
 export component HomeScreen inherits Rectangle {
     /// A product card was activated. Carries the product slug.
     callback open-product-requested(string);
     callback theme-toggle-requested();
+    /// The search text or the Exam Hub category changed. Rust re-filters the
+    /// `Products` and `Exams` models. Carries (query, exam-category).
+    callback filters-changed(string, string);
+    /// An exam launcher was pressed. Carries (exam id, language "eng" | "hin").
+    callback exam-launch-requested(string, string);
+    /// A contact / social link id was activated; Rust opens it.
+    callback open-link-requested(string);
 
-    /// Placeholder contact details — listed in the end-of-phase report for
-    /// replacement. Properties rather than literals so real values can be supplied
-    /// without editing this file.
-    in property <string> contact-number: "+91 00000 00000";
-    in property <string> website-url: "radhatyping.example";
+    /// Move keyboard focus to the search box (Ctrl+K, wired in main.slint).
+    public function focus-search() {
+        search.focus-input();
+    }
+
+    /// Contact details. Properties rather than literals so Settings can supply them
+    /// later without editing this file.
+    in property <string> website-url: "www.golupdf.online";
+    in property <string> whatsapp-number: "+91 8603064972";
+    in property <string> contact-number: "+91 8789086401";
 
     /// Flips the welcome panel from its empty state to real figures once the
     /// progress system exists (Phase 31).
     in property <bool> has-progress-data: false;
 
-    // Which utility modal is open: "", "settings", "profile" or "analytics".
+    // Which info modal is open: "", "tips", "social", "license" or "exam".
+    // Analytics, Profile and Settings are real overlays owned by Rust (P08).
     private property <string> open-modal: "";
+    // Text for the exam notice modal, set when a launcher is pressed.
+    private property <string> exam-notice: "";
+
+    // Track filter: "all", "english", "hindi", "beginner" or "exams".
+    private property <string> track: "all";
+    // Exam Hub category filter: "all", "central", "state" or "court".
+    private property <string> exam-category: "all";
+
+    // --- Responsive switches --------------------------------------------------
+    private property <bool> wide: root.width >= 1280px;
 
     // --- Page measure -------------------------------------------------------
     // Allowance for the vertical scrollbar, so content never sits under it.
@@ -79,77 +116,139 @@ export component HomeScreen inherits Rectangle {
 
     // Width available to a row of cards.
     //
-    // Passed explicitly to each ProductGrid rather than left to the layout. Relying
-    // on propagation, the grid ended up wider than its container and clipped the
+    // Passed explicitly to each grid rather than left to the layout. Relying on
+    // propagation, the grid ended up wider than its container and clipped the
     // third card: the container's declared width did not constrain it, because a
     // sibling's intrinsic width had already grown the parent. Computing the row
     // width from `root.width` — a value that comes from outside and cannot be
     // influenced by content — makes the result deterministic.
     private property <length> row-width: root.content-width - root.page-gutter * 2;
 
-    // Exact width of one card in a three-column row.
-    //
-    // Computed here, not inside ProductGrid, because `root.width` is a genuine
-    // external input — it comes from the window. Computing it inside the grid meant
-    // reading the grid's own width, which is itself derived from its children: a
-    // cycle that Slint resolves by ignoring the explicit width entirely, leaving
-    // every row 1.25x too wide and the third card clipped.
+    // Exact width of one card in a three-column product row. Computed here for the
+    // same reason: `root.width` is a genuine external input.
     private property <length> card-width: (root.row-width - Spacing.lg * 2) / 3;
+
+    // Exam Hub columns: four where there is room, otherwise three.
+    private property <int> exam-columns: root.row-width >= 1180px ? 4 : 3;
+
+    // --- Which sections are visible -------------------------------------------
+    private property <bool> show-english:
+        (root.track == "all" || root.track == "english") && Products.english.length > 0;
+    private property <bool> show-hindi:
+        (root.track == "all" || root.track == "hindi") && Products.hindi-mastery.length > 0;
+    private property <bool> show-learn:
+        (root.track == "all" || root.track == "beginner") && Products.hindi-learn.length > 0;
+    private property <bool> show-exams:
+        (root.track == "all" || root.track == "exams") && Exams.shown.length > 0;
+    private property <bool> nothing-found:
+        !root.show-english && !root.show-hindi && !root.show-learn && !root.show-exams;
+
+    private property <[PillItem]> track-items: [
+        { id: "all", label: "All tracks" },
+        { id: "english", label: "English Mastery" },
+        { id: "hindi", label: "Hindi Mastery" },
+        { id: "beginner", label: "Hindi Beginner" },
+        { id: "exams", label: "Exam Hub (" + Exams.all.length + ")" },
+    ];
+
+    private property <[PillItem]> category-items: [
+        { id: "all", label: "All exams" },
+        { id: "central", label: "SSC, Railway & Central" },
+        { id: "state", label: "State & Police" },
+        { id: "court", label: "High Courts" },
+    ];
 
     background: Theme.bg-base;
 
     VerticalLayout {
         // ===================================================================
-        // Header
+        // Micro-bar (HOME-01) — wide windows only
+        // ===================================================================
+        // Not an if: a conditional whose condition reads the window width changes the
+        // layout's horizontal size info, which the window width itself is derived from -
+        // a binding loop. Collapsing the height instead only touches the vertical info.
+        MicroBar {
+            height: root.wide ? 28px : 0px;
+            visible: root.wide;
+            website: root.website-url;
+            whatsapp: root.whatsapp-number;
+            phone: root.contact-number;
+            link-requested(id) => {
+                root.open-link-requested(id);
+            }
+            tips-requested => {
+                root.open-modal = "tips";
+            }
+            social-requested => {
+                root.open-modal = "social";
+            }
+            license-requested => {
+                root.open-modal = "license";
+            }
+        }
+
+        // ===================================================================
+        // Header (HOME-02)
         // ===================================================================
         // AppHeader spaces every direct child, so content is grouped into exactly
-        // two: a stretching left group and a right group. Passing every item
-        // individually spent ~144px on spacing alone and pushed the right-hand
-        // controls off the edge at the 1024px minimum width.
+        // three: brand, a stretching search slot, and the action group. Passing
+        // every item individually spent ~144px on spacing alone and pushed the
+        // right-hand controls off the edge at the 1024px minimum width.
         AppHeader {
-            // --- Brand and contact ------------------------------------------
-            // Stretch 1: this group absorbs the slack, so the right group always
-            // gets its full width at the trailing edge.
+            // --- Brand --------------------------------------------------------
             HorizontalLayout {
-                horizontal-stretch: 1;
-                spacing: Spacing.lg;
-                alignment: start;
+                horizontal-stretch: 0;
+                spacing: Spacing.sm;
 
-                HorizontalLayout {
-                    spacing: Spacing.sm;
-
-                    Image {
-                        source: @image-url("../../../../assets/icons/brand-mark.svg");
-                        width: 30px;
-                        height: 30px;
-                        y: (parent.height - self.height) / 2;
-                    }
-
-                    VerticalLayout {
-                        spacing: 0px;
-                        alignment: center;
-
-                        Text {
-                            text: "RADHA TYPING TUTOR";
-                            font-family: Typography.family-ui;
-                            font-size: Typography.size-h3;
-                            font-weight: Typography.weight-bold;
-                            letter-spacing: Typography.tracking-wide;
-                            color: Theme.text-primary;
-                        }
-
-                        Text {
-                            text: "Typing • Practice • Mastery";
-                            font-family: Typography.family-ui;
-                            font-size: Typography.size-micro;
-                            color: Theme.text-tertiary;
-                        }
-                    }
+                Image {
+                    source: @image-url("../../../../assets/icons/brand-mark.svg");
+                    width: 30px;
+                    height: 30px;
+                    y: (parent.height - self.height) / 2;
                 }
 
+                VerticalLayout {
+                    spacing: 0px;
+                    alignment: center;
+
+                    Text {
+                        text: "RADHA TYPING TUTOR";
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-h3;
+                        font-weight: Typography.weight-bold;
+                        letter-spacing: Typography.tracking-wide;
+                        color: Theme.text-primary;
+                    }
+
+                    Text {
+                        text: "Typing • Practice • Mastery";
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-micro;
+                        color: Theme.text-tertiary;
+                    }
+                }
             }
 
-            // --- Utility actions --------------------------------------------
+            // --- Search (HOME-03) ----------------------------------------------
+            // Takes the slack. Capped so it does not become a wide empty bar on a
+            // large display.
+            Rectangle {
+                horizontal-stretch: 1;
+                min-width: 60px;
+                background: transparent;
+
+                search := SearchField {
+                    width: Math.min(parent.width, 380px);
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    placeholder: "Search courses and exams";
+                    edited(text) => {
+                        root.filters-changed(text, root.exam-category);
+                    }
+                }
+            }
+
+            // --- Utility actions ----------------------------------------------
             // Overlays, not screens — RULES.MD Rule 21 keeps the core flow at four
             // screens. Stretch 0 so this group is never squeezed or displaced.
             HorizontalLayout {
@@ -162,7 +261,7 @@ export component HomeScreen inherits Rectangle {
                     icon: @image-url("../../../../assets/icons/analytics.svg");
                     y: (parent.height - self.height) / 2;
                     triggered => {
-                        root.open-modal = "analytics";
+                        UtilityView.open-requested("analytics");
                     }
                 }
 
@@ -171,16 +270,16 @@ export component HomeScreen inherits Rectangle {
                     icon: @image-url("../../../../assets/icons/profile.svg");
                     y: (parent.height - self.height) / 2;
                     triggered => {
-                        root.open-modal = "profile";
+                        UtilityView.open-requested("profile");
                     }
                 }
 
                 NavAction {
                     label: "Settings";
-                    icon: @image-url("../../../../assets/icons/settings.svg");
+                    icon: @image-url("../../../../assets/icons/settings-solid.svg");
                     y: (parent.height - self.height) / 2;
                     triggered => {
-                        root.open-modal = "settings";
+                        UtilityView.open-requested("settings");
                     }
                 }
 
@@ -201,18 +300,9 @@ export component HomeScreen inherits Rectangle {
 
             VerticalLayout {
                 // Width comes from `root.width` — the screen's own width, set by
-                // the window — NOT from the ScrollView's `visible-width`.
-                //
-                // Binding to `visible-width` from inside the scroll area is a
-                // cycle: the viewport is sized from its content while the content
-                // is sized from the viewport. Slint resolves it to something wider
-                // than the window, and the third card in each row gets clipped.
-                // Depending only on an outside-in value avoids that entirely.
-                //
-                // `page-gutter` both insets the content and caps its measure: on a
-                // wide display the extra width becomes padding, which centres the
-                // content and keeps the reading measure comfortable instead of
-                // stretching cards edge to edge.
+                // the window — NOT from the ScrollView's `visible-width` (see the
+                // header comment). `page-gutter` both insets the content and caps
+                // its measure.
                 width: root.content-width;
                 padding-left: root.page-gutter;
                 padding-right: root.page-gutter;
@@ -221,12 +311,32 @@ export component HomeScreen inherits Rectangle {
                 spacing: Spacing.xl;
                 alignment: start;
 
-                    WelcomePanel {
-                        width: root.row-width;
-                        has-data: root.has-progress-data;
-                    }
+                WelcomePanel {
+                    width: root.row-width;
+                    has-data: root.has-progress-data;
+                    practice-time: UtilityView.hero-practice;
+                    best-wpm: UtilityView.hero-best;
+                    accuracy: UtilityView.hero-accuracy;
+                }
 
-                    // --- English Typing Mastery ---------------------------
+                // --- Track filter (HOME-05) -----------------------------------
+                HorizontalLayout {
+                    width: root.row-width;
+                    alignment: start;
+
+                    PillBar {
+                        items: root.track-items;
+                        current: root.track;
+                        selected(id) => {
+                            root.track = id;
+                        }
+                    }
+                }
+
+                // --- English Typing Mastery -----------------------------------
+                if root.show-english: VerticalLayout {
+                    spacing: Spacing.xl;
+
                     SectionHeader {
                         width: root.row-width;
                         title: "ENGLISH TYPING MASTERY";
@@ -242,12 +352,16 @@ export component HomeScreen inherits Rectangle {
                             root.open-product-requested(slug);
                         }
                     }
+                }
 
-                    // --- Hindi Typing Mastery -----------------------------
+                // --- Hindi Typing Mastery -------------------------------------
+                if root.show-hindi: VerticalLayout {
+                    spacing: Spacing.xl;
+
                     SectionHeader {
                         width: root.row-width;
                         title: "HINDI TYPING MASTERY";
-                        tagline: "Learn • Practice • Compete • Master";
+                        tagline: "Mangal Unicode (GAIL, CBI) and Kruti Dev 010";
                         accent: Theme.secondary;
                         status: root.has-progress-data ? "" : "Not started yet";
                     }
@@ -259,10 +373,12 @@ export component HomeScreen inherits Rectangle {
                             root.open-product-requested(slug);
                         }
                     }
+                }
 
-                    // --- Hindi Learn (Beginner) ---------------------------
-                    // Title only: PRD.md Section 6.4's wireframe shows no tagline
-                    // row for this section.
+                // --- Hindi Learn (Beginner) -----------------------------------
+                if root.show-learn: VerticalLayout {
+                    spacing: Spacing.xl;
+
                     SectionHeader {
                         width: root.row-width;
                         title: "HINDI LEARN (BEGINNER)";
@@ -277,41 +393,170 @@ export component HomeScreen inherits Rectangle {
                             root.open-product-requested(slug);
                         }
                     }
+                }
 
-                    // Contact details and social links live here rather than in the
-                    // header: together they cost ~320px, which pushed the header
-                    // past the 1024px minimum width and clipped the navigation.
-                    AppFooter {
+                // --- Exam Hub (HOME-08..10) ------------------------------------
+                if root.show-exams: VerticalLayout {
+                    spacing: Spacing.lg;
+
+                    SectionHeader {
                         width: root.row-width;
-                        contact-number: root.contact-number;
-                        website-url: root.website-url;
+                        title: "EXAM HUB";
+                        tagline: "Practice simulators. Every card shows how far its rules are verified.";
+                        accent: Theme.accent;
+                        status: Exams.shown.length + " of " + Exams.all.length + " shown";
+                    }
+
+                    HorizontalLayout {
+                        width: root.row-width;
+                        alignment: start;
+
+                        PillBar {
+                            items: root.category-items;
+                            current: root.exam-category;
+                            selected(id) => {
+                                root.exam-category = id;
+                                root.filters-changed(search.text, id);
+                            }
+                        }
+                    }
+
+                    // Honest notice: the Hub must not read as an official exam.
+                    Rectangle {
+                        width: root.row-width;
+                        background: Theme.warning-subtle;
+                        border-radius: Radius.md;
+
+                        HorizontalLayout {
+                            padding: Spacing.md;
+
+                            Text {
+                                text: "Practice simulators only. Official pass / fail is shown only where an exam's rules are verified from its notification; every other card is practice-only.";
+                                font-family: Typography.family-ui;
+                                font-size: Typography.size-caption;
+                                color: Theme.text-secondary;
+                                wrap: word-wrap;
+                            }
+                        }
+                    }
+
+                    ExamGrid {
+                        exams: Exams.shown;
+                        grid-width: root.row-width;
+                        columns: root.exam-columns;
+                        // Opens the exam's Exercise screen (practice only
+                        // until Exam Mode profiles land, P09).
+                        launch-requested(id, language) => {
+                            root.exam-launch-requested(id, language);
+                        }
+                    }
+                }
+
+                // --- Nothing matched ------------------------------------------
+                if root.nothing-found: Rectangle {
+                    width: root.row-width;
+                    height: 120px;
+                    background: Theme.bg-sunken;
+                    border-radius: Radius.lg;
+
+                    Text {
+                        text: "No courses or exams match this search.";
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-body;
+                        color: Theme.text-secondary;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+
+                // Contact details and social links live here as well as in the
+                // micro-bar: below 1280 px the micro-bar is hidden, and together
+                // they cost ~320px, which would push the header past the 1024px
+                // minimum width.
+                AppFooter {
+                    width: root.row-width;
+                    contact-number: root.contact-number;
+                    website-url: root.website-url;
+                    link-requested(id) => {
+                        root.open-link-requested(id);
                     }
                 }
             }
         }
+    }
 
     // =====================================================================
-    // Utility modals
+    // Info modal
     // =====================================================================
-    // One RadhaModal per surface, reusing the existing component unchanged.
+    // One RadhaModal whose title and body follow `open-modal`. Utility surfaces
+    // (Settings, Profile, Analytics) are placeholders until their phases; Tips,
+    // Social, Licence and the exam notice are informational.
+    //
     // Explicit geometry rather than `100%`, and `visible` rather than `if`, for the
     // reasons documented in main.slint.
     RadhaModal {
         width: root.width;
         height: root.height;
-        visible: root.open-modal == "settings";
-        open: root.open-modal == "settings";
-        title: "Settings";
+        visible: root.open-modal != "";
+        open: root.open-modal != "";
+        title: root.open-modal == "tips" ? "Typing tips"
+            : root.open-modal == "social" ? "Connect"
+            : root.open-modal == "license" ? "Licence"
+            : "Exam Mode";
         dismissed => {
             root.open-modal = "";
         }
 
         Text {
-            text: "Appearance, theme, sound, font, typing, keyboard and guide preferences — coming in Phase 13.";
+            text: root.open-modal == "tips"
+                ? "1. Build accuracy first; speed follows.\n2. Keep your eyes on the text, not the keys.\n3. Return your fingers to the home row after every key.\n4. Short daily practice beats one long session."
+                : root.open-modal == "social"
+                ? "Website: " + root.website-url + "\nWhatsApp: " + root.whatsapp-number + "\nPhone: " + root.contact-number + "\nInstagram: @golukumar_yt_\nOpen any of them with the buttons below."
+                : root.open-modal == "license"
+                ? "Licence is not configured in this build. Licensing and activation arrive in a later release."
+                : root.exam-notice;
             font-family: Typography.family-ui;
             font-size: Typography.size-body;
             color: Theme.text-secondary;
             wrap: word-wrap;
+        }
+
+        // Social: the links open through Rust (URLs never live in .slint).
+        if root.open-modal == "social": HorizontalLayout {
+            spacing: Spacing.sm;
+            alignment: start;
+            RadhaButton {
+                text: "Website";
+                variant: ButtonVariant.Secondary;
+                compact: true;
+                clicked => {
+                    root.open-link-requested("website");
+                }
+            }
+            RadhaButton {
+                text: "WhatsApp";
+                variant: ButtonVariant.Secondary;
+                compact: true;
+                clicked => {
+                    root.open-link-requested("whatsapp");
+                }
+            }
+            RadhaButton {
+                text: "Instagram";
+                variant: ButtonVariant.Secondary;
+                compact: true;
+                clicked => {
+                    root.open-link-requested("instagram");
+                }
+            }
+            RadhaButton {
+                text: "Facebook";
+                variant: ButtonVariant.Secondary;
+                compact: true;
+                clicked => {
+                    root.open-link-requested("facebook");
+                }
+            }
         }
 
         HorizontalLayout {
@@ -326,63 +571,4 @@ export component HomeScreen inherits Rectangle {
         }
     }
 
-    RadhaModal {
-        width: root.width;
-        height: root.height;
-        visible: root.open-modal == "profile";
-        open: root.open-modal == "profile";
-        title: "Profile";
-        dismissed => {
-            root.open-modal = "";
-        }
-
-        Text {
-            text: "Name, typing level, total practice, personal bests and achievements — coming in Phase 13.";
-            font-family: Typography.family-ui;
-            font-size: Typography.size-body;
-            color: Theme.text-secondary;
-            wrap: word-wrap;
-        }
-
-        HorizontalLayout {
-            alignment: end;
-            RadhaButton {
-                text: "Close";
-                variant: ButtonVariant.Secondary;
-                clicked => {
-                    root.open-modal = "";
-                }
-            }
-        }
-    }
-
-    RadhaModal {
-        width: root.width;
-        height: root.height;
-        visible: root.open-modal == "analytics";
-        open: root.open-modal == "analytics";
-        title: "Analytics";
-        dismissed => {
-            root.open-modal = "";
-        }
-
-        Text {
-            text: "Overall WPM, accuracy, practice time, weak keys and per-layout progress — coming in Phase 12.";
-            font-family: Typography.family-ui;
-            font-size: Typography.size-body;
-            color: Theme.text-secondary;
-            wrap: word-wrap;
-        }
-
-        HorizontalLayout {
-            alignment: end;
-            RadhaButton {
-                text: "Close";
-                variant: ButtonVariant.Secondary;
-                clicked => {
-                    root.open-modal = "";
-                }
-            }
-        }
-    }
 }

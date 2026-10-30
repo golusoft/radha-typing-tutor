@@ -1,0 +1,28 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "ssc-chsl"
+profile_version = 1
+display_name = "SSC CHSL — LDC / JSA"
+body = "Staff Selection Commission"
+
+[notice]
+title = "Combined Higher Secondary Level — LDC / JSA skill test"
+note = "Primary notification not read in Radha; rules are unknown."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "LDC/JSA typing in English or Hindi, 10 min; English 35 WPM / Hindi 30 WPM; separate 15-min DEO skill test with 8,000 or 15,000 KDPH tracks by department"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://ssc.gov.in/api/attachment/uploads/masterData/NoticeBoards/Notice_of_adv_chsl_2025.pdf"
+
+[[reference_claims]]
+claim = "English 35 WPM · Hindi 30 WPM · 10 Min · Official · Backspace allowed · QWERTY · Mangal / KD · Hindi layout GAIL"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

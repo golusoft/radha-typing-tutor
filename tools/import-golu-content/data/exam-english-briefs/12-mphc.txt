@@ -1,0 +1,151 @@
+// MPHC — MP High Court JJA / AG-3 (fictional Vindhyanagar District and Sessions Court)
+
+#MPHC-001 | district court case registration and numbering
+- A case is registered after scrutiny and given a number made of its type, a running serial and the year.
+- The registration register records the number, the date, the parties and the advocate.
+- The case number is written on the file cover and on every later paper in the case.
+- Running serials start again from one at the beginning of each year.
+
+#MPHC-002 | preparing a daily cause list
+- The daily cause list for each court is prepared from the dates entered in the case register.
+- Matters are listed under headings such as evidence, arguments and judgment.
+- The list is typed in a fixed format with the serial number in the first column.
+- The final list is checked by the reader of the court before it is displayed.
+
+#MPHC-003 | a court diary entry and file movement
+- The court diary records the business of each day, including matters heard and orders passed.
+- Every movement of a file out of the courtroom is noted in the file movement register.
+- Files sent to the copying section or the record room are signed for by the receiving clerk.
+- The diary and the movement register together show where every file is at any time.
+
+#MPHC-004 | application tracking in the certified copy section
+- Each application in the copy section is given a number and entered with the date of receipt.
+- The tracking register shows the date on which the record was requisitioned and the date on which it arrived.
+- The date of preparation and the date of delivery complete the entry.
+- Applicants receive a slip showing the expected date of delivery.
+
+#MPHC-005 | a summons and notice dispatch record
+- The dispatch record lists every summons and notice issued with its case number and addressee.
+- The mode of service, such as process server or registered post, is noted.
+- The date of the next hearing is written in the record to track timely service.
+- Service reports are entered when they return.
+
+#MPHC-006 | uploading a court order and verifying its status
+- Signed orders are scanned and uploaded to the case management system on the same day.
+- The clerk checks that the uploaded file opens and shows every page clearly.
+- The status of the case is updated to match the order.
+- A register records the date and time of each upload.
+
+#MPHC-007 | digitising old judicial registers
+- Old registers are digitised by typing their entries into a database with the original page numbers.
+- Faded entries are checked under good light and typed only when they can be read with certainty.
+- Unreadable entries are marked as illegible rather than guessed.
+- The original registers are preserved after digitisation.
+
+#MPHC-008 | case file pagination and annexure control
+- The case file is paginated in a single sequence after every new filing.
+- Annexures are listed in a control sheet with their marks and page ranges.
+- An annexure withdrawn by order of the court is noted on the control sheet.
+- The control sheet is kept at the front of the file.
+
+#MPHC-009 | listing a matter for hearing
+- A matter is listed according to the date fixed by the court and the listing rules.
+- Urgent matters may be listed on an earlier date on the court's direction.
+- The listing clerk checks that the file is complete before listing.
+- Parties learn of the listing from the published cause list.
+
+#MPHC-010 | a register of pending applications
+- The register lists every interlocutory application pending in each case.
+- Each entry shows the application number, the date of filing and the relief sought in brief.
+- The date of disposal is entered when the court decides the application.
+- A monthly abstract shows the number pending in each court.
+
+#MPHC-011 | judicial staff attendance and duty schedule
+- The attendance of judicial staff is recorded every morning in the attendance register.
+- The duty schedule assigns staff to courtrooms, counters and sections.
+- Changes in duty are approved in writing by the officer in charge.
+- The schedule is displayed in the staff room each week.
+
+#MPHC-012 | reconciling court fees and receipts
+- Court fees received during the day are added and compared with the total of the receipts issued.
+- Any difference is investigated before the day's account is closed.
+- The reconciled amount is entered in the fee register.
+- The register is checked by the accounts section each month.
+
+#MPHC-013 | preparing a court office memorandum
+- A court office memorandum conveys an instruction to the staff of a section or the whole court.
+- It has a number, a date and a brief subject line.
+- The instruction is stated in clear numbered points.
+- The memorandum is acknowledged by each section that receives it.
+
+#MPHC-014 | record room retention and retrieval
+- The record room keeps disposed files according to the retention schedule for each class.
+- Files are arranged by year and case type for quick retrieval.
+- Retrieval requests are entered in a register with the requester's name and purpose.
+- Files due for review are listed every year.
+
+#MPHC-015 | e-court services in Madhya Pradesh
+- E-court services allow litigants to see case status, cause lists and orders online.
+- Litigants can search by case number, party name or advocate name.
+- Orders uploaded to the system can be downloaded by the parties.
+- Service centres in court premises help people who cannot use the online services.
+
+#MPHC-016 | a formal notice for litigants
+- A notice for litigants announces changes such as new counter hours or a revised filing procedure.
+- It states the date from which the change applies.
+- The notice is written in plain language and displayed at the entrance and on the website.
+- It is issued under the signature of the competent officer.
+
+#MPHC-017 | a case number and date accuracy drill
+- This drill presents many case numbers and dates in close succession.
+- Case numbers differ in their type, serial or year, and each part must be typed correctly.
+- Dates appear in both numeric and written forms.
+- The typist should check each number before moving to the next one.
+
+#MPHC-018 | an administrative report on case disposal
+- The disposal report gives the number of cases disposed of in each court during the month.
+- Disposals are classified as contested, uncontested and transferred.
+- The report compares the month's figures with the target set for each court.
+- A short note explains the reasons for any shortfall.
+
+#MPHC-019 | a registry objection and missing document memo
+- The memo lists documents missing from a filing, such as a certified copy of the order under challenge.
+- It states the time within which the documents must be supplied.
+- The compliance date is entered when the documents are filed.
+- Filings without compliance are placed before the registrar for orders.
+
+#MPHC-020 | a court holiday calendar and working hours
+- The holiday calendar lists all court holidays with their dates.
+- Working hours of courts and offices are printed beside the calendar.
+- Arrangements for urgent matters during vacations are explained.
+- The calendar is published at the start of the year.
+
+#MPHC-021 | entering party names and case status
+- Party names are entered exactly as they appear in the cause title.
+- Where there are many parties, the first name is entered followed by the words and others.
+- The case status is entered from the latest order sheet.
+- Each entry is checked against the file before it is saved.
+
+#MPHC-022 | the confidential handling of judicial records
+- Confidential judicial records are kept in a locked cabinet in the registry.
+- They are opened only on a written direction and in the presence of an authorised officer.
+- A register records every opening with the date, time and purpose.
+- Copies are never made without the court's permission.
+
+#MPHC-023 | English office typing with legal terms
+- This passage uses legal terms such as plaint, written statement, decree and execution.
+- Each term is used in a sentence that shows its ordinary meaning in court work.
+- The typist should spell every legal term correctly, as small errors change the meaning.
+- The passage is fictional practice material.
+
+#MPHC-024 | mixed numbers, dates and punctuation for judicial assistants
+- This passage mixes figures, dates, brackets and semicolons in court-style sentences.
+- Numbers such as page counts and fees must be typed exactly.
+- Brackets and quotation marks are used as they would be in a court note.
+- The aim is to type every mark correctly while keeping a steady pace.
+
+#MPHC-025 | a timed typing simulation for judicial assistants
+- This timed simulation gives a continuous passage of court office prose.
+- It contains case numbers, dates and the names of fictional parties.
+- The typist should maintain speed and accuracy until the time is over.
+- The actual test rules for each post are configured separately in the app.

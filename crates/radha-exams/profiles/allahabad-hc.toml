@@ -1,0 +1,28 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "allahabad-hc"
+profile_version = 1
+display_name = "Allahabad High Court — Group-C"
+body = "High Court of Judicature at Allahabad"
+
+[notice]
+title = "Group-C clerical posts — typing where specified by post"
+note = "Primary notification not read in Radha; rules are unknown. RO / ARO rules are not mixed in."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "Hindi and English typing wherever specified by post"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://www.allahabadhighcourt.in/event/event_20077_04-10-2024.html"
+
+[[reference_claims]]
+claim = "English 30 WPM · Hindi 25 WPM · 500 Words · 10 Min · Backspace allowed · QWERTY · Mangal Unicode"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

@@ -1,0 +1,113 @@
+// ============================================================================
+// KpiPill — one compact metric tile (label, value, optional delta)
+// ============================================================================
+//
+// DESIGN.md Chapter 20.3; look taken from the KPI tiles in
+// design-reference/01-home.html (layout reference only, RULES.MD Rule 26).
+//
+//   PRACTICE TIME          label: micro caps, text-tertiary
+//   2h 40m  [+12 min]      value: mono bold; delta chip tinted by `delta-tone`
+//
+// The delta text must carry its own sign or word ("+6.2 WPM", "-3%", "steady"):
+// the tone colour only reinforces it, never replaces it (DESIGN.md 20.7).
+//
+// `empty: true` is the honest no-data state: the value becomes "—" and the
+// delta is hidden, so an absent number is never shown as a zero.
+// Width comes from the owner; the tile does not size itself to its text.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke } from "../theme/metrics.slint";
+
+/// Colour of the delta chip. Neutral = no judgement.
+export enum KpiTone {
+    Neutral,
+    Positive,
+    Negative,
+    Accent,
+}
+
+export component KpiPill inherits Rectangle {
+    /// Caption above the value. Pass it in capitals ("PEAK SPEED").
+    in property <string> label;
+    /// The metric, already formatted ("42 WPM").
+    in property <string> value;
+    /// Change since the last period, with its own sign/word; empty hides the chip.
+    in property <string> delta;
+    /// Tone of the delta chip.
+    in property <KpiTone> delta-tone: KpiTone.Neutral;
+    /// No data yet: shows "—" and hides the delta.
+    in property <bool> empty: false;
+
+    property <color> delta-fg:
+        root.delta-tone == KpiTone.Positive ? Theme.success
+        : root.delta-tone == KpiTone.Negative ? Theme.error
+        : root.delta-tone == KpiTone.Accent ? Theme.accent
+        : Theme.text-secondary;
+
+    property <color> delta-bg:
+        root.delta-tone == KpiTone.Positive ? Theme.success-subtle
+        : root.delta-tone == KpiTone.Negative ? Theme.error-subtle
+        : root.delta-tone == KpiTone.Accent ? Theme.accent-subtle
+        : Theme.bg-raised;
+
+    border-radius: Radius.md;
+    background: Theme.bg-sunken;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-soft;
+
+    VerticalLayout {
+        padding-top: Spacing.md;
+        padding-bottom: Spacing.md;
+        padding-left: Spacing.lg;
+        padding-right: Spacing.lg;
+        spacing: Spacing.xxs;
+
+        Text {
+            text: root.label;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-micro;
+            font-weight: Typography.weight-semibold;
+            letter-spacing: Typography.tracking-wide;
+            color: Theme.text-tertiary;
+            overflow: elide;
+        }
+
+        HorizontalLayout {
+            spacing: Spacing.sm;
+            alignment: start;
+
+            Text {
+                text: root.empty ? "—" : root.value;
+                font-family: Typography.family-mono;
+                font-size: Typography.size-body;
+                font-weight: Typography.weight-bold;
+                color: root.empty ? Theme.text-disabled : Theme.text-primary;
+                vertical-alignment: center;
+            }
+
+            if !root.empty && root.delta != "": Rectangle {
+                height: 18px;
+                y: (parent.height - self.height) / 2;
+                border-radius: Radius.sm;
+                background: root.delta-bg;
+
+                HorizontalLayout {
+                    padding-left: Spacing.xs + 2px;
+                    padding-right: Spacing.xs + 2px;
+                    alignment: center;
+
+                    Text {
+                        text: root.delta;
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-micro;
+                        font-weight: Typography.weight-semibold;
+                        color: root.delta-fg;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+    }
+}

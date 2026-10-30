@@ -1,0 +1,1311 @@
+{
+ "schema_version": 1,
+ "layout": "inscript",
+ "book": "02_Hindi_InScript_Keyboard_Reference.pdf",
+ "sha256": "10cb8afdf018370fde55a8958fa24cd14b6a148e3afc24f5d5fa0ced07d43afb",
+ "rows": [
+  {
+   "tc": "INSC-TC-001",
+   "map": "INSC-MAP-001",
+   "book_input": "`",
+   "status": "verified",
+   "input": [
+    "`"
+   ],
+   "expect": "ॊ"
+  },
+  {
+   "tc": "INSC-TC-002",
+   "map": "INSC-MAP-002",
+   "book_input": "1",
+   "status": "verified",
+   "input": [
+    "1"
+   ],
+   "expect": "१"
+  },
+  {
+   "tc": "INSC-TC-003",
+   "map": "INSC-MAP-003",
+   "book_input": "2",
+   "status": "verified",
+   "input": [
+    "2"
+   ],
+   "expect": "२"
+  },
+  {
+   "tc": "INSC-TC-004",
+   "map": "INSC-MAP-004",
+   "book_input": "3",
+   "status": "verified",
+   "input": [
+    "3"
+   ],
+   "expect": "३"
+  },
+  {
+   "tc": "INSC-TC-005",
+   "map": "INSC-MAP-005",
+   "book_input": "4",
+   "status": "verified",
+   "input": [
+    "4"
+   ],
+   "expect": "४"
+  },
+  {
+   "tc": "INSC-TC-006",
+   "map": "INSC-MAP-006",
+   "book_input": "5",
+   "status": "verified",
+   "input": [
+    "5"
+   ],
+   "expect": "५"
+  },
+  {
+   "tc": "INSC-TC-007",
+   "map": "INSC-MAP-007",
+   "book_input": "6",
+   "status": "verified",
+   "input": [
+    "6"
+   ],
+   "expect": "६"
+  },
+  {
+   "tc": "INSC-TC-008",
+   "map": "INSC-MAP-008",
+   "book_input": "7",
+   "status": "verified",
+   "input": [
+    "7"
+   ],
+   "expect": "७"
+  },
+  {
+   "tc": "INSC-TC-009",
+   "map": "INSC-MAP-009",
+   "book_input": "8",
+   "status": "verified",
+   "input": [
+    "8"
+   ],
+   "expect": "८"
+  },
+  {
+   "tc": "INSC-TC-010",
+   "map": "INSC-MAP-010",
+   "book_input": "9",
+   "status": "verified",
+   "input": [
+    "9"
+   ],
+   "expect": "९"
+  },
+  {
+   "tc": "INSC-TC-011",
+   "map": "INSC-MAP-011",
+   "book_input": "0",
+   "status": "verified",
+   "input": [
+    "0"
+   ],
+   "expect": "०"
+  },
+  {
+   "tc": "INSC-TC-012",
+   "map": "INSC-MAP-012",
+   "book_input": "-",
+   "status": "verified",
+   "input": [
+    "-"
+   ],
+   "expect": "-"
+  },
+  {
+   "tc": "INSC-TC-013",
+   "map": "INSC-MAP-013",
+   "book_input": "=",
+   "status": "verified",
+   "input": [
+    "="
+   ],
+   "expect": "ृ"
+  },
+  {
+   "tc": "INSC-TC-014",
+   "map": "INSC-MAP-014",
+   "book_input": "q",
+   "status": "verified",
+   "input": [
+    "q"
+   ],
+   "expect": "ौ"
+  },
+  {
+   "tc": "INSC-TC-015",
+   "map": "INSC-MAP-015",
+   "book_input": "w",
+   "status": "verified",
+   "input": [
+    "w"
+   ],
+   "expect": "ै"
+  },
+  {
+   "tc": "INSC-TC-016",
+   "map": "INSC-MAP-016",
+   "book_input": "e",
+   "status": "verified",
+   "input": [
+    "e"
+   ],
+   "expect": "ा"
+  },
+  {
+   "tc": "INSC-TC-017",
+   "map": "INSC-MAP-017",
+   "book_input": "r",
+   "status": "verified",
+   "input": [
+    "r"
+   ],
+   "expect": "ी"
+  },
+  {
+   "tc": "INSC-TC-018",
+   "map": "INSC-MAP-018",
+   "book_input": "t",
+   "status": "verified",
+   "input": [
+    "t"
+   ],
+   "expect": "ू"
+  },
+  {
+   "tc": "INSC-TC-019",
+   "map": "INSC-MAP-019",
+   "book_input": "y",
+   "status": "verified",
+   "input": [
+    "y"
+   ],
+   "expect": "ब"
+  },
+  {
+   "tc": "INSC-TC-020",
+   "map": "INSC-MAP-020",
+   "book_input": "u",
+   "status": "verified",
+   "input": [
+    "u"
+   ],
+   "expect": "ह"
+  },
+  {
+   "tc": "INSC-TC-021",
+   "map": "INSC-MAP-021",
+   "book_input": "i",
+   "status": "verified",
+   "input": [
+    "i"
+   ],
+   "expect": "ग"
+  },
+  {
+   "tc": "INSC-TC-022",
+   "map": "INSC-MAP-022",
+   "book_input": "o",
+   "status": "verified",
+   "input": [
+    "o"
+   ],
+   "expect": "द"
+  },
+  {
+   "tc": "INSC-TC-023",
+   "map": "INSC-MAP-023",
+   "book_input": "p",
+   "status": "verified",
+   "input": [
+    "p"
+   ],
+   "expect": "ज"
+  },
+  {
+   "tc": "INSC-TC-024",
+   "map": "INSC-MAP-024",
+   "book_input": "[",
+   "status": "verified",
+   "input": [
+    "["
+   ],
+   "expect": "ड"
+  },
+  {
+   "tc": "INSC-TC-025",
+   "map": "INSC-MAP-025",
+   "book_input": "]",
+   "status": "verified",
+   "input": [
+    "]"
+   ],
+   "expect": "़"
+  },
+  {
+   "tc": "INSC-TC-026",
+   "map": "INSC-MAP-026",
+   "book_input": "\\",
+   "status": "verified",
+   "input": [
+    "\\"
+   ],
+   "expect": "ॉ"
+  },
+  {
+   "tc": "INSC-TC-027",
+   "map": "INSC-MAP-027",
+   "book_input": "a",
+   "status": "verified",
+   "input": [
+    "a"
+   ],
+   "expect": "ो"
+  },
+  {
+   "tc": "INSC-TC-028",
+   "map": "INSC-MAP-028",
+   "book_input": "s",
+   "status": "verified",
+   "input": [
+    "s"
+   ],
+   "expect": "े"
+  },
+  {
+   "tc": "INSC-TC-029",
+   "map": "INSC-MAP-029",
+   "book_input": "d",
+   "status": "verified",
+   "input": [
+    "d"
+   ],
+   "expect": "्"
+  },
+  {
+   "tc": "INSC-TC-030",
+   "map": "INSC-MAP-030",
+   "book_input": "f",
+   "status": "verified",
+   "input": [
+    "f"
+   ],
+   "expect": "ि"
+  },
+  {
+   "tc": "INSC-TC-031",
+   "map": "INSC-MAP-031",
+   "book_input": "g",
+   "status": "verified",
+   "input": [
+    "g"
+   ],
+   "expect": "ु"
+  },
+  {
+   "tc": "INSC-TC-032",
+   "map": "INSC-MAP-032",
+   "book_input": "h",
+   "status": "verified",
+   "input": [
+    "h"
+   ],
+   "expect": "प"
+  },
+  {
+   "tc": "INSC-TC-033",
+   "map": "INSC-MAP-033",
+   "book_input": "j",
+   "status": "verified",
+   "input": [
+    "j"
+   ],
+   "expect": "र"
+  },
+  {
+   "tc": "INSC-TC-034",
+   "map": "INSC-MAP-034",
+   "book_input": "k",
+   "status": "verified",
+   "input": [
+    "k"
+   ],
+   "expect": "क"
+  },
+  {
+   "tc": "INSC-TC-035",
+   "map": "INSC-MAP-035",
+   "book_input": "l",
+   "status": "verified",
+   "input": [
+    "l"
+   ],
+   "expect": "त"
+  },
+  {
+   "tc": "INSC-TC-036",
+   "map": "INSC-MAP-036",
+   "book_input": ";",
+   "status": "verified",
+   "input": [
+    ";"
+   ],
+   "expect": "च"
+  },
+  {
+   "tc": "INSC-TC-037",
+   "map": "INSC-MAP-037",
+   "book_input": "'",
+   "status": "verified",
+   "input": [
+    "'"
+   ],
+   "expect": "ट"
+  },
+  {
+   "tc": "INSC-TC-038",
+   "map": "INSC-MAP-038",
+   "book_input": "z",
+   "status": "verified",
+   "input": [
+    "z"
+   ],
+   "expect": "ॆ"
+  },
+  {
+   "tc": "INSC-TC-039",
+   "map": "INSC-MAP-039",
+   "book_input": "x",
+   "status": "verified",
+   "input": [
+    "x"
+   ],
+   "expect": "ं"
+  },
+  {
+   "tc": "INSC-TC-040",
+   "map": "INSC-MAP-040",
+   "book_input": "c",
+   "status": "verified",
+   "input": [
+    "c"
+   ],
+   "expect": "म"
+  },
+  {
+   "tc": "INSC-TC-041",
+   "map": "INSC-MAP-041",
+   "book_input": "v",
+   "status": "verified",
+   "input": [
+    "v"
+   ],
+   "expect": "न"
+  },
+  {
+   "tc": "INSC-TC-042",
+   "map": "INSC-MAP-042",
+   "book_input": "b",
+   "status": "verified",
+   "input": [
+    "b"
+   ],
+   "expect": "व"
+  },
+  {
+   "tc": "INSC-TC-043",
+   "map": "INSC-MAP-043",
+   "book_input": "n",
+   "status": "verified",
+   "input": [
+    "n"
+   ],
+   "expect": "ल"
+  },
+  {
+   "tc": "INSC-TC-044",
+   "map": "INSC-MAP-044",
+   "book_input": "m",
+   "status": "verified",
+   "input": [
+    "m"
+   ],
+   "expect": "स"
+  },
+  {
+   "tc": "INSC-TC-045",
+   "map": "INSC-MAP-045",
+   "book_input": ",",
+   "status": "verified",
+   "input": [
+    ","
+   ],
+   "expect": ","
+  },
+  {
+   "tc": "INSC-TC-046",
+   "map": "INSC-MAP-046",
+   "book_input": ".",
+   "status": "verified",
+   "input": [
+    "."
+   ],
+   "expect": "."
+  },
+  {
+   "tc": "INSC-TC-047",
+   "map": "INSC-MAP-047",
+   "book_input": "/",
+   "status": "verified",
+   "input": [
+    "/"
+   ],
+   "expect": "य"
+  },
+  {
+   "tc": "INSC-TC-048",
+   "map": "INSC-MAP-048",
+   "book_input": "Shift+`",
+   "status": "verified",
+   "input": [
+    "~"
+   ],
+   "expect": "ऒ"
+  },
+  {
+   "tc": "INSC-TC-049",
+   "map": "INSC-MAP-049",
+   "book_input": "Shift+1",
+   "status": "verified",
+   "input": [
+    "!"
+   ],
+   "expect": "ऍ"
+  },
+  {
+   "tc": "INSC-TC-050",
+   "map": "INSC-MAP-050",
+   "book_input": "Shift+2",
+   "status": "verified",
+   "input": [
+    "@"
+   ],
+   "expect": "ॅ"
+  },
+  {
+   "tc": "INSC-TC-051",
+   "map": "INSC-MAP-051",
+   "book_input": "Shift+3",
+   "status": "verified",
+   "input": [
+    "#"
+   ],
+   "expect": "्र"
+  },
+  {
+   "tc": "INSC-TC-052",
+   "map": "INSC-MAP-052",
+   "book_input": "Shift+4",
+   "status": "verified",
+   "input": [
+    "$"
+   ],
+   "expect": "र्"
+  },
+  {
+   "tc": "INSC-TC-053",
+   "map": "INSC-MAP-053",
+   "book_input": "Shift+5",
+   "status": "verified",
+   "input": [
+    "%"
+   ],
+   "expect": "ज्ञ"
+  },
+  {
+   "tc": "INSC-TC-054",
+   "map": "INSC-MAP-054",
+   "book_input": "Shift+6",
+   "status": "verified",
+   "input": [
+    "^"
+   ],
+   "expect": "त्र"
+  },
+  {
+   "tc": "INSC-TC-055",
+   "map": "INSC-MAP-055",
+   "book_input": "Shift+7",
+   "status": "verified",
+   "input": [
+    "&"
+   ],
+   "expect": "क्ष"
+  },
+  {
+   "tc": "INSC-TC-056",
+   "map": "INSC-MAP-056",
+   "book_input": "Shift+8",
+   "status": "verified",
+   "input": [
+    "*"
+   ],
+   "expect": "श्र"
+  },
+  {
+   "tc": "INSC-TC-057",
+   "map": "INSC-MAP-057",
+   "book_input": "Shift+9",
+   "status": "verified",
+   "input": [
+    "("
+   ],
+   "expect": "("
+  },
+  {
+   "tc": "INSC-TC-058",
+   "map": "INSC-MAP-058",
+   "book_input": "Shift+0",
+   "status": "verified",
+   "input": [
+    ")"
+   ],
+   "expect": ")"
+  },
+  {
+   "tc": "INSC-TC-059",
+   "map": "INSC-MAP-059",
+   "book_input": "Shift+-",
+   "status": "verified",
+   "input": [
+    "_"
+   ],
+   "expect": "ः"
+  },
+  {
+   "tc": "INSC-TC-060",
+   "map": "INSC-MAP-060",
+   "book_input": "Shift+=",
+   "status": "verified",
+   "input": [
+    "+"
+   ],
+   "expect": "ऋ"
+  },
+  {
+   "tc": "INSC-TC-061",
+   "map": "INSC-MAP-061",
+   "book_input": "Shift+Q",
+   "status": "verified",
+   "input": [
+    "Q"
+   ],
+   "expect": "औ"
+  },
+  {
+   "tc": "INSC-TC-062",
+   "map": "INSC-MAP-062",
+   "book_input": "Shift+W",
+   "status": "verified",
+   "input": [
+    "W"
+   ],
+   "expect": "ऐ"
+  },
+  {
+   "tc": "INSC-TC-063",
+   "map": "INSC-MAP-063",
+   "book_input": "Shift+E",
+   "status": "verified",
+   "input": [
+    "E"
+   ],
+   "expect": "आ"
+  },
+  {
+   "tc": "INSC-TC-064",
+   "map": "INSC-MAP-064",
+   "book_input": "Shift+R",
+   "status": "verified",
+   "input": [
+    "R"
+   ],
+   "expect": "ई"
+  },
+  {
+   "tc": "INSC-TC-065",
+   "map": "INSC-MAP-065",
+   "book_input": "Shift+T",
+   "status": "verified",
+   "input": [
+    "T"
+   ],
+   "expect": "ऊ"
+  },
+  {
+   "tc": "INSC-TC-066",
+   "map": "INSC-MAP-066",
+   "book_input": "Shift+Y",
+   "status": "verified",
+   "input": [
+    "Y"
+   ],
+   "expect": "भ"
+  },
+  {
+   "tc": "INSC-TC-067",
+   "map": "INSC-MAP-067",
+   "book_input": "Shift+U",
+   "status": "verified",
+   "input": [
+    "U"
+   ],
+   "expect": "ङ"
+  },
+  {
+   "tc": "INSC-TC-068",
+   "map": "INSC-MAP-068",
+   "book_input": "Shift+I",
+   "status": "verified",
+   "input": [
+    "I"
+   ],
+   "expect": "घ"
+  },
+  {
+   "tc": "INSC-TC-069",
+   "map": "INSC-MAP-069",
+   "book_input": "Shift+O",
+   "status": "verified",
+   "input": [
+    "O"
+   ],
+   "expect": "ध"
+  },
+  {
+   "tc": "INSC-TC-070",
+   "map": "INSC-MAP-070",
+   "book_input": "Shift+P",
+   "status": "verified",
+   "input": [
+    "P"
+   ],
+   "expect": "झ"
+  },
+  {
+   "tc": "INSC-TC-071",
+   "map": "INSC-MAP-071",
+   "book_input": "Shift+[",
+   "status": "verified",
+   "input": [
+    "{"
+   ],
+   "expect": "ढ"
+  },
+  {
+   "tc": "INSC-TC-072",
+   "map": "INSC-MAP-072",
+   "book_input": "Shift+]",
+   "status": "verified",
+   "input": [
+    "}"
+   ],
+   "expect": "ञ"
+  },
+  {
+   "tc": "INSC-TC-073",
+   "map": "INSC-MAP-073",
+   "book_input": "Shift+\\",
+   "status": "verified",
+   "input": [
+    "|"
+   ],
+   "expect": "ऑ"
+  },
+  {
+   "tc": "INSC-TC-074",
+   "map": "INSC-MAP-074",
+   "book_input": "Shift+A",
+   "status": "verified",
+   "input": [
+    "A"
+   ],
+   "expect": "ओ"
+  },
+  {
+   "tc": "INSC-TC-075",
+   "map": "INSC-MAP-075",
+   "book_input": "Shift+S",
+   "status": "verified",
+   "input": [
+    "S"
+   ],
+   "expect": "ए"
+  },
+  {
+   "tc": "INSC-TC-076",
+   "map": "INSC-MAP-076",
+   "book_input": "Shift+D",
+   "status": "verified",
+   "input": [
+    "D"
+   ],
+   "expect": "अ"
+  },
+  {
+   "tc": "INSC-TC-077",
+   "map": "INSC-MAP-077",
+   "book_input": "Shift+F",
+   "status": "verified",
+   "input": [
+    "F"
+   ],
+   "expect": "इ"
+  },
+  {
+   "tc": "INSC-TC-078",
+   "map": "INSC-MAP-078",
+   "book_input": "Shift+G",
+   "status": "verified",
+   "input": [
+    "G"
+   ],
+   "expect": "उ"
+  },
+  {
+   "tc": "INSC-TC-079",
+   "map": "INSC-MAP-079",
+   "book_input": "Shift+H",
+   "status": "verified",
+   "input": [
+    "H"
+   ],
+   "expect": "फ"
+  },
+  {
+   "tc": "INSC-TC-080",
+   "map": "INSC-MAP-080",
+   "book_input": "Shift+J",
+   "status": "verified",
+   "input": [
+    "J"
+   ],
+   "expect": "ऱ"
+  },
+  {
+   "tc": "INSC-TC-081",
+   "map": "INSC-MAP-081",
+   "book_input": "Shift+K",
+   "status": "verified",
+   "input": [
+    "K"
+   ],
+   "expect": "ख"
+  },
+  {
+   "tc": "INSC-TC-082",
+   "map": "INSC-MAP-082",
+   "book_input": "Shift+L",
+   "status": "verified",
+   "input": [
+    "L"
+   ],
+   "expect": "थ"
+  },
+  {
+   "tc": "INSC-TC-083",
+   "map": "INSC-MAP-083",
+   "book_input": "Shift+;",
+   "status": "verified",
+   "input": [
+    ":"
+   ],
+   "expect": "छ"
+  },
+  {
+   "tc": "INSC-TC-084",
+   "map": "INSC-MAP-084",
+   "book_input": "Shift+'",
+   "status": "verified",
+   "input": [
+    "\""
+   ],
+   "expect": "ठ"
+  },
+  {
+   "tc": "INSC-TC-085",
+   "map": "INSC-MAP-085",
+   "book_input": "Shift+Z",
+   "status": "verified",
+   "input": [
+    "Z"
+   ],
+   "expect": "ऎ"
+  },
+  {
+   "tc": "INSC-TC-086",
+   "map": "INSC-MAP-086",
+   "book_input": "Shift+X",
+   "status": "verified",
+   "input": [
+    "X"
+   ],
+   "expect": "ँ"
+  },
+  {
+   "tc": "INSC-TC-087",
+   "map": "INSC-MAP-087",
+   "book_input": "Shift+C",
+   "status": "verified",
+   "input": [
+    "C"
+   ],
+   "expect": "ण"
+  },
+  {
+   "tc": "INSC-TC-088",
+   "map": "INSC-MAP-088",
+   "book_input": "Shift+V",
+   "status": "verified",
+   "input": [
+    "V"
+   ],
+   "expect": "ऩ"
+  },
+  {
+   "tc": "INSC-TC-089",
+   "map": "INSC-MAP-089",
+   "book_input": "Shift+B",
+   "status": "verified",
+   "input": [
+    "B"
+   ],
+   "expect": "ऴ"
+  },
+  {
+   "tc": "INSC-TC-090",
+   "map": "INSC-MAP-090",
+   "book_input": "Shift+N",
+   "status": "verified",
+   "input": [
+    "N"
+   ],
+   "expect": "ळ"
+  },
+  {
+   "tc": "INSC-TC-091",
+   "map": "INSC-MAP-091",
+   "book_input": "Shift+M",
+   "status": "verified",
+   "input": [
+    "M"
+   ],
+   "expect": "श"
+  },
+  {
+   "tc": "INSC-TC-092",
+   "map": "INSC-MAP-092",
+   "book_input": "Shift+,",
+   "status": "verified",
+   "input": [
+    "<"
+   ],
+   "expect": "ष"
+  },
+  {
+   "tc": "INSC-TC-093",
+   "map": "INSC-MAP-093",
+   "book_input": "Shift+.",
+   "status": "verified",
+   "input": [
+    ">"
+   ],
+   "expect": "।"
+  },
+  {
+   "tc": "INSC-TC-094",
+   "map": "INSC-MAP-094",
+   "book_input": "Shift+/",
+   "status": "verified",
+   "input": [
+    "?"
+   ],
+   "expect": "य़"
+  },
+  {
+   "tc": "INSC-TC-095",
+   "map": "INSC-MAP-095",
+   "book_input": "AltGr+Shift+4",
+   "status": "verified",
+   "input": [
+    "G:$"
+   ],
+   "expect": "₹"
+  },
+  {
+   "tc": "INSC-TC-096",
+   "map": "INSC-MAP-096",
+   "book_input": "AltGr+=",
+   "status": "verified",
+   "input": [
+    "G:="
+   ],
+   "expect": "ॄ"
+  },
+  {
+   "tc": "INSC-TC-097",
+   "map": "INSC-MAP-097",
+   "book_input": "AltGr+Shift+=",
+   "status": "verified",
+   "input": [
+    "G:+"
+   ],
+   "expect": "ॠ"
+  },
+  {
+   "tc": "INSC-TC-098",
+   "map": "INSC-MAP-098",
+   "book_input": "AltGr+R",
+   "status": "verified",
+   "input": [
+    "G:r"
+   ],
+   "expect": "ॣ"
+  },
+  {
+   "tc": "INSC-TC-099",
+   "map": "INSC-MAP-099",
+   "book_input": "AltGr+Shift+R",
+   "status": "verified",
+   "input": [
+    "G:R"
+   ],
+   "expect": "ॡ"
+  },
+  {
+   "tc": "INSC-TC-100",
+   "map": "INSC-MAP-100",
+   "book_input": "AltGr+F",
+   "status": "verified",
+   "input": [
+    "G:f"
+   ],
+   "expect": "ॢ"
+  },
+  {
+   "tc": "INSC-TC-101",
+   "map": "INSC-MAP-101",
+   "book_input": "AltGr+Shift+F",
+   "status": "verified",
+   "input": [
+    "G:F"
+   ],
+   "expect": "ऌ"
+  },
+  {
+   "tc": "INSC-TC-102",
+   "map": "INSC-MAP-102",
+   "book_input": "AltGr+I",
+   "status": "verified",
+   "input": [
+    "G:i"
+   ],
+   "expect": "ग़"
+  },
+  {
+   "tc": "INSC-TC-103",
+   "map": "INSC-MAP-103",
+   "book_input": "AltGr+P",
+   "status": "verified",
+   "input": [
+    "G:p"
+   ],
+   "expect": "ज़"
+  },
+  {
+   "tc": "INSC-TC-104",
+   "map": "INSC-MAP-104",
+   "book_input": "AltGr+[",
+   "status": "verified",
+   "input": [
+    "G:["
+   ],
+   "expect": "ड़"
+  },
+  {
+   "tc": "INSC-TC-105",
+   "map": "INSC-MAP-105",
+   "book_input": "AltGr+Shift+[",
+   "status": "verified",
+   "input": [
+    "G:{"
+   ],
+   "expect": "ढ़"
+  },
+  {
+   "tc": "INSC-TC-106",
+   "map": "INSC-MAP-106",
+   "book_input": "AltGr+Shift+H",
+   "status": "verified",
+   "input": [
+    "G:H"
+   ],
+   "expect": "फ़"
+  },
+  {
+   "tc": "INSC-TC-107",
+   "map": "INSC-MAP-107",
+   "book_input": "AltGr+K",
+   "status": "verified",
+   "input": [
+    "G:k"
+   ],
+   "expect": "क़"
+  },
+  {
+   "tc": "INSC-TC-108",
+   "map": "INSC-MAP-108",
+   "book_input": "AltGr+Shift+K",
+   "status": "verified",
+   "input": [
+    "G:K"
+   ],
+   "expect": "ख़"
+  },
+  {
+   "tc": "INSC-TC-109",
+   "map": "INSC-MAP-109",
+   "book_input": "AltGr+D",
+   "status": "verified",
+   "input": [
+    "G:d"
+   ],
+   "expect": "॒"
+  },
+  {
+   "tc": "INSC-TC-110",
+   "map": "INSC-MAP-110",
+   "book_input": "AltGr+Shift+'",
+   "status": "verified",
+   "input": [
+    "G:\""
+   ],
+   "expect": "॑"
+  },
+  {
+   "tc": "INSC-TC-111",
+   "map": "INSC-MAP-111",
+   "book_input": "AltGr+Shift+X",
+   "status": "verified",
+   "input": [
+    "G:X"
+   ],
+   "expect": "ॐ"
+  },
+  {
+   "tc": "INSC-TC-112",
+   "map": "INSC-MAP-112",
+   "book_input": "AltGr+,",
+   "status": "verified",
+   "input": [
+    "G:,"
+   ],
+   "expect": "॰"
+  },
+  {
+   "tc": "INSC-TC-113",
+   "map": "INSC-MAP-113",
+   "book_input": "AltGr+.",
+   "status": "verified",
+   "input": [
+    "G:."
+   ],
+   "expect": "॥"
+  },
+  {
+   "tc": "INSC-TC-114",
+   "map": "INSC-MAP-114",
+   "book_input": "AltGr+Shift+.",
+   "status": "verified",
+   "input": [
+    "G:>"
+   ],
+   "expect": "ऽ"
+  },
+  {
+   "tc": "INSC-TC-115",
+   "map": "INSC-MAP-115",
+   "book_input": "Ctrl+Shift+1",
+   "status": "verified",
+   "input": [
+    "CTRL+1"
+   ],
+   "expect": "‍"
+  },
+  {
+   "tc": "INSC-TC-116",
+   "map": "INSC-MAP-116",
+   "book_input": "Ctrl+Shift+2",
+   "status": "verified",
+   "input": [
+    "CTRL+2"
+   ],
+   "expect": "‌"
+  },
+  {
+   "tc": "INSC-TC-117",
+   "map": "INSC-MAP-117",
+   "book_input": "k + d + Shift+,",
+   "status": "verified",
+   "input": [
+    "k",
+    "d",
+    "<"
+   ],
+   "expect": "क्ष"
+  },
+  {
+   "tc": "INSC-TC-118",
+   "map": "INSC-MAP-118",
+   "book_input": "l + d + j",
+   "status": "verified",
+   "input": [
+    "l",
+    "d",
+    "j"
+   ],
+   "expect": "त्र"
+  },
+  {
+   "tc": "INSC-TC-119",
+   "map": "INSC-MAP-119",
+   "book_input": "p + d + Shift+]",
+   "status": "verified",
+   "input": [
+    "p",
+    "d",
+    "}"
+   ],
+   "expect": "ज्ञ"
+  },
+  {
+   "tc": "INSC-TC-120",
+   "map": "INSC-MAP-120",
+   "book_input": "Shift+M + d + j",
+   "status": "verified",
+   "input": [
+    "M",
+    "d",
+    "j"
+   ],
+   "expect": "श्र"
+  },
+  {
+   "tc": "INSC-TC-121",
+   "map": "INSC-MAP-121",
+   "book_input": "o + d + /",
+   "status": "verified",
+   "input": [
+    "o",
+    "d",
+    "/"
+   ],
+   "expect": "द्य"
+  },
+  {
+   "tc": "INSC-TC-122",
+   "map": "INSC-MAP-122",
+   "book_input": "o + d + Shift+O",
+   "status": "verified",
+   "input": [
+    "o",
+    "d",
+    "O"
+   ],
+   "expect": "द्ध"
+  },
+  {
+   "tc": "INSC-TC-123",
+   "map": "INSC-MAP-123",
+   "book_input": "o + d + b",
+   "status": "verified",
+   "input": [
+    "o",
+    "d",
+    "b"
+   ],
+   "expect": "द्व"
+  },
+  {
+   "tc": "INSC-TC-124",
+   "map": "INSC-MAP-124",
+   "book_input": "o + d + i",
+   "status": "verified",
+   "input": [
+    "o",
+    "d",
+    "i"
+   ],
+   "expect": "द्ग"
+  },
+  {
+   "tc": "INSC-TC-125",
+   "map": "INSC-MAP-125",
+   "book_input": "k + d + j",
+   "status": "verified",
+   "input": [
+    "k",
+    "d",
+    "j"
+   ],
+   "expect": "क्र"
+  },
+  {
+   "tc": "INSC-TC-126",
+   "map": "INSC-MAP-126",
+   "book_input": "j + d + k",
+   "status": "verified",
+   "input": [
+    "j",
+    "d",
+    "k"
+   ],
+   "expect": "र्क"
+  },
+  {
+   "tc": "INSC-TC-127",
+   "map": "INSC-MAP-127",
+   "book_input": "' + d + '",
+   "status": "verified",
+   "input": [
+    "'",
+    "d",
+    "'"
+   ],
+   "expect": "ट्ट"
+  },
+  {
+   "tc": "INSC-TC-128",
+   "map": "INSC-MAP-128",
+   "book_input": "k + f",
+   "status": "verified",
+   "input": [
+    "k",
+    "f"
+   ],
+   "expect": "कि"
+  }
+ ]
+}

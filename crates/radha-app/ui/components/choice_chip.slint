@@ -1,0 +1,48 @@
+// ============================================================================
+// ChoiceChip — one selectable chip (timer preset, KEY / WORD mode)
+// ============================================================================
+//
+// The caller gives the width (computed from the screen width, never from the
+// label), so a row of chips can never feed its own size back into itself.
+// Selection is a request: the owner (Rust) decides `selected`.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Radius, Stroke, Motion } from "../theme/metrics.slint";
+
+export component ChoiceChip inherits Rectangle {
+    in property <string> text;
+    in property <bool> selected;
+    in property <color> accent: Theme.primary;
+
+    callback clicked();
+
+    height: 30px;
+    border-radius: Radius.sm;
+    background: root.selected ? root.accent : (touch.has-hover ? Theme.bg-raised : Theme.bg-sunken);
+    border-width: Stroke.hairline;
+    border-color: root.selected ? root.accent : Theme.border-soft;
+
+    animate background { duration: Motion.fast; }
+
+    Text {
+        width: parent.width;
+        height: parent.height;
+        text: root.text;
+        font-family: Typography.family-ui;
+        font-size: Typography.size-caption;
+        font-weight: root.selected ? Typography.weight-semibold : Typography.weight-medium;
+        color: root.selected ? Theme.text-on-primary : Theme.text-secondary;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        overflow: elide;
+    }
+
+    touch := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => {
+            root.clicked();
+        }
+    }
+}

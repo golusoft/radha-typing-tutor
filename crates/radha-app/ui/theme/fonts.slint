@@ -11,50 +11,63 @@
 // deleting a file. (Slint 1.18 removed the older runtime
 // `register_font_from_path` in favour of this.)
 //
-// ---------------------------------------------------------------------------
-// HOW TO ADD THE FONTS
-// ---------------------------------------------------------------------------
-// 1. Drop the `.ttf` / `.otf` files into `assets/fonts/`.
-// 2. Uncomment the matching import below.
-// 3. Rebuild. The family names in `typography.slint` then resolve to the bundled
-//    files instead of falling back to a system font.
-//
-// Nothing else needs to change — `typography.slint` already names these families.
+// IMPORTANT: these imports only take effect because `ui/main.slint` imports
+// this file (`import { Fonts } from "theme/fonts.slint";`). A font import in a
+// file that nothing imports is never compiled and never embedded.
 //
 // ---------------------------------------------------------------------------
-// WHY THEY ARE NOT BUNDLED YET
+// CURRENT STATUS (P01)
 // ---------------------------------------------------------------------------
-// Three of the four are SIL OFL 1.1 and freely redistributable. Kruti Dev is not
-// — its licensing has to be confirmed before it can ship (PRD.md Section 12.5),
-// and it is the one font with no safe fallback: a machine without it renders
-// Kruti Dev text as meaningless Latin characters rather than Devanagari.
+// Bundled (SIL OFL 1.1, licence files next to the fonts in `assets/fonts/`):
+//   - Inter 4.1 — Regular / Medium / SemiBold / Bold (UI text)
+//   - JetBrains Mono 2.304 — Regular (typing target / input) / Bold (numeric
+//     emphasis: crest codes, KPI and chart values, count chips, key caps;
+//     semibold requests resolve to the Bold face)
+//   - Noto Sans Devanagari 2.007 — Regular / Bold (Hindi Unicode)
+// Only the weights the UI actually uses are shipped, to stay inside the
+// < 20 MB binary budget.
 //
-// Bundling licensed binaries is deliberately left as an explicit step rather than
-// something this scaffold does silently.
+// NOT bundled:
+//   - Kruti Dev — licence check pending (PRD.md Section 12.5, assets/README.md).
+//     It is the one font with no safe fallback: a machine without it renders
+//     Kruti Dev text as meaningless Latin characters rather than Devanagari.
+//   - Mangal — a Windows system font; read from the OS, never redistributed.
+//
+// To add a font: drop the file into `assets/fonts/`, add its import below with
+// its licence file, record it in `assets/README.md`, rebuild.
 // ---------------------------------------------------------------------------
 
+// The Latin faces are embedded as subsets (`assets/fonts/subset/`, built by
+// `tools/subset_fonts.py` from the unmodified upstream files next to them):
+// Latin-1, Latin Extended-A, the Windows-1252 extras, punctuation and the
+// symbol blocks; every layout feature and the hinting are kept. Characters
+// outside the subset render through the system-font fallback. Noto Sans
+// Devanagari is embedded whole so Hindi shaping stays complete.
+
 // --- Latin UI text (Inter, SIL OFL 1.1) ---
-// import "../../../../assets/fonts/Inter-Regular.ttf";
-// import "../../../../assets/fonts/Inter-Medium.ttf";
-// import "../../../../assets/fonts/Inter-SemiBold.ttf";
-// import "../../../../assets/fonts/Inter-Bold.ttf";
+import "../../../../assets/fonts/subset/Inter-Regular.ttf";
+import "../../../../assets/fonts/subset/Inter-Medium.ttf";
+import "../../../../assets/fonts/subset/Inter-SemiBold.ttf";
+import "../../../../assets/fonts/subset/Inter-Bold.ttf";
 
 // --- Typing target / input (JetBrains Mono, SIL OFL 1.1) ---
 // Monospace is required for per-character highlight alignment.
-// import "../../../../assets/fonts/JetBrainsMono-Regular.ttf";
+import "../../../../assets/fonts/subset/JetBrainsMono-Regular.ttf";
+import "../../../../assets/fonts/subset/JetBrainsMono-Bold.ttf";
 
 // --- Hindi GAIL / CBI (Noto Sans Devanagari, SIL OFL 1.1) ---
-// import "../../../../assets/fonts/NotoSansDevanagari-Regular.ttf";
+import "../../../../assets/fonts/NotoSansDevanagari-Regular.ttf";
+import "../../../../assets/fonts/NotoSansDevanagari-Bold.ttf";
 
-// --- Hindi Kruti Dev (licensing to be confirmed) ---
+// --- Hindi Kruti Dev — licence check pending (assets/README.md) ---
 // import "../../../../assets/fonts/KrutiDev010.ttf";
 
 // A `.slint` file must export something to be importable. This carries the
 // bundling status so the UI can surface it, and so the gallery can show at a
 // glance whether it is rendering with bundled fonts or system fallbacks.
 export global Fonts {
-    // Flip to true in the same commit that uncomments the imports above.
-    out property <bool> bundled: false;
+    // True because the imports above are active. Keep in sync with them.
+    out property <bool> bundled: true;
 
     out property <string> status: bundled
         ? "Bundled fonts active"

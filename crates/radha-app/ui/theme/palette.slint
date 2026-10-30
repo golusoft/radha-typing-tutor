@@ -67,6 +67,17 @@ export global LightPalette {
     out property <color> error: #C95A5A;           // Coral
     out property <color> error-subtle: #FAEBEB;
 
+    // --- Typing passage (word highlighter) ---
+    out property <color> passage-correct: #23784F;       // Deep emerald: a finished, right word
+    out property <color> passage-wrong: #B42F45;         // Crimson rose: a finished, wrong word
+    out property <color> passage-wrong-bg: #FCE4E7;      // Its light red wash
+    out property <color> passage-current-bg: #FFD45C;    // Saffron-gold block: the word to type
+    out property <color> passage-current-edge: #D99A12;  // Its lower edge
+    out property <color> passage-current-text: #3B2508;  // Dark umber on gold (contrast > 9:1)
+    out property <color> passage-upcoming: #4A3D44;      // Muted plum-brown: words ahead
+    out property <color> passage-skipped: #A0742B;       // Ochre: an omitted word
+    out property <color> passage-key: #C84B73;           // Key Guide mark (next key)
+
     // --- Shadow tint ---
     // Plum-tinted rather than neutral so elevation feels part of the palette.
     out property <color> shadow: #6B3A5B;
@@ -119,6 +130,17 @@ export global DarkPalette {
     out property <color> warning-subtle: #38301F;
     out property <color> error: #E07A7A;
     out property <color> error-subtle: #3A2729;
+
+    // --- Typing passage (word highlighter) ---
+    out property <color> passage-correct: #6FD39F;
+    out property <color> passage-wrong: #FF8D9B;
+    out property <color> passage-wrong-bg: #4C2A31;
+    out property <color> passage-current-bg: #F4C445;
+    out property <color> passage-current-edge: #FFDD7A;
+    out property <color> passage-current-text: #2E1D06;
+    out property <color> passage-upcoming: #E6D9DF;
+    out property <color> passage-skipped: #E0B467;
+    out property <color> passage-key: #F08CA2;
 
     // --- Shadow tint ---
     out property <color> shadow: #1A1218;
@@ -176,6 +198,17 @@ export global Theme {
     out property <color> warning-subtle: dark ? DarkPalette.warning-subtle : LightPalette.warning-subtle;
     out property <color> error: dark ? DarkPalette.error : LightPalette.error;
     out property <color> error-subtle: dark ? DarkPalette.error-subtle : LightPalette.error-subtle;
+
+    // --- Typing passage ---
+    out property <color> passage-correct: dark ? DarkPalette.passage-correct : LightPalette.passage-correct;
+    out property <color> passage-wrong: dark ? DarkPalette.passage-wrong : LightPalette.passage-wrong;
+    out property <color> passage-wrong-bg: dark ? DarkPalette.passage-wrong-bg : LightPalette.passage-wrong-bg;
+    out property <color> passage-current-bg: dark ? DarkPalette.passage-current-bg : LightPalette.passage-current-bg;
+    out property <color> passage-current-edge: dark ? DarkPalette.passage-current-edge : LightPalette.passage-current-edge;
+    out property <color> passage-current-text: dark ? DarkPalette.passage-current-text : LightPalette.passage-current-text;
+    out property <color> passage-upcoming: dark ? DarkPalette.passage-upcoming : LightPalette.passage-upcoming;
+    out property <color> passage-skipped: dark ? DarkPalette.passage-skipped : LightPalette.passage-skipped;
+    out property <color> passage-key: dark ? DarkPalette.passage-key : LightPalette.passage-key;
 
     // --- Shadow ---
     out property <color> shadow: dark ? DarkPalette.shadow : LightPalette.shadow;

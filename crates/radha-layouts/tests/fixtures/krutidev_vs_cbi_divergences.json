@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "radha-keyboard-books",
+    "path": "03_Remington_CBI_Keyboard_Reference.pdf + 04_Kruti_Dev_010_Keyboard_Reference.pdf",
+    "sha256": "7091e708da7003f8c2b1d684fc80d7a901f0b2318171c45cca2d66259aa3060b",
+    "extracted": "2026-10-29"
+  },
+  "note": "Base/Shift slots where Kruti Dev 010 (book 04, drawn glyph) differs from Remington CBI (book 03). Every other slot draws the same Devanagari on both; the short-i key differs in kind only.",
+  "slots": [
+    {
+      "key": "`",
+      "layer": "base",
+      "krutidev": "ृ",
+      "cbi": "़"
+    },
+    {
+      "key": "`",
+      "layer": "shift",
+      "krutidev": "्",
+      "cbi": "द्य"
+    },
+    {
+      "key": "1",
+      "layer": "shift",
+      "krutidev": "!",
+      "cbi": "।"
+    },
+    {
+      "key": "3",
+      "layer": "shift",
+      "krutidev": "रु",
+      "cbi": "ः"
+    },
+    {
+      "key": "5",
+      "layer": "shift",
+      "krutidev": "ः",
+      "cbi": "-"
+    },
+    {
+      "key": "7",
+      "layer": "shift",
+      "krutidev": "-",
+      "cbi": "’"
+    },
+    {
+      "key": "8",
+      "layer": "shift",
+      "krutidev": "’",
+      "cbi": "द्ध"
+    },
+    {
+      "key": "9",
+      "layer": "shift",
+      "krutidev": ";",
+      "cbi": "त्र"
+    },
+    {
+      "key": "0",
+      "layer": "shift",
+      "krutidev": "द्ध",
+      "cbi": "ऋ"
+    },
+    {
+      "key": "-",
+      "layer": "base",
+      "krutidev": ".",
+      "cbi": ";"
+    },
+    {
+      "key": "-",
+      "layer": "shift",
+      "krutidev": "ऋ",
+      "cbi": "."
+    },
+    {
+      "key": "=",
+      "layer": "base",
+      "krutidev": "त्र",
+      "cbi": "ृ"
+    },
+    {
+      "key": "=",
+      "layer": "shift",
+      "krutidev": "़",
+      "cbi": "्"
+    },
+    {
+      "key": "\\",
+      "layer": "base",
+      "krutidev": "?",
+      "cbi": "("
+    },
+    {
+      "key": "\\",
+      "layer": "shift",
+      "krutidev": "द्य",
+      "cbi": ")"
+    },
+    {
+      "key": "a",
+      "layer": "shift",
+      "krutidev": "।",
+      "cbi": "ा"
+    }
+  ]
+}

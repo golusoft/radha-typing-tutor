@@ -21,12 +21,177 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use anyhow::Context;
+use slint::{Model, ModelRc, VecModel};
 
 use crate::app_state::AppState;
+use crate::catalog;
 use crate::navigation::{NavigationState, Screen};
 use crate::settings::ThemeMode;
 
+mod flow;
+mod utility;
+
 slint::include_modules!();
+
+/// Master copies of the Home catalogues.
+///
+/// The Slint globals hold the unfiltered literals. When the search text changes,
+/// the *displayed* models are rewritten from these masters, so clearing the search
+/// restores everything without re-reading the UI.
+///
+/// The matching rule itself is `catalog::matches_query`; this type only applies it.
+struct HomeCatalog {
+    english: Vec<ProductEntry>,
+    hindi_mastery: Vec<ProductEntry>,
+    hindi_learn: Vec<ProductEntry>,
+    exams: Vec<ExamEntry>,
+}
+
+impl HomeCatalog {
+    /// Snapshot the masters from the window's globals. Call once, before any filter
+    /// has been applied.
+    fn capture(window: &AppWindow) -> Self {
+        let products = window.global::<Products>();
+        let exams = window.global::<Exams>();
+
+        HomeCatalog {
+            english: products.get_english().iter().collect(),
+            hindi_mastery: products.get_hindi_mastery().iter().collect(),
+            hindi_learn: products.get_hindi_learn().iter().collect(),
+            exams: exams.get_all().iter().collect(),
+        }
+    }
+
+    /// Re-filter every displayed model for `query` and the Exam Hub `exam_category`.
+    fn apply(&self, window: &AppWindow, query: &str, exam_category: &str) {
+        let products = window.global::<Products>();
+        products.set_english(filter_products(&self.english, query));
+        products.set_hindi_mastery(filter_products(&self.hindi_mastery, query));
+        products.set_hindi_learn(filter_products(&self.hindi_learn, query));
+
+        window
+            .global::<Exams>()
+            .set_shown(filter_exams(&self.exams, query, exam_category));
+    }
+}
+
+/// Rewrite each Home product card's count chip with what is installed
+/// (`catalog::count_chip`). A count that cannot be read keeps the chip.
+fn apply_installed_counts(window: &AppWindow, db: &radha_db::Database) {
+    let products = window.global::<Products>();
+    let fix = |list: ModelRc<ProductEntry>| -> ModelRc<ProductEntry> {
+        let entries: Vec<ProductEntry> = list
+            .iter()
+            .map(|mut e| {
+                let Ok(product) = radha_content::ProductId::from_slug(e.slug.as_str()) else {
+                    return e;
+                };
+                match radha_db::content_import::exercise_count(db, product) {
+                    Ok(n) => e.meta_1 = catalog::count_chip(n, e.meta_1.as_str()).into(),
+                    Err(err) => log::warn!("Could not count {}: {err}", product.slug()),
+                }
+                e
+            })
+            .collect();
+        ModelRc::new(VecModel::from(entries))
+    };
+    products.set_english(fix(products.get_english()));
+    products.set_hindi_mastery(fix(products.get_hindi_mastery()));
+    products.set_hindi_learn(fix(products.get_hindi_learn()));
+}
+
+/// Each Exam Hub card's rule fields from its `radha-exams` profile (PRD
+/// EM-01..EM-04): speeds, the rule line and the certification level are
+/// derived from the profile, never trusted from the Slint literal. A card
+/// whose profile did not load shows nothing but practice.
+fn apply_exam_profiles(exams: &mut [ExamEntry]) {
+    for e in exams.iter_mut() {
+        match crate::exam_mode::profile(e.id.as_str()) {
+            Some(p) => {
+                let card = radha_exams::card_summary(p);
+                e.eng_speed = card.eng_speed.into();
+                e.hin_speed = card.hin_speed.into();
+                e.rule = card.rule.into();
+                e.level = card.level.into();
+                e.hindi_only = e.hindi_only || p.hindi_only;
+            }
+            None => {
+                log::warn!("Exam card '{}' has no loaded profile", e.id);
+                e.eng_speed = "—".into();
+                e.hin_speed = "—".into();
+                e.rule = "Rules pending verification".into();
+                e.level = "practice".into();
+            }
+        }
+    }
+}
+
+/// A Hindi-only exam card's passage chip from the installed Hindi pool
+/// (`catalog::pool_chip`). A count that cannot be read keeps the chip.
+fn apply_exam_pool_counts(exams: &mut [ExamEntry], db: &radha_db::Database) {
+    let count =
+        match radha_db::content_import::exam_passage_count(db, radha_content::ExamPool::Hindi) {
+            Ok(n) => n,
+            Err(err) => {
+                log::warn!("Could not count the Hindi exam pool: {err}");
+                return;
+            }
+        };
+    for e in exams.iter_mut().filter(|e| e.hindi_only) {
+        e.hin_speed = catalog::pool_chip(count).into();
+    }
+}
+
+/// The product cards that match `query`.
+fn filter_products(master: &[ProductEntry], query: &str) -> ModelRc<ProductEntry> {
+    let kept: Vec<ProductEntry> = master
+        .iter()
+        .filter(|entry| {
+            catalog::matches_query(
+                query,
+                &[
+                    entry.slug.as_str(),
+                    entry.title.as_str(),
+                    entry.subtitle.as_str(),
+                    entry.description.as_str(),
+                    entry.badge.as_str(),
+                    entry.identity_label.as_str(),
+                    entry.meta_1.as_str(),
+                    entry.meta_2.as_str(),
+                ],
+            )
+        })
+        .cloned()
+        .collect();
+
+    ModelRc::new(VecModel::from(kept))
+}
+
+/// The exam cards that match `query` within `category`.
+fn filter_exams(master: &[ExamEntry], query: &str, category: &str) -> ModelRc<ExamEntry> {
+    let kept: Vec<ExamEntry> = master
+        .iter()
+        .filter(|entry| catalog::category_matches(category, entry.category.as_str()))
+        .filter(|entry| {
+            catalog::matches_query(
+                query,
+                &[
+                    entry.id.as_str(),
+                    entry.crest.as_str(),
+                    entry.dept.as_str(),
+                    entry.tag.as_str(),
+                    entry.title.as_str(),
+                    entry.org.as_str(),
+                    entry.description.as_str(),
+                    entry.font_layout.as_str(),
+                ],
+            )
+        })
+        .cloned()
+        .collect();
+
+    ModelRc::new(VecModel::from(kept))
+}
 
 /// Font file extensions Slint can embed.
 const FONT_EXTENSIONS: [&str; 3] = ["ttf", "otf", "ttc"];
@@ -95,13 +260,52 @@ fn log_font_status() -> usize {
     found.len()
 }
 
+/// Exam typography (English Arial, Hindi Unicode Mangal) from the installed
+/// Windows fonts, with the embedded fallbacks (`exam_fonts`). Set once.
+fn apply_exam_fonts(window: &AppWindow, fonts: crate::exam_fonts::ExamFonts) {
+    log::info!(
+        "Exam fonts: English passages in {}{}, Hindi Unicode passages in {}{}",
+        fonts.latin(),
+        if fonts.arial {
+            ""
+        } else {
+            " (Arial not installed)"
+        },
+        fonts.devanagari(),
+        if fonts.mangal {
+            ""
+        } else {
+            " (Mangal not installed: Windows optional feature Hindi Supplemental Fonts)"
+        },
+    );
+    let v = window.global::<TypingView>();
+    v.set_font_latin(fonts.latin().into());
+    v.set_font_hindi(fonts.devanagari().into());
+    v.set_mangal_missing(!fonts.mangal);
+}
+
+/// The UI's screen switch value: Typing Flow has dedicated Exercise, Typing
+/// and Result screens (DESIGN 5.1, 8); every other product shares the
+/// family screens. Navigation itself is unchanged (`Screen::slug`).
+fn screen_slug(screen: &Screen) -> &'static str {
+    let flow = screen
+        .context()
+        .is_some_and(|c| c.product == radha_content::ProductId::TypingFlow && !c.is_exam());
+    match (flow, screen) {
+        (true, Screen::Exercise(_)) => "flow-exercise",
+        (true, Screen::Typing(_)) => "flow-typing",
+        (true, Screen::Result(_)) => "flow-result",
+        _ => screen.slug(),
+    }
+}
+
 /// Push the active screen into the window.
 ///
 /// Single place that translates a [`Screen`] into the properties the UI switches
 /// on, so the mapping cannot drift between the initial render and later
 /// navigation.
-fn apply_screen(window: &AppWindow, screen: Screen) {
-    window.set_active_screen(screen.slug().into());
+fn apply_screen(window: &AppWindow, screen: &Screen) {
+    window.set_active_screen(screen_slug(screen).into());
 
     match screen.product() {
         Some(product) => {
@@ -166,6 +370,11 @@ pub fn run(application: &mut crate::app::App) -> anyhow::Result<()> {
 
     let window = AppWindow::new().context("could not create the application window")?;
 
+    // What the compiled UI actually embedded (ui/theme/fonts.slint), as opposed
+    // to what happens to be on disk (log_font_status above).
+    log::info!("{}", window.global::<Fonts>().get_status());
+    apply_exam_fonts(&window, crate::exam_fonts::ExamFonts::detect());
+
     // The window exists but nothing has been pushed into it yet, so show the
     // loading state rather than a momentarily blank Home. In practice this lasts
     // microseconds; it earns its place because later phases move real work here
@@ -181,10 +390,9 @@ pub fn run(application: &mut crate::app::App) -> anyhow::Result<()> {
     // the saved theme would be ignored and the window would always open light.
     window.global::<Theme>().set_dark(settings.theme.is_dark());
 
-    // Animation master switch. Wired now so the Settings screen has somewhere to
-    // write; DESIGN.md Section 14 requires transitions to be switchable off
-    // wholesale for slower machines.
-    window.global::<Motion>().set_enabled(true);
+    // Animation master switch: "Reduce motion" in Settings turns every
+    // transition off (DESIGN.md Section 14, 20.9).
+    utility::apply_window_settings(&window, &settings);
 
     window.set_initial_width(settings.window.width as f32);
     window.set_initial_height(settings.window.height as f32);
@@ -196,13 +404,50 @@ pub fn run(application: &mut crate::app::App) -> anyhow::Result<()> {
         settings.theme
     );
 
-    // --- Navigation (Rust-owned) -------------------------------------------
-    let navigation = Rc::new(RefCell::new(NavigationState::new()));
-    apply_screen(&window, navigation.borrow().current());
+    // --- Navigation and the practice flow (Rust-owned) ----------------------
+    // `Flow` owns navigation and the Exercise -> Typing -> Result state; it
+    // writes the initial screen (honouring RADHA_START_SCREEN in debug).
+    let flow = flow::Flow::install(
+        &window,
+        NavigationState::new(),
+        Rc::clone(&application.repository),
+        Rc::clone(&application.database),
+        application.profile_id,
+        application.paths.data_dir(),
+    );
+
+    // Debug-only component preview overlay (P01). A plain property set before
+    // `run()`, not a changed-handler, so the value is honoured at startup.
+    let preview = crate::navigation::component_preview_requested();
+    if preview {
+        log::warn!("RADHA_START_SCREEN=preview — showing the component preview overlay");
+    }
+    window.set_show_component_preview(preview);
+
+    // --- Settings, Analytics, Profile, Candidate info (P08) -------------------
+    // One shared copy of the settings: the overlay and the theme toggle both
+    // change it and save settings.toml at once; it is merged back on exit.
+    let shared_settings = Rc::new(RefCell::new(settings.clone()));
+    flow.borrow_mut().apply_settings(&settings);
+    let utility = utility::Utility::install(
+        &window,
+        Rc::clone(&application.database),
+        application.profile_id,
+        Rc::clone(&shared_settings),
+        application.paths.settings_file(),
+        application.paths.data_dir().to_path_buf(),
+        Rc::clone(&flow),
+    );
+    // Debug-only: RADHA_START_SCREEN=overlay:<id> opens an overlay over Home.
+    if let Some(id) = crate::navigation::start_overlay_requested() {
+        log::warn!("RADHA_START_SCREEN=overlay:{id} — opening the {id} overlay");
+        if let Ok(mut u) = utility.try_borrow_mut() {
+            u.open(id);
+        }
+    }
 
     {
-        let navigation = Rc::clone(&navigation);
-        let handle = window.as_weak();
+        let flow = Rc::clone(&flow);
 
         window.on_navigate_requested(move |slug| {
             // The UI hands over an opaque slug; Rust decides what it means. An
@@ -215,31 +460,66 @@ pub fn run(application: &mut crate::app::App) -> anyhow::Result<()> {
                     return;
                 }
             };
-
-            let screen = navigation.borrow_mut().open_product(product);
-            if let Some(window) = handle.upgrade() {
-                apply_screen(&window, screen);
-            }
+            flow.borrow_mut().open_product(product);
         });
     }
 
     {
-        let navigation = Rc::clone(&navigation);
+        let flow = Rc::clone(&flow);
+        // Back at the root is a no-op (Escape on Home never closes the app).
+        window.on_back_requested(move || flow.borrow_mut().back());
+    }
+
+    // --- Home search and Exam Hub filter ------------------------------------
+    // The UI reports the search text and the exam category; Rust applies the
+    // matching rule and rewrites the displayed models.
+    // Count chips from the installed content, before the masters are
+    // captured (a planned "100 Drills" with nothing installed is not shown).
+    apply_installed_counts(&window, &application.database.borrow());
+    let home_catalog = {
+        let mut catalog = HomeCatalog::capture(&window);
+        apply_exam_profiles(&mut catalog.exams);
+        apply_exam_pool_counts(&mut catalog.exams, &application.database.borrow());
+        // Show the rewritten masters (the Slint default shows the literals).
+        window
+            .global::<Exams>()
+            .set_shown(filter_exams(&catalog.exams, "", "all"));
+        Rc::new(catalog)
+    };
+
+    {
+        let home_catalog = Rc::clone(&home_catalog);
         let handle = window.as_weak();
 
-        window.on_back_requested(move || {
-            // Returns None at the root, which is how Escape on Home becomes a
-            // deliberate no-op instead of closing the app.
-            let Some(screen) = navigation.borrow_mut().back() else {
-                log::debug!("Back requested at the root — ignoring");
-                return;
-            };
-
+        window.on_filters_changed(move |query, category| {
             if let Some(window) = handle.upgrade() {
-                apply_screen(&window, screen);
+                home_catalog.apply(&window, query.as_str(), category.as_str());
             }
         });
     }
+
+    // An exam launcher opens that exam's Exercise screen: the shared passage
+    // pool under the card's `radha-exams` profile (fixed timer, locked
+    // rules, the profile's scoring policy and certification).
+    {
+        let flow = Rc::clone(&flow);
+        window.on_exam_launch_requested(move |id, language| {
+            log::info!("Exam launch requested: {id} / {language}");
+            flow.borrow_mut().open_exam(id.as_str(), language.as_str());
+        });
+    }
+
+    // Contact and social links: the UI sends a fixed id, Rust owns the URL.
+    window.on_open_link_requested(
+        |id| match crate::contact::ContactLink::from_id(id.as_str()) {
+            Some(link) => {
+                if let Err(e) = crate::contact::open(link) {
+                    log::warn!("Could not open the {} link: {e}", link.id());
+                }
+            }
+            None => log::warn!("Ignoring unknown link id '{id}'"),
+        },
+    );
 
     // --- Own the theme state on the Rust side -------------------------------
     // The UI raises a toggle *request*; this closure computes the next mode and
@@ -249,22 +529,25 @@ pub fn run(application: &mut crate::app::App) -> anyhow::Result<()> {
     //     saved to settings.toml always matches what the user saw.
     //  2. `application` cannot be borrowed for the lifetime of the event loop, so
     //     the choice is parked here and merged back once the loop exits.
-    let current_theme = Rc::new(RefCell::new(settings.theme));
-    let pending_theme: Rc<RefCell<Option<ThemeMode>>> = Rc::new(RefCell::new(None));
-
     {
-        let current_theme = Rc::clone(&current_theme);
-        let pending_theme = Rc::clone(&pending_theme);
+        let shared = Rc::clone(&shared_settings);
+        let settings_path = application.paths.settings_file();
         // Weak, to avoid a reference cycle between the window and its own handler.
         let window_handle = window.as_weak();
 
         window.on_theme_toggle_requested(move || {
-            let next = current_theme.borrow().toggled();
-            *current_theme.borrow_mut() = next;
-            *pending_theme.borrow_mut() = Some(next);
+            let next: ThemeMode = shared.borrow().theme.toggled();
+            shared.borrow_mut().theme = next;
+            // Save at once so a crash or kill does not lose the choice.
+            if let Err(e) = shared.borrow().save(&settings_path) {
+                log::warn!("Could not save settings: {e}");
+            }
 
             if let Some(window) = window_handle.upgrade() {
                 window.global::<Theme>().set_dark(next.is_dark());
+                window
+                    .global::<UtilityView>()
+                    .set_st_theme(if next.is_dark() { "dark" } else { "light" }.into());
             }
 
             log::debug!("Theme switched to {next:?}");
@@ -292,8 +575,15 @@ pub fn run(application: &mut crate::app::App) -> anyhow::Result<()> {
     log::info!("UI event loop exited");
 
     // --- Merge UI changes back into persisted state ------------------------
-    if let Some(mode) = *pending_theme.borrow() {
-        application.settings.theme = mode;
+    // Everything the overlay and the theme toggle changed; the window
+    // geometry and first-launch flag are the shell's own.
+    {
+        let changed = shared_settings.borrow();
+        let window_geometry = application.settings.window;
+        let first_launch = application.settings.first_launch;
+        application.settings = changed.clone();
+        application.settings.window = window_geometry;
+        application.settings.first_launch = first_launch;
     }
 
     // Persist the final window geometry so the app reopens as the user left it.
@@ -315,8 +605,9 @@ mod tests {
 
     #[test]
     fn font_status_check_does_not_fail_without_bundled_fonts() {
-        // Phase 0 ships no font binaries, so this must simply report zero. The
-        // app has to start regardless.
+        // Since P01 the fonts ship in assets/fonts/ and are embedded at compile
+        // time; this check only reports what is on disk. It must never fail —
+        // a missing or unreadable directory is logged and the app still starts.
         let _ = log_font_status();
     }
 
@@ -345,5 +636,23 @@ mod tests {
                 .expect("Home card slug must resolve");
             assert_eq!(parsed, product);
         }
+    }
+
+    #[test]
+    fn typing_flow_gets_its_dedicated_screens_and_nothing_else_does() {
+        use crate::navigation::SessionContext;
+        use radha_content::ProductId;
+        let flow = SessionContext::for_product(ProductId::TypingFlow);
+        assert_eq!(
+            screen_slug(&Screen::Exercise(flow.clone())),
+            "flow-exercise"
+        );
+        assert_eq!(screen_slug(&Screen::Typing(flow.clone())), "flow-typing");
+        assert_eq!(screen_slug(&Screen::Result(flow)), "flow-result");
+        assert_eq!(screen_slug(&Screen::Home), "home");
+        let english = SessionContext::for_product(ProductId::EnglishClassic);
+        assert_eq!(screen_slug(&Screen::Typing(english)), "typing");
+        let number = SessionContext::for_product(ProductId::NumberPunctuation);
+        assert_eq!(screen_slug(&Screen::Exercise(number)), "exercise");
     }
 }

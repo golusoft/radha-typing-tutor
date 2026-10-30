@@ -1,0 +1,20 @@
+# All-in-One Mangal Unicode Hindi Exam (P09 A7). Not a recruitment exam:
+# Hindi-only practice on the shared Hindi master pool, typed on the three
+# Mangal Unicode layouts Golu asked for. No threshold, so no pass / fail.
+schema_version = 1
+id = "all-in-one-mangal"
+profile_version = 1
+display_name = "All-in-One Mangal Unicode Hindi Exam"
+body = "Radha Typing Tutor (shared Hindi master exam pool)"
+hindi_only = true
+practice_notice = "Hindi exam practice on Mangal Unicode. Not a recruitment exam's official test, so there is no pass or fail."
+
+[notice]
+title = "Hindi exam practice on Mangal Unicode"
+note = "Layouts InScript, Remington GAIL and Remington CBI as Golu specified for this card."
+
+[[tests]]
+language = "hindi"
+layouts = { status = "user_asserted", value = ["inscript", "gail", "cbi"], note = "Golu: this card types InScript, GAIL and CBI only, no English" }
+font = { status = "user_asserted", value = "Mangal", note = "Golu: exam look via Mangal" }
+scoring = "practice_only"

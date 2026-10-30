@@ -1,0 +1,149 @@
+// ============================================================================
+// MicroBar — slim status and support strip above the main header
+// ============================================================================
+//
+// HOME-01. Shows the offline-ready status chip, the contact details, and the three
+// overlay triggers (Tips, Social, Licence).
+//
+// It is a plum strip (Theme.secondary) with cream text rather than the black strip
+// of the mock-up (RULES.MD Rule 27).
+//
+// Visibility is the caller's decision: the Home screen hides it below 1280 px, where
+// the contact details move to the footer so the 1024 px minimum never clips the nav.
+//
+// The contact details are links: the strip raises `link-requested(id)` and Rust
+// (src/contact.rs) owns the URLs and opens them. The footer carries the same ones.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Motion } from "../theme/metrics.slint";
+
+component MicroLink inherits Rectangle {
+    in property <string> label;
+
+    callback triggered();
+
+    height: 22px;
+    border-radius: Radius.sm;
+    background: touch.has-hover ? Theme.bg-surface.with-alpha(0.14) : transparent;
+
+    HorizontalLayout {
+        padding-left: Spacing.sm;
+        padding-right: Spacing.sm;
+        alignment: center;
+
+        Text {
+            text: root.label;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-micro;
+            font-weight: Typography.weight-medium;
+            color: Theme.text-on-primary;
+            vertical-alignment: center;
+        }
+    }
+
+    touch := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => {
+            root.triggered();
+        }
+    }
+}
+
+export component MicroBar inherits Rectangle {
+    in property <string> website: "";
+    in property <string> whatsapp: "";
+    in property <string> phone: "";
+
+    /// A contact detail was clicked: "website" | "whatsapp" | "phone".
+    callback link-requested(string);
+    callback tips-requested();
+    callback social-requested();
+    callback license-requested();
+
+    // Default height; the Home screen overrides it with 0 when the window is narrow.
+    height: 28px;
+    background: Theme.secondary;
+
+    HorizontalLayout {
+        padding-left: Spacing.xl;
+        padding-right: Spacing.xl;
+        spacing: Spacing.md;
+
+        // --- Status ----------------------------------------------------------
+        HorizontalLayout {
+            spacing: Spacing.sm;
+            horizontal-stretch: 1;
+            alignment: start;
+
+            Rectangle {
+                width: 7px;
+                height: 7px;
+                border-radius: 3.5px;
+                background: Theme.success;
+                y: (parent.height - self.height) / 2;
+            }
+
+            Text {
+                text: "Engine ready · works fully offline";
+                font-family: Typography.family-ui;
+                font-size: Typography.size-micro;
+                font-weight: Typography.weight-semibold;
+                color: Theme.text-on-primary;
+                vertical-alignment: center;
+            }
+        }
+
+        // --- Contact ----------------------------------------------------------
+        HorizontalLayout {
+            spacing: Spacing.md;
+            alignment: end;
+
+            // Each detail is a link; Rust maps the id to its URL and opens it.
+            if root.website != "": MicroLink {
+                label: root.website;
+                y: (parent.height - self.height) / 2;
+                triggered => {
+                    root.link-requested("website");
+                }
+            }
+            if root.whatsapp != "": MicroLink {
+                label: "WhatsApp " + root.whatsapp;
+                y: (parent.height - self.height) / 2;
+                triggered => {
+                    root.link-requested("whatsapp");
+                }
+            }
+            if root.phone != "": MicroLink {
+                label: root.phone;
+                y: (parent.height - self.height) / 2;
+                triggered => {
+                    root.link-requested("phone");
+                }
+            }
+
+            MicroLink {
+                label: "Typing Tips";
+                y: (parent.height - self.height) / 2;
+                triggered => {
+                    root.tips-requested();
+                }
+            }
+            MicroLink {
+                label: "Social";
+                y: (parent.height - self.height) / 2;
+                triggered => {
+                    root.social-requested();
+                }
+            }
+            MicroLink {
+                label: "Licence";
+                y: (parent.height - self.height) / 2;
+                triggered => {
+                    root.license-requested();
+                }
+            }
+        }
+    }
+}

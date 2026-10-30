@@ -1,0 +1,28 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "delhi-police-hcm"
+profile_version = 1
+display_name = "Delhi Police HC (Ministerial)"
+body = "Delhi Police"
+
+[notice]
+title = "Head Constable (Ministerial) — typing test"
+note = "Primary notification not read in Radha; rules are unknown."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "10-min test, min 30 WPM English / 25 WPM Hindi, one-word deduction per mistake, then computer formatting test"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://ssc.gov.in/api/attachment/uploads/masterData/NoticeBoards/Notice_of_DPHCM_2025.pdf"
+
+[[reference_claims]]
+claim = "English 30 WPM · Hindi 25 WPM · 10 Min · Graded Marks · Backspace allowed · QWERTY · Kruti / Mangal"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

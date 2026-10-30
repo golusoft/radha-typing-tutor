@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Engine\\WordSkipSessionTests.cs",
+    "sha256": "0266b75afa886a710b9cbd4f965d5b8dfca28f3d00de2ed6f10270e63c15127c",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "Skip_Advances_The_Caret_And_Charges_Full_Mistakes",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "Radha has no Skip API; the skip happens through space mid-word (word-aligned matcher). Skipped letters are Missing errors (3 full) but are NOT typed characters: Golu counts each skipped slot as a keystroke (TypingSession.cs SkipMarker, TotalKeystrokes++), which inflates gross WPM and KDPH. Radha characters_typed = 4 (o, r, a, space).",
+      "input": { "unit": "char", "target": "orange juice", "events": [ { "at_ms": 0, "type": "text", "text": "ora " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Skip(3)": 3, "Position": 3, "FullMistakes": 3, "CorrectKeystrokes": 0, "TotalKeystrokes": 3 },
+      "radha_expected": { "missing": 3, "error_count": 3, "unit_full": 3, "characters_typed": 4 }
+    },
+    {
+      "name": "A_Skipped_Word_Is_Reported_By_What_Was_Actually_Typed",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "visited every", "events": [ { "at_ms": 0, "type": "text", "text": "visite every" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "row.Expected": "visited", "row.Typed": "visite", "row.Error": "Missing Character" },
+      "radha_expected": { "typed_text": "visite every", "word_outcomes": "IC", "error_kinds": ["Missing"] }
+    },
+    {
+      "name": "A_Skipped_Word_Is_Reported_By_What_Was_Actually_Typed#word_level",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "Radha's word-level vocabulary (mistake.rs WordMistake, EXAM-MODE plan 5.4: omission full; case, spacing, spelling half) calls a word with a dropped letter a Spelling mistake. Golu labels the row with its character-level kind, \"Missing Character\" (Radha's unit-level kind for it is Missing, asserted in the previous case).",
+      "input": { "unit": "char", "target": "visited every", "events": [ { "at_ms": 0, "type": "text", "text": "visite every" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "row.Error": "Missing Character" },
+      "radha_expected": { "word_mistakes": ["Spelling", "None"] }
+    },
+    {
+      "name": "A_Skip_Is_Unwound_By_Backspace_Like_Any_Other_Mistake",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "One backspace removes the one key pressed (the space), and the stateless matcher re-evaluates: the skip is fully undone with ONE backspace. Golu stores a marker per skipped slot and needs three backspaces.",
+      "input": { "unit": "char", "target": "orange juice", "events": [ { "at_ms": 0, "type": "text", "text": "ora " }, { "at_ms": 0, "type": "backspace", "count": 1 } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "backspaces needed": 3, "Position": 3, "FullMistakes": 0, "CorrectKeystrokes": 3 },
+      "radha_expected": { "cursor": 3, "error_count": 0, "outcomes": "ccc", "backspaces": 1 }
+    },
+    {
+      "name": "Skipping_The_Final_Word_Completes_The_Passage",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "Radha auto-completes only when the end is reached with a correct final unit (session.rs); a space inside the final word leaves Missing + Extra outcomes and the typist can still correct it. Time-up or submit end the session. Golu completes on the skip.",
+      "input": { "unit": "char", "target": "go now", "events": [ { "at_ms": 0, "type": "text", "text": "go n " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "SkipToNextWord": true, "Position": 6, "IsComplete": true },
+      "radha_expected": { "state": "Active", "finished": false, "outcomes": "ccccmmx", "cursor": 6 }
+    },
+    {
+      "name": "SkipToNextWord_On_A_Boundary_Is_A_No_Op",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "orange juice", "events": [ { "at_ms": 0, "type": "text", "text": "orange" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "SkipToNextWord": false, "FullMistakes": 0 },
+      "radha_expected": { "error_count": 0, "cursor": 6, "current_word": "orange" }
+    }
+  ]
+}

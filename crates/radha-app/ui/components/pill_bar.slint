@@ -1,0 +1,74 @@
+// ============================================================================
+// PillBar — a segmented filter / mode switch
+// ============================================================================
+//
+// One component for the Home track filter, the Exam Hub category filter and (in
+// later prompts) the Exercise screen's LEARN | TEST toggle. The active pill is
+// filled with the primary colour; the label carries the state in text too, so
+// selection never depends on colour alone (DESIGN.md Chapter 20.7).
+//
+// The bar only reports a request (`selected(id)`); the owner decides what the new
+// state is, which keeps state out of the UI (RULES.MD Rule 16).
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Motion, Stroke } from "../theme/metrics.slint";
+
+export struct PillItem {
+    id: string,
+    label: string,
+}
+
+export component PillBar inherits Rectangle {
+    in property <[PillItem]> items;
+    in property <string> current;
+
+    callback selected(string);
+
+    height: 38px;
+    border-radius: Radius.md;
+    background: Theme.bg-surface;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-soft;
+
+    HorizontalLayout {
+        padding: 3px;
+        spacing: 2px;
+        alignment: start;
+
+        for item in root.items: Rectangle {
+            height: 30px;
+            border-radius: Radius.sm;
+            background: item.id == root.current
+                ? Theme.primary
+                : (touch.has-hover ? Theme.bg-sunken : transparent);
+
+            animate background { duration: Motion.fast; }
+
+            HorizontalLayout {
+                padding-left: Spacing.md;
+                padding-right: Spacing.md;
+                alignment: center;
+
+                Text {
+                    text: item.label;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-caption;
+                    font-weight: item.id == root.current
+                        ? Typography.weight-semibold
+                        : Typography.weight-medium;
+                    color: item.id == root.current ? Theme.text-on-primary : Theme.text-secondary;
+                    vertical-alignment: center;
+                }
+            }
+
+            touch := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => {
+                    root.selected(item.id);
+                }
+            }
+        }
+    }
+}

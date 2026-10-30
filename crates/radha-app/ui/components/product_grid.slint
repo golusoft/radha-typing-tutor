@@ -25,7 +25,7 @@
 // section here is exactly three items.
 // ============================================================================
 
-import { ProductEntry, Accents } from "../data/products.slint";
+import { ProductEntry, Accents, Products } from "../data/products.slint";
 import { ProductCard } from "product_card.slint";
 import { Spacing } from "../theme/metrics.slint";
 
@@ -46,12 +46,17 @@ export component ProductGrid inherits Rectangle {
         for entry in root.products: ProductCard {
             width: root.card-width;
 
+            eyebrow: entry.eyebrow;
             title: entry.title;
             subtitle: entry.subtitle;
             description: entry.description;
             badge: entry.badge;
             identity-label: entry.identity-label;
             key-sequence: entry.key-sequence;
+            deck-label: entry.deck-label;
+            deck-keys: entry.deck-keys;
+            // Typing Flow shows its live smoothness (P07); others their note.
+            deck-note: entry.slug == "typing-flow" ? Products.flow-smoothness + " Smoothness" : entry.deck-note;
             meta-1: entry.meta-1;
             meta-2: entry.meta-2;
             meta-3: entry.meta-3;

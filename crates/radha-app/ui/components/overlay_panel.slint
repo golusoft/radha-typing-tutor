@@ -1,0 +1,122 @@
+// ============================================================================
+// OverlayPanel — large utility surface over the screens (P08)
+// ============================================================================
+//
+// Analytics, Profile, Settings and Candidate info are overlays, not screens
+// (RULES.MD Rule 21). A plum-tinted backdrop absorbs clicks; the panel is
+// centred with a header (title, subtitle, close). Children are placed inside
+// the body area; their widths come from `body-w`, which is derived from this
+// overlay's own width — set by the window (outside-in), never by content.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Elevation, Stroke } from "../theme/metrics.slint";
+
+export component OverlayPanel inherits Rectangle {
+    in property <string> title;
+    in property <string> subtitle;
+    in property <length> max-panel-w: 1040px;
+    in property <length> max-panel-h: 760px;
+    callback close();
+
+    out property <length> panel-w: Math.min(root.width - 2 * Spacing.xl, root.max-panel-w);
+    out property <length> panel-h: Math.min(root.height - 2 * Spacing.xl, root.max-panel-h);
+    out property <length> head-h: 64px;
+    out property <length> body-w: root.panel-w - 2 * Spacing.xl;
+    out property <length> body-h: root.panel-h - root.head-h - Spacing.lg;
+
+    background: Theme.secondary.with-alpha(0.35);
+
+    TouchArea {
+        clicked => {
+            root.close();
+        }
+    }
+
+    Rectangle {
+        x: (root.width - root.panel-w) / 2;
+        y: (root.height - root.panel-h) / 2;
+        width: root.panel-w;
+        height: root.panel-h;
+        background: Theme.bg-base;
+        border-radius: Radius.xl;
+        border-width: Stroke.hairline;
+        border-color: Theme.border-soft;
+        drop-shadow-blur: Elevation.modal-blur;
+        drop-shadow-offset-y: Elevation.modal-offset-y;
+        drop-shadow-color: Theme.shadow.with-alpha(Elevation.modal-opacity);
+        clip: true;
+
+        // Swallow clicks so the backdrop does not close the panel.
+        TouchArea { }
+
+        Text {
+            x: Spacing.xl;
+            y: Spacing.lg;
+            width: root.panel-w - 2 * Spacing.xl - 48px;
+            text: root.title;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-h2;
+            font-weight: Typography.weight-bold;
+            color: Theme.text-primary;
+            overflow: elide;
+        }
+
+        Text {
+            x: Spacing.xl;
+            y: Spacing.lg + 26px;
+            width: root.panel-w - 2 * Spacing.xl - 48px;
+            text: root.subtitle;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            color: Theme.text-secondary;
+            overflow: elide;
+        }
+
+        close-btn := Rectangle {
+            x: root.panel-w - Spacing.xl - 32px;
+            y: Spacing.lg;
+            width: 32px;
+            height: 32px;
+            border-radius: Radius.md;
+            background: close-touch.has-hover ? Theme.primary-subtle : transparent;
+            border-width: close-focus.has-focus ? Stroke.thick : 0px;
+            border-color: Theme.primary;
+
+            Image {
+                x: 8px;
+                y: 8px;
+                width: 16px;
+                height: 16px;
+                source: @image-url("../../../../assets/icons/x.svg");
+                colorize: Theme.text-secondary;
+            }
+
+            close-focus := FocusScope {
+                key-pressed(event) => {
+                    if (event.text == " " || event.text == "\n") {
+                        root.close();
+                        return EventResult.accept;
+                    }
+                    return EventResult.reject;
+                }
+            }
+
+            close-touch := TouchArea {
+                mouse-cursor: MouseCursor.pointer;
+                clicked => {
+                    root.close();
+                }
+            }
+        }
+
+        Rectangle {
+            x: Spacing.xl;
+            y: root.head-h;
+            width: root.body-w;
+            height: root.body-h;
+            @children
+        }
+    }
+}

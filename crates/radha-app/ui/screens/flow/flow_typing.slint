@@ -1,0 +1,759 @@
+// ============================================================================
+// FlowTypingScreen — Typing Flow word stream + rhythm instruments
+// (DESIGN 8.4, PRD FL-03)
+// ============================================================================
+//
+//   ○ Flow · title                 ⏱ 1:24              Pause  Restart  Finish  ✕
+//   ───────────────────────────────────────────────────────────────────────
+//   ┌ word stream (same word highlighter and tokens as the Typing screen) ─┐
+//   │ the quick brown fox jumps over the lazy dog while the moon rises     │
+//   └ Word 12 of 180 ───────────────────────────────────────────────────────┘
+//   ┌ BEAT ─ pendulum ┐┌ TEMPO LANE: one bar per beat inside the smooth band ┐
+//   ┌ STEADINESS gauge ┐┌ FLOW RUN streak · best · hesitations ┐┌ KEYS MISSED ┐
+//   1:24 left · 42 WPM · 97.0%                       notice
+//
+// Everything is driven by the Rust rhythm engine through FlowView, written
+// only when a value changes; the pendulum is one animated property that
+// swings once per scored beat at the engine's own tempo. No keyboard, no
+// sidebar, nothing redrawn per key that did not change (DESIGN 8.6).
+// ============================================================================
+
+import { Theme } from "../../theme/palette.slint";
+import { Typography } from "../../theme/typography.slint";
+import { Spacing, Radius, Stroke, Motion } from "../../theme/metrics.slint";
+import { RadhaButton, ButtonVariant } from "../../components/button.slint";
+import { TypingView } from "../../data/practice.slint";
+import { FlowView } from "../../data/flow.slint";
+
+component Eyebrow inherits Text {
+    font-family: Typography.family-ui;
+    font-size: Typography.size-micro;
+    font-weight: Typography.weight-semibold;
+    letter-spacing: Typography.tracking-wide;
+    color: Theme.text-tertiary;
+    overflow: elide;
+}
+
+component Panel inherits Rectangle {
+    border-radius: Radius.lg;
+    background: Theme.bg-surface;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-soft;
+    clip: true;
+}
+
+export component FlowTypingScreen inherits Rectangle {
+    callback back-requested();
+
+    // --- Geometry (from the screen size only) --------------------------------
+    property <length> pad: Spacing.xl;
+    property <length> header-h: 52px;
+    property <length> bottom-h: 40px;
+    property <length> gap: Spacing.md;
+    property <length> lane-h: 92px;
+    property <length> cards-h: 84px;
+    property <length> col-w: Math.min(root.width - 2 * Spacing.lg, 1080px);
+    property <length> col-x: (root.width - root.col-w) / 2;
+    property <length> line-h: TypingView.font-size * 1.75;
+    property <length> block-h: TypingView.font-size * 1.42;
+    property <length> stream-pad: Spacing.xl;
+    property <length> stream-foot: 26px;
+    property <length> fixed-h: root.header-h + Spacing.lg + root.lane-h + root.cards-h + 2 * root.gap
+        + root.bottom-h + Spacing.lg + 2 * root.stream-pad + root.stream-foot;
+    property <int> rows: Math.max(2, Math.min(5, Math.floor((root.height - root.fixed-h) / root.line-h)));
+    property <length> stream-h: root.rows * root.line-h + 2 * root.stream-pad + root.stream-foot;
+    property <length> stream-y: root.header-h + Spacing.lg;
+    property <length> lane-y: root.stream-y + root.stream-h + root.gap;
+    property <length> cards-y: root.lane-y + root.lane-h + root.gap;
+    /// The word-stream text width: Rust rewraps when it changes.
+    property <length> stream-w: root.col-w - 2 * root.stream-pad;
+    // English exam typography (Arial, or the embedded monospace fallback);
+    // a proportional face keeps the current word at 400 so lines do not
+    // shift sideways word by word.
+    property <bool> word-bold: TypingView.font-latin == Typography.family-mono;
+    // Smooth scrolling: one-line steps glide, jumps snap (Rust decides).
+    property <float> scroll-pos: TypingView.scroll-first;
+    animate scroll-pos {
+        duration: TypingView.scroll-glide ? Motion.fast : 0ms;
+        easing: ease-out;
+    }
+    property <length> beat-w: 220px;
+    property <length> card-w: (root.col-w - 2 * root.gap) / 3;
+    property <color> tone: FlowView.rhythm-tone == "steady" ? Theme.success
+        : FlowView.rhythm-tone == "settling" ? Theme.accent
+        : FlowView.rhythm-tone == "uneven" ? Theme.secondary : Theme.text-tertiary;
+
+    changed stream-w => {
+        FlowView.stream-resized(root.stream-w);
+    }
+    changed rows => {
+        FlowView.stream-rows(root.rows);
+    }
+    changed visible => {
+        if (root.visible) {
+            FlowView.stream-resized(root.stream-w);
+            FlowView.stream-rows(root.rows);
+        }
+    }
+
+    background: Theme.bg-base;
+
+    // A click anywhere hands the keys back to the typing scope.
+    TouchArea {
+        clicked => {
+            TypingView.request-focus();
+        }
+    }
+
+    // =====================================================================
+    // Minimal header
+    // =====================================================================
+    Rectangle {
+        x: 0px;
+        y: 0px;
+        width: root.width;
+        height: root.header-h;
+
+        HorizontalLayout {
+            padding-left: root.pad;
+            padding-right: root.pad;
+            spacing: Spacing.sm;
+
+            VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 6px;
+                    border-width: Stroke.thick;
+                    border-color: Theme.accent;
+                    background: TypingView.idle || TypingView.paused ? transparent : Theme.accent-light;
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                horizontal-stretch: 1;
+                min-width: 120px;
+                Text {
+                    text: "Flow · " + TypingView.title;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-body-sm;
+                    font-weight: Typography.weight-semibold;
+                    color: Theme.text-secondary;
+                    overflow: elide;
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                Rectangle {
+                    width: 112px;
+                    height: 32px;
+                    border-radius: 16px;
+                    background: TypingView.ring-warning ? Theme.warning-subtle : Theme.accent-subtle;
+                    Text {
+                        width: parent.width;
+                        height: parent.height;
+                        text: TypingView.stat-time + (TypingView.ring-visible ? " left" : "");
+                        font-family: Typography.family-mono;
+                        font-size: Typography.size-body-sm;
+                        font-weight: Typography.weight-bold;
+                        color: TypingView.ring-warning ? Theme.warning : Theme.accent;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: TypingView.paused ? "Resume" : "Pause";
+                    variant: ButtonVariant.Ghost;
+                    compact: true;
+                    enabled: !TypingView.idle;
+                    clicked => {
+                        TypingView.toggle-pause();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "Restart";
+                    variant: ButtonVariant.Ghost;
+                    compact: true;
+                    clicked => {
+                        TypingView.restart();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "Finish";
+                    variant: ButtonVariant.Secondary;
+                    compact: true;
+                    enabled: !TypingView.idle;
+                    clicked => {
+                        TypingView.finish();
+                    }
+                }
+            }
+
+            VerticalLayout {
+                alignment: center;
+                RadhaButton {
+                    text: "✕";
+                    variant: ButtonVariant.Ghost;
+                    compact: true;
+                    clicked => {
+                        root.back-requested();
+                    }
+                }
+            }
+        }
+    }
+
+    // Thin progress line under the header.
+    Rectangle {
+        x: 0px;
+        y: root.header-h - 2px;
+        width: root.width;
+        height: 2px;
+        background: Theme.border-soft;
+        Rectangle {
+            x: 0px;
+            width: parent.width * Math.max(0, Math.min(1, TypingView.progress));
+            height: parent.height;
+            background: Theme.accent;
+        }
+    }
+
+    // =====================================================================
+    // Word stream (the shared word highlighter)
+    // =====================================================================
+    Rectangle {
+        x: root.col-x;
+        y: root.stream-y;
+        width: root.col-w;
+        height: root.stream-h;
+        border-radius: Radius.xl;
+        background: Theme.bg-surface;
+        border-width: TypingView.focused ? Stroke.hairline : Stroke.thick;
+        border-color: TypingView.focused ? Theme.border-soft : Theme.warning;
+        drop-shadow-blur: 8px;
+        drop-shadow-offset-y: 2px;
+        drop-shadow-color: Theme.shadow.with-alpha(0.08);
+        clip: true;
+
+        // The rows plus one buffer line above and below, clipped: lines
+        // glide in and out with `scroll-pos` (as on the Typing screen).
+        Rectangle {
+            x: root.stream-pad;
+            y: root.stream-pad;
+            width: root.stream-w;
+            height: root.rows * root.line-h;
+            clip: true;
+
+            VerticalLayout {
+                x: 0px;
+                y: (TypingView.lines-base - root.scroll-pos) * root.line-h;
+                width: root.stream-w;
+                height: TypingView.lines.length * root.line-h;
+                alignment: start;
+
+                for line in TypingView.lines: HorizontalLayout {
+                    height: root.line-h;
+                    alignment: start;
+                    padding-top: (root.line-h - root.block-h) / 2;
+                    padding-bottom: (root.line-h - root.block-h) / 2;
+
+                    for seg in line.segments: Rectangle {
+                        border-radius: 5px;
+                        background: seg.state == 4 || seg.state == 3 ? Theme.passage-current-bg
+                            : seg.state == 2 ? Theme.passage-wrong-bg : transparent;
+
+                        HorizontalLayout {
+                            Text {
+                                text: seg.text;
+                                font-family: TypingView.font-latin;
+                                font-size: TypingView.font-size;
+                                font-weight: (root.word-bold && (seg.state == 3 || seg.state == 4)) || TypingView.bold
+                                    ? Typography.weight-bold
+                                    : Typography.weight-regular;
+                                color: seg.state == 1 ? Theme.passage-correct
+                                    : seg.state == 2 ? Theme.passage-wrong
+                                    : seg.state == 3 ? Theme.passage-key
+                                    : seg.state == 4 ? Theme.passage-current-text
+                                    : seg.state == 5 ? Theme.passage-skipped : Theme.passage-upcoming;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        // Current word: a lower edge that breathes with the beat.
+                        Rectangle {
+                            x: 0px;
+                            y: parent.height - (FlowView.pulse ? 3px : 2px);
+                            width: parent.width;
+                            height: FlowView.pulse ? 3px : 2px;
+                            visible: seg.state == 4 || seg.state == 3;
+                            background: seg.state == 3 ? Theme.passage-key : Theme.passage-current-edge;
+                            animate height, y { duration: Motion.fast; }
+                        }
+
+                        // Wrong word: a dotted underline (calm, not a red box).
+                        Rectangle {
+                            x: 0px;
+                            y: parent.height - 3px;
+                            width: parent.width;
+                            height: 2px;
+                            visible: seg.state == 2;
+                            background: Theme.passage-wrong.with-alpha(0.7);
+                        }
+
+                        // Skipped word: struck through.
+                        Rectangle {
+                            x: 0px;
+                            y: parent.height / 2;
+                            width: parent.width;
+                            height: 1.5px;
+                            visible: seg.state == 5;
+                            background: Theme.passage-skipped;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Footer: position in the passage.
+        Rectangle {
+            x: 0px;
+            y: parent.height - root.stream-foot;
+            width: parent.width;
+            height: root.stream-foot;
+            background: Theme.bg-sunken;
+
+            Text {
+                x: root.stream-pad;
+                width: parent.width / 2;
+                height: parent.height;
+                text: TypingView.word-position;
+                font-family: Typography.family-mono;
+                font-size: Typography.size-micro;
+                color: Theme.text-tertiary;
+                vertical-alignment: center;
+            }
+
+            Text {
+                x: parent.width / 2;
+                width: parent.width / 2 - root.stream-pad;
+                height: parent.height;
+                text: TypingView.idle ? "Begin when ready · the clock starts on your first key"
+                    : !TypingView.focused ? "Click to focus the stream"
+                    : "Find a pace you can hold through every word";
+                font-family: Typography.family-ui;
+                font-size: Typography.size-micro;
+                color: !TypingView.focused ? Theme.warning : Theme.text-tertiary;
+                horizontal-alignment: right;
+                vertical-alignment: center;
+                overflow: elide;
+            }
+        }
+
+        // Paused veil.
+        if TypingView.paused: Rectangle {
+            x: 0px;
+            y: 0px;
+            width: parent.width;
+            height: parent.height;
+            background: Theme.bg-base.with-alpha(0.82);
+            Text {
+                width: parent.width;
+                height: parent.height;
+                text: "Paused · breathe · press Esc or Resume to flow again";
+                font-family: Typography.family-ui;
+                font-size: Typography.size-body;
+                font-weight: Typography.weight-semibold;
+                color: Theme.text-secondary;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+    }
+
+    // =====================================================================
+    // Beat (pendulum) + tempo lane
+    // =====================================================================
+    Panel {
+        x: root.col-x;
+        y: root.lane-y;
+        width: root.beat-w;
+        height: root.lane-h;
+
+        Eyebrow {
+            x: Spacing.md;
+            y: Spacing.sm;
+            width: parent.width - 2 * Spacing.md;
+            text: "YOUR BEAT";
+        }
+
+        // The pendulum: the bob crosses once per scored keystroke, taking
+        // exactly one beat (the engine's tempo) to arrive.
+        track := Rectangle {
+            x: Spacing.md;
+            y: 36px;
+            width: parent.width - 2 * Spacing.md;
+            height: 18px;
+
+            Rectangle {
+                x: 0px;
+                y: parent.height / 2 - 1px;
+                width: parent.width;
+                height: 2px;
+                border-radius: 1px;
+                background: Theme.border-soft;
+            }
+            for e in 2: Rectangle {
+                x: e == 0 ? 0px : parent.width - 2px;
+                y: 2px;
+                width: 2px;
+                height: parent.height - 4px;
+                background: Theme.border-strong;
+            }
+            Rectangle {
+                x: (parent.width - 1px) / 2;
+                y: 4px;
+                width: 1px;
+                height: parent.height - 8px;
+                background: Theme.border-soft;
+            }
+
+            bob := Rectangle {
+                width: 18px;
+                height: 18px;
+                border-radius: 9px;
+                x: FlowView.pulse ? track.width - self.width : 0px;
+                y: 0px;
+                background: TypingView.idle ? Theme.border-strong : root.tone;
+                animate x {
+                    duration: Motion.enabled ? Math.min(1500, Math.max(0, FlowView.tempo-ms)) * 1ms : 0ms;
+                    easing: ease-in-out;
+                }
+            }
+        }
+
+        Text {
+            x: Spacing.md;
+            y: 62px;
+            width: parent.width - 2 * Spacing.md;
+            text: FlowView.pace;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-micro;
+            color: Theme.text-secondary;
+            overflow: elide;
+        }
+    }
+
+    Panel {
+        property <length> plot-x: Spacing.md;
+        property <length> plot-y: 28px;
+        property <length> plot-w: self.width - 2 * Spacing.md;
+        property <length> plot-h: self.height - self.plot-y - Spacing.sm;
+        property <length> bar-gap: 3px;
+        property <length> bar-w: (self.plot-w - (FlowView.bars.length - 1) * self.bar-gap) / Math.max(1, FlowView.bars.length);
+
+        x: root.col-x + root.beat-w + root.gap;
+        y: root.lane-y;
+        width: root.col-w - root.beat-w - root.gap;
+        height: root.lane-h;
+
+        Eyebrow {
+            x: Spacing.md;
+            y: Spacing.sm;
+            width: parent.width / 2;
+            text: "TEMPO LANE · one bar per beat";
+        }
+
+        Text {
+            x: parent.width / 2;
+            y: Spacing.sm - 1px;
+            width: parent.width / 2 - Spacing.md;
+            text: "rhythm: " + FlowView.rhythm-word;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            font-weight: Typography.weight-semibold;
+            color: root.tone;
+            horizontal-alignment: right;
+            overflow: elide;
+            animate color { duration: Motion.standard; }
+        }
+
+        // The smooth band around your own beat.
+        Rectangle {
+            x: parent.plot-x;
+            y: parent.plot-y + parent.plot-h * (1 - (0.5 + FlowView.band));
+            width: parent.plot-w;
+            height: parent.plot-h * 2 * FlowView.band;
+            border-radius: 3px;
+            background: Theme.success-subtle;
+        }
+
+        // Your beat (a bar at 0.5 is exactly on tempo).
+        Rectangle {
+            x: parent.plot-x;
+            y: parent.plot-y + parent.plot-h / 2;
+            width: parent.plot-w;
+            height: 1px;
+            background: Theme.success.with-alpha(0.5);
+        }
+
+        for b[i] in FlowView.bars: Rectangle {
+            x: parent.plot-x + i * (parent.bar-w + parent.bar-gap);
+            y: parent.plot-y + parent.plot-h - self.height;
+            width: parent.bar-w;
+            height: Math.max(2px, parent.plot-h * Math.max(0, Math.min(1, b.level)));
+            border-radius: Math.min(3px, parent.bar-w / 2);
+            background: b.level <= 0 ? Theme.border-soft
+                : b.smooth ? Theme.accent : Theme.secondary-light.with-alpha(0.75);
+        }
+    }
+
+    // =====================================================================
+    // Steadiness · Flow run · Keys missed
+    // =====================================================================
+    Panel {
+        x: root.col-x;
+        y: root.cards-y;
+        width: root.card-w;
+        height: root.cards-h;
+
+        property <length> gw: self.width - 2 * Spacing.md;
+
+        Eyebrow {
+            x: Spacing.md;
+            y: Spacing.sm;
+            width: parent.gw - 60px;
+            text: "STEADINESS · last 64 beats";
+        }
+
+        Text {
+            x: Spacing.md;
+            y: Spacing.sm - 4px;
+            width: parent.gw;
+            text: FlowView.live-smoothness;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-h3;
+            font-weight: Typography.weight-bold;
+            color: root.tone;
+            horizontal-alignment: right;
+        }
+
+        // Gauge with the settling and steady marks.
+        Rectangle {
+            x: Spacing.md;
+            y: 40px;
+            width: parent.gw;
+            height: 10px;
+            border-radius: 5px;
+            background: Theme.bg-sunken;
+
+            Rectangle {
+                x: 0px;
+                width: parent.width * Math.max(0, Math.min(1, FlowView.live-level));
+                height: parent.height;
+                border-radius: 5px;
+                background: root.tone;
+                animate width { duration: Motion.standard; }
+            }
+            for m in [FlowView.settling-at, FlowView.steady-at]: Rectangle {
+                x: parent.width * m - 1px;
+                y: -3px;
+                width: 2px;
+                height: parent.height + 6px;
+                background: Theme.border-strong;
+            }
+        }
+
+        Text {
+            x: Spacing.md;
+            y: 58px;
+            width: parent.gw;
+            text: FlowView.live-level < 0 ? "Warming up · a few beats first"
+                : "steady from " + Math.round(FlowView.steady-at * 100) + "% · settling from "
+                    + Math.round(FlowView.settling-at * 100) + "%";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-micro;
+            color: Theme.text-tertiary;
+            overflow: elide;
+        }
+    }
+
+    Panel {
+        x: root.col-x + root.card-w + root.gap;
+        y: root.cards-y;
+        width: root.card-w;
+        height: root.cards-h;
+
+        Eyebrow {
+            x: Spacing.md;
+            y: Spacing.sm;
+            width: parent.width - 2 * Spacing.md;
+            text: "FLOW RUN · smooth beats in a row";
+        }
+
+        Text {
+            x: Spacing.md;
+            y: 26px;
+            text: FlowView.streak;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-h2;
+            font-weight: Typography.weight-bold;
+            color: FlowView.streak >= 20 ? Theme.success : FlowView.streak > 0 ? Theme.accent : Theme.text-disabled;
+        }
+
+        Text {
+            x: Spacing.md + 70px;
+            y: 30px;
+            width: parent.width - 2 * Spacing.md - 70px;
+            text: "best " + FlowView.best-streak;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-caption;
+            color: Theme.text-secondary;
+            overflow: elide;
+        }
+
+        Text {
+            x: Spacing.md + 70px;
+            y: 48px;
+            width: parent.width - 2 * Spacing.md - 70px;
+            text: FlowView.live-hesitations == 1 ? "1 hesitation" : FlowView.live-hesitations + " hesitations";
+            font-family: Typography.family-mono;
+            font-size: Typography.size-caption;
+            color: FlowView.live-hesitations > 0 ? Theme.secondary : Theme.text-tertiary;
+            overflow: elide;
+        }
+    }
+
+    Panel {
+        x: root.col-x + 2 * (root.card-w + root.gap);
+        y: root.cards-y;
+        width: root.card-w;
+        height: root.cards-h;
+
+        Eyebrow {
+            x: Spacing.md;
+            y: Spacing.sm;
+            width: parent.width - 2 * Spacing.md;
+            text: "KEYS MISSED MOST · live";
+        }
+
+        if FlowView.live-weak.length == 0: Text {
+            x: Spacing.md;
+            y: 30px;
+            width: parent.width - 2 * Spacing.md;
+            height: 40px;
+            text: "No key missed twice yet. Keep the beat, not the speed.";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            color: Theme.text-tertiary;
+            wrap: word-wrap;
+        }
+
+        for k[i] in FlowView.live-weak: Rectangle {
+            property <length> slot: (parent.width - 2 * Spacing.md) / 3;
+            x: Spacing.md + i * self.slot;
+            y: 28px;
+            width: self.slot - 6px;
+            height: 44px;
+            border-radius: Radius.md;
+            background: Theme.accent-subtle;
+            border-width: Stroke.hairline;
+            border-color: Theme.accent;
+
+            Text {
+                y: 3px;
+                width: parent.width;
+                text: k.key;
+                font-family: Typography.family-mono;
+                font-size: Typography.size-h3;
+                font-weight: Typography.weight-bold;
+                color: Theme.accent;
+                horizontal-alignment: center;
+            }
+            Text {
+                y: 27px;
+                width: parent.width;
+                text: k.detail;
+                font-family: Typography.family-ui;
+                font-size: 10px;
+                color: Theme.text-secondary;
+                horizontal-alignment: center;
+            }
+        }
+    }
+
+    // =====================================================================
+    // Slim metrics bar
+    // =====================================================================
+    Rectangle {
+        x: 0px;
+        y: root.height - root.bottom-h;
+        width: root.width;
+        height: root.bottom-h;
+        background: Theme.bg-surface;
+
+        Rectangle {
+            x: 0px;
+            y: 0px;
+            width: parent.width;
+            height: 1px;
+            background: Theme.border-soft;
+        }
+
+        HorizontalLayout {
+            padding-left: root.pad;
+            padding-right: root.pad;
+            spacing: Spacing.xl;
+
+            Text {
+                text: TypingView.stat-wpm + " WPM";
+                font-family: Typography.family-mono;
+                font-size: Typography.size-caption;
+                font-weight: Typography.weight-semibold;
+                color: Theme.text-secondary;
+                vertical-alignment: center;
+            }
+
+            Text {
+                text: TypingView.stat-accuracy + " accuracy";
+                font-family: Typography.family-mono;
+                font-size: Typography.size-caption;
+                color: Theme.text-secondary;
+                vertical-alignment: center;
+            }
+
+            Text {
+                text: TypingView.stat-errors + " errors";
+                font-family: Typography.family-mono;
+                font-size: Typography.size-caption;
+                color: Theme.text-tertiary;
+                vertical-alignment: center;
+            }
+
+            Text {
+                horizontal-stretch: 1;
+                text: TypingView.notice;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                color: Theme.text-tertiary;
+                horizontal-alignment: right;
+                vertical-alignment: center;
+                overflow: elide;
+            }
+        }
+    }
+}

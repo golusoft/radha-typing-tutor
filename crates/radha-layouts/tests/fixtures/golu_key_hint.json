@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Multilingual\\KeyHintTests.cs",
+    "sha256": "e8431b9418e31deaa4e4816edddd2f16d6d833d4833c00f460954982646b902b",
+    "extracted": "2026-10-25"
+  },
+  "extra_sources": [
+    {
+      "origin": "golu-expert-ai",
+      "path": "tests\\Golu.Tests\\Multilingual\\ClusterKeyGuideTests.cs",
+      "sha256": "a624ebde922189068cc8525cb31bdde6908975ebb38bfc73ab0fb931d0ffc012",
+      "extracted": "2026-10-25",
+      "used_for": "cluster key sequences (plan cases)"
+    }
+  ],
+  "cases": [
+    {
+      "name": "Qwerty_A_Left_Pinky",
+      "tag": "must_match",
+      "kind": "hint",
+      "layout": "qwerty",
+      "output": "a",
+      "golu_expected": "A left pinky",
+      "radha_expected": {
+        "legend": "A",
+        "layer": "base",
+        "hand": "left",
+        "finger": "pinky"
+      }
+    },
+    {
+      "name": "Space_Right_Thumb",
+      "tag": "must_match",
+      "kind": "hint",
+      "layout": "qwerty",
+      "output": " ",
+      "golu_expected": "Space right thumb",
+      "radha_expected": {
+        "legend": "Space",
+        "layer": "base",
+        "hand": "right",
+        "finger": "thumb"
+      }
+    },
+    {
+      "name": "Cbi_Ra_On_J",
+      "tag": "must_match",
+      "kind": "hint",
+      "layout": "cbi",
+      "output": "र",
+      "golu_expected": "J right index",
+      "radha_expected": {
+        "legend": "J",
+        "layer": "base",
+        "hand": "right",
+        "finger": "index"
+      }
+    },
+    {
+      "name": "Cbi_Pha_Shift_Q",
+      "tag": "must_match",
+      "kind": "hint",
+      "layout": "cbi",
+      "output": "फ",
+      "golu_expected": "Shift+Q left pinky",
+      "radha_expected": {
+        "legend": "Q",
+        "layer": "shift",
+        "hand": "left",
+        "finger": "pinky"
+      }
+    },
+    {
+      "name": "Cbi_Ri_Shift_0",
+      "tag": "must_match",
+      "kind": "hint",
+      "layout": "cbi",
+      "output": "ऋ",
+      "golu_expected": "Shift+0 right pinky",
+      "radha_expected": {
+        "legend": "0",
+        "layer": "shift",
+        "hand": "right",
+        "finger": "pinky"
+      }
+    },
+    {
+      "name": "Cbi_Ii_AltGr_B",
+      "tag": "intentional_divergence",
+      "kind": "hint",
+      "layout": "cbi",
+      "output": "ई",
+      "golu_expected": "AltGr+B left index",
+      "radha_expected": {
+        "finger": "index",
+        "hand": "left",
+        "layer": "base",
+        "legend": "B"
+      },
+      "reason": "book 03: CBI has no AltGr layer; ई is b then Shift+Z, so the first key is b"
+    },
+    {
+      "name": "Cbi_CandraO_AltGr_W",
+      "tag": "intentional_divergence",
+      "kind": "hint",
+      "layout": "cbi",
+      "output": "ॉ",
+      "golu_expected": "AltGr+W left ring",
+      "radha_expected": {
+        "finger": "middle",
+        "hand": "right",
+        "layer": "base",
+        "legend": "K"
+      },
+      "reason": "book 03: CBI has no AltGr layer; ॉ is k then Shift+W, so the first key is k"
+    },
+    {
+      "name": "Gail_Nukta_Backquote",
+      "tag": "must_match",
+      "kind": "hint",
+      "layout": "gail",
+      "output": "़",
+      "source_path": "tests\\Golu.Tests\\Multilingual\\RemingtonGailLayoutTests.cs",
+      "golu_expected": "` left pinky unshifted",
+      "radha_expected": {
+        "legend": "`",
+        "layer": "base",
+        "hand": "left",
+        "finger": "pinky"
+      }
+    },
+    {
+      "name": "KrutiDev_Produced_Glyph_Has_A_Finger",
+      "tag": "must_match",
+      "kind": "hint",
+      "layout": "krutidev",
+      "output": "d",
+      "golu_expected": "a finger, not Unknown",
+      "radha_expected": {
+        "legend": "D",
+        "layer": "base",
+        "hand": "left",
+        "finger": "middle"
+      }
+    },
+    {
+      "name": "Karya_Gail_D_K_Semicolon_ShiftZ",
+      "tag": "must_match",
+      "kind": "plan",
+      "layout": "gail",
+      "unicode": "कार्य",
+      "source_path": "tests\\Golu.Tests\\Multilingual\\ClusterKeyGuideTests.cs",
+      "golu_expected": "D, K, ;, Shift+Z",
+      "radha_expected": "dk;Z"
+    },
+    {
+      "name": "Karya_Cbi_D_K_Semicolon_ShiftZ",
+      "tag": "must_match",
+      "kind": "plan",
+      "layout": "cbi",
+      "unicode": "कार्य",
+      "source_path": "tests\\Golu.Tests\\Multilingual\\ClusterKeyGuideTests.cs",
+      "golu_expected": "D, K, ;, Shift+Z",
+      "radha_expected": "dk;Z"
+    },
+    {
+      "name": "Ksha_Half_Is_One_Key",
+      "tag": "must_match",
+      "kind": "plan",
+      "layout": "gail",
+      "unicode": "क्ष्",
+      "source_path": "tests\\Golu.Tests\\Multilingual\\ClusterKeyGuideTests.cs",
+      "golu_expected": "Shift+[ (output length 4)",
+      "radha_expected": "{"
+    },
+    {
+      "name": "English_Plain_And_Shifted",
+      "tag": "must_match",
+      "kind": "plan",
+      "layout": "qwerty",
+      "unicode": "fjFj",
+      "source_path": "tests\\Golu.Tests\\Multilingual\\ClusterKeyGuideTests.cs",
+      "golu_expected": "f j Shift+F j",
+      "radha_expected": "fjFj"
+    }
+  ]
+}

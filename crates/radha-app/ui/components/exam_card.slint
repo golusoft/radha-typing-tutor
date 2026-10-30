@@ -1,0 +1,249 @@
+// ============================================================================
+// ExamCard — one exam in the Exam Hub
+// ============================================================================
+//
+// Same shell language as ProductCard (accent bar, hairline border, hover raise) but
+// a different anatomy, per DESIGN.md Chapter 20.5:
+//
+//   crest + department + title
+//   organisation + tag
+//   VerificationBadge
+//   description
+//   2x2 spec matrix   (English speed, Hindi speed, Font / layout, Test rule)
+//   [ English Test ] [ Hindi Test ]
+//
+// The card itself is not clickable. It has two explicit launch buttons, because
+// "which language?" is part of the decision, and a card-wide click would hide it.
+//
+// Values come from the entry as-is. An unverified value is "—" in the data; this
+// component never fills a blank with a guess (RULES.MD Rule 32).
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Elevation, Motion, Stroke } from "../theme/metrics.slint";
+import { RadhaBadge, BadgeTone } from "badge.slint";
+import { VerificationBadge } from "verification_badge.slint";
+import { CrestBadge } from "crest_badge.slint";
+
+component SpecCell inherits VerticalLayout {
+    in property <string> label;
+    in property <string> value;
+
+    spacing: 1px;
+
+    Text {
+        text: root.label;
+        font-family: Typography.family-mono;
+        font-size: 9px;
+        letter-spacing: Typography.tracking-wide;
+        color: Theme.text-tertiary;
+    }
+
+    Text {
+        text: root.value;
+        font-family: Typography.family-ui;
+        font-size: Typography.size-caption;
+        font-weight: Typography.weight-semibold;
+        color: root.value == "—" ? Theme.text-disabled : Theme.text-primary;
+        // Wrap rather than elide: a rule such as the Patna HC marks threshold must be
+        // readable in full, not cut at "minimum 90 / 8…".
+        wrap: word-wrap;
+    }
+}
+
+component LaunchButton inherits Rectangle {
+    in property <string> label;
+    in property <color> accent;
+    in property <bool> filled: false;
+
+    callback clicked();
+
+    height: 32px;
+    border-radius: Radius.md;
+    background: root.filled
+        ? (touch.has-hover ? root.accent.darker(0.1) : root.accent)
+        : (touch.has-hover ? Theme.bg-raised : Theme.bg-sunken);
+
+    animate background { duration: Motion.fast; }
+
+    HorizontalLayout {
+        padding-left: Spacing.sm;
+        padding-right: Spacing.sm;
+        alignment: center;
+
+        Text {
+            text: root.label;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            font-weight: Typography.weight-semibold;
+            color: root.filled ? Theme.text-on-primary : Theme.text-primary;
+            vertical-alignment: center;
+        }
+    }
+
+    touch := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => {
+            root.clicked();
+        }
+    }
+}
+
+export component ExamCard inherits Rectangle {
+    in property <string> crest;
+    in property <string> dept;
+    in property <string> tag;
+    in property <string> title;
+    in property <string> org;
+    in property <string> description;
+    in property <string> eng-speed;
+    in property <string> hin-speed;
+    in property <string> font-layout;
+    in property <string> rule;
+    in property <string> level: "practice";
+    in property <color> accent: Theme.primary;
+    /// Hindi-only card: no English launcher.
+    in property <bool> hindi-only;
+
+    /// A launch button was pressed. Carries "eng" or "hin".
+    callback launch-requested(string);
+
+    border-radius: Radius.lg;
+    background: Theme.bg-surface;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-soft;
+
+    // No card-level hover state: the card has two real buttons, and a hover tracker
+    // behind them loses the pointer whenever it is over a button, which makes the
+    // card flicker. Each button carries its own hover feedback instead.
+    drop-shadow-blur: Elevation.card-blur;
+    drop-shadow-offset-y: Elevation.card-offset-y;
+    drop-shadow-color: Theme.shadow.with-alpha(Elevation.card-opacity);
+
+    Rectangle {
+        x: 0;
+        y: 0;
+        width: root.width;
+        height: 3px;
+        background: root.accent;
+        border-top-left-radius: Radius.lg;
+        border-top-right-radius: Radius.lg;
+    }
+
+    VerticalLayout {
+        padding: Spacing.lg;
+        padding-top: Spacing.lg + 3px;
+        spacing: Spacing.sm;
+
+        // --- Crest + title ---------------------------------------------------
+        HorizontalLayout {
+            spacing: Spacing.md;
+
+            CrestBadge {
+                code: root.crest;
+                accent: root.accent;
+                size: 42px;
+            }
+
+            VerticalLayout {
+                spacing: 1px;
+                alignment: center;
+
+                Text {
+                    text: root.dept;
+                    font-family: Typography.family-mono;
+                    font-size: 9px;
+                    letter-spacing: Typography.tracking-wide;
+                    color: Theme.text-tertiary;
+                    overflow: elide;
+                }
+
+                Text {
+                    text: root.title;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-body-sm;
+                    font-weight: Typography.weight-semibold;
+                    color: Theme.text-primary;
+                    wrap: word-wrap;
+                }
+            }
+        }
+
+        // --- Organisation + tag ----------------------------------------------
+        Text {
+            text: root.org;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-micro;
+            color: Theme.text-tertiary;
+            overflow: elide;
+        }
+
+        HorizontalLayout {
+            spacing: Spacing.xs;
+            alignment: start;
+
+            VerificationBadge {
+                level: root.level;
+            }
+
+            RadhaBadge {
+                text: root.tag;
+                tone: BadgeTone.Neutral;
+                outlined: true;
+            }
+        }
+
+        Text {
+            text: root.description;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            color: Theme.text-secondary;
+            wrap: word-wrap;
+        }
+
+        // --- 2x2 spec matrix --------------------------------------------------
+        Rectangle {
+            background: Theme.bg-sunken;
+            border-radius: Radius.md;
+
+            GridLayout {
+                padding: Spacing.md;
+                spacing: Spacing.sm;
+
+                SpecCell { row: 0; col: 0; label: "ENGLISH"; value: root.eng-speed; }
+                SpecCell { row: 0; col: 1; label: "HINDI"; value: root.hin-speed; }
+                SpecCell { row: 1; col: 0; label: "FONT / LAYOUT"; value: root.font-layout; }
+                SpecCell { row: 1; col: 1; label: "TEST RULE"; value: root.rule; }
+            }
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            background: transparent;
+        }
+
+        // --- Launchers --------------------------------------------------------
+        HorizontalLayout {
+            spacing: Spacing.sm;
+
+            if !root.hindi-only: LaunchButton {
+                label: "English Test";
+                accent: root.accent;
+                filled: true;
+                clicked => {
+                    root.launch-requested("eng");
+                }
+            }
+
+            LaunchButton {
+                label: "अ  Hindi Test";
+                accent: root.accent;
+                filled: root.hindi-only;
+                clicked => {
+                    root.launch-requested("hin");
+                }
+            }
+        }
+    }
+}

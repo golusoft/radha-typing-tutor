@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Engine\\StateMachineVisualOrderTests.cs",
+    "sha256": "8eab8246e27dcdf1f7e8008576810e871dd56de548b9d05c69c7be2f5cc356ce",
+    "extracted": "2026-10-25"
+  },
+  "extra_sources": [
+    {
+      "origin": "golu-expert-ai",
+      "path": "tools\\content-engine\\krutidev-convert-core.js",
+      "sha256": "68739717c3006191e33cc085948a769d2d31392ee52ead9e17f2e9c542263ef9",
+      "extracted": "2026-10-25",
+      "used_for": "reconstruct() L195-253 and compose() L180-189: a pre-posed-only cluster absorbs the next letter and signs follow it"
+    }
+  ],
+  "cases": [
+    { "name": "PreposedMatra_Then_Consonant_Reorders", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "fd", "reason": "Golu's synthetic map re-keyed to GAIL: i->f, k->d", "golu_expected": "कि", "radha_expected": "कि" },
+    { "name": "PreposedMatra_On_Conjunct_Attaches_After_Cluster", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "fd+r", "reason": "re-keyed: i->f, k->d, /->Shift+= (halant), t->r", "golu_expected": "क्ति", "radha_expected": "क्ति" },
+    { "name": "Regular_Matra_Still_PostPoses", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "dk", "golu_expected": "का", "radha_expected": "का" },
+    { "name": "Consonant_Alone_Unaffected", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "d", "golu_expected": "क", "radha_expected": "क" },
+    { "name": "Two_Aksharas_With_Preposed_Matra", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "fdfr", "golu_expected": "किति", "radha_expected": "किति" },
+    { "name": "PreposedMatra_Alone_Emits_Sign", "tag": "intentional_divergence", "kind": "type", "layout": "gail", "keys": "f", "reason": "Radha holds the pre-posed sign as preedit until its consonant exists, so the correct sequence never shows a transient mistake (gap log G-DIV-2)", "golu_expected": "ि", "radha_expected": "", "radha_preedit": "ि" },
+    { "name": "Preposed_Before_A_Vowel", "tag": "must_match", "kind": "type", "layout": "gail", "keys": "fv", "source_path": "tools\\content-engine\\krutidev-convert-core.js", "golu_expected": "अि", "radha_expected": "अि" }
+  ]
+}

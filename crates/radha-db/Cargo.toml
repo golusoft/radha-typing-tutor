@@ -12,6 +12,8 @@ publish.workspace = true
 radha-core.workspace = true
 # The repository module implements radha-content's storage-agnostic traits.
 radha-content.workspace = true
+# The analytics types the read queries return (P08).
+radha-analytics.workspace = true
 rusqlite.workspace = true
 log.workspace = true
 

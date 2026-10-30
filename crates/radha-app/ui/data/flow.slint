@@ -1,0 +1,119 @@
+// ============================================================================
+// FlowView — the Typing Flow view-model (PRD 17.8, DESIGN Section 8)
+// ============================================================================
+//
+// The three dedicated Flow screens read the shared practice globals
+// (ExerciseView for the selected exercise and the timer, TypingView for the
+// passage lines and the clock, ResultView for the figures) and this global
+// for everything that is about rhythm. Rust writes every value (RULES.MD
+// Rule 16); the screens only draw and raise requests. Exported from
+// main.slint.
+// ============================================================================
+
+/// One bar of the live cadence wave.
+export struct FlowBar {
+    /// 0-1 (0.5 is exactly on tempo); 0 = no data yet.
+    level: float,
+    /// The interval was inside the smooth band.
+    smooth: bool,
+}
+
+/// One weak key on the Flow Result.
+export struct FlowWeakKey {
+    key: string,
+    detail: string,
+}
+
+/// One hesitation point on the Flow Result: the word and how often.
+export struct FlowHesitation {
+    word: string,
+    /// "word 12 · ×2".
+    detail: string,
+    count: int,
+}
+
+export global FlowView {
+    // --- Flow Exercise -------------------------------------------------------
+    /// "12 of 100".
+    in-out property <string> position;
+    /// Timer preset index under the dial, -1 when a custom value is set.
+    in-out property <int> dial-index: -1;
+    /// The selected flow's rhythm history ("Smooth 94% · best 97%" or "—").
+    in-out property <string> sel-rhythm: "—";
+
+    // --- Flow Typing -----------------------------------------------------------
+    /// The live cadence wave, oldest first (fixed length).
+    in-out property <[FlowBar]> bars;
+    /// "steady" | "settling" | "uneven" | "finding your rhythm".
+    in-out property <string> rhythm-word: "finding your rhythm";
+    /// "steady" | "settling" | "uneven" | "neutral".
+    in-out property <string> rhythm-tone: "neutral";
+    /// Live smoothness "94%", or "—" before a rhythm is scored.
+    in-out property <string> live-smoothness: "—";
+    /// The rhythm pulse: flips on every scored keystroke (cursor glow).
+    in-out property <bool> pulse;
+    /// Live smoothness as 0-1, -1 before a rhythm is scored (the gauge).
+    in-out property <float> live-level: -1;
+    /// The gauge's thresholds (0-1), from the flow configuration.
+    in-out property <float> steady-at: 0.85;
+    in-out property <float> settling-at: 0.65;
+    /// Half-width of the smooth band around the beat (bar levels).
+    in-out property <float> band: 0.225;
+    /// Current tempo in ms a key (0 before the first interval): the
+    /// metronome swings once per beat at this pace.
+    in-out property <int> tempo-ms;
+    /// "212 ms a key · ≈ 57 WPM pace" or "—".
+    in-out property <string> pace: "—";
+    /// Smooth beats in a row, and the session's longest run.
+    in-out property <int> streak;
+    in-out property <int> best-streak;
+    /// Hesitations so far.
+    in-out property <int> live-hesitations;
+    /// The keys missed most so far (key, "3 misses").
+    in-out property <[FlowWeakKey]> live-weak;
+
+    // --- Flow Result -------------------------------------------------------------
+    /// "Your rhythm held steady for 94% of this session".
+    in-out property <string> headline;
+    in-out property <string> smoothness: "—";
+    in-out property <string> cadence-variance: "—";
+    in-out property <string> mean-interval: "—";
+    in-out property <string> hesitations: "0";
+    in-out property <string> pauses: "0";
+    /// Smoothness corridor in the 0 0 360 72 viewbox; empty = no data.
+    in-out property <bool> corridor-has-data;
+    in-out property <string> corridor-line;
+    in-out property <string> corridor-area;
+    /// y of the steady threshold line in the same viewbox.
+    in-out property <float> corridor-steady-y: 10.8;
+    in-out property <string> corridor-footer;
+    in-out property <[FlowWeakKey]> weak-keys;
+    in-out property <string> weak-note;
+    in-out property <string> advice-title;
+    in-out property <string> advice-detail;
+    in-out property <string> drill-stage;
+    /// The drill text itself ("" when there is none).
+    in-out property <string> drill-text;
+    /// Cadence chart: one bar per slice of the session (level 0.5 = on
+    /// the session's beat; smooth = the slice was steady).
+    in-out property <[FlowBar]> cadence;
+    /// Where the hesitations landed in the text.
+    in-out property <[FlowHesitation]> hesitation-points;
+    in-out property <string> hesitation-note;
+    /// Personal-best comparison line and tone
+    /// ("best" | "close" | "below" | "first" | "none").
+    in-out property <string> best-line;
+    in-out property <string> best-tone: "none";
+    /// Smoothness 0-1 for the hero ring (-1 = none) and its arc path.
+    in-out property <float> smooth-level: -1;
+    in-out property <string> smooth-arc;
+    in-out property <string> pace-result: "—";
+    in-out property <string> longest-run: "0";
+
+    /// Previous (-1) / next (1) exercise on the Flow Exercise carousel.
+    callback step(int);
+    /// The word-stream area's width changed (rewrap).
+    callback stream-resized(length);
+    /// Lines that fit in the word stream.
+    callback stream-rows(int);
+}

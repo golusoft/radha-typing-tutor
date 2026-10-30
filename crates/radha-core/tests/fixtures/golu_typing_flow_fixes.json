@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Engine\\TypingFlowFixesTests.cs",
+    "sha256": "d9edd340d3df580ed9cbb59037622c45e0044599288ca45922730753c92e0dba",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "Space_Mid_Word_Lands_The_Caret_On_The_Next_Word",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "orange juice", "events": [ { "at_ms": 0, "type": "text", "text": "ora " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Position": 7, "TargetText[Position]": "j" },
+      "radha_expected": { "cursor": 7, "current_word": "juice" }
+    },
+    {
+      "name": "Skipped_Letters_Are_Charged_As_Full_Mistakes",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "orange juice", "events": [ { "at_ms": 0, "type": "text", "text": "ora " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "FullMistakes": 3, "CorrectKeystrokes": 4, "AccuracyPercent": "< 100 (4 of 7)" },
+      "radha_expected": { "missing": 3, "error_count": 3, "unit_full": 3, "accuracy": 57.142857142857146 }
+    },
+    {
+      "name": "Skipped_Letters_Are_Charged_As_Full_Mistakes#gross",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "Skipped letters were never typed, so they are not counted as typed characters for WPM/KDPH (scoring/accuracy.rs characters_typed). Golu's TotalKeystrokes is 7 here (3 skip markers + 4 real keys), inflating gross WPM.",
+      "input": { "unit": "char", "target": "orange juice", "events": [ { "at_ms": 0, "type": "text", "text": "ora " } ], "snapshot_at_ms": 60000 },
+      "golu_expected": { "TotalKeystrokes": 7 },
+      "radha_expected": { "characters_typed": 4 }
+    },
+    {
+      "name": "A_Space_Typed_On_The_Boundary_Is_Still_Just_A_Space",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "orange juice", "events": [ { "at_ms": 0, "type": "text", "text": "orange " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Position": 7, "FullMistakes": 0, "HalfMistakes": 0, "AccuracyPercent": 100 },
+      "radha_expected": { "cursor": 7, "error_count": 0, "unit_half": 0, "unit_full": 0, "accuracy": 100.0 }
+    },
+    {
+      "name": "With_The_Skip_Turned_Off_Space_Is_Evaluated_Where_It_Was_Pressed",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "Radha has no positional mode: space mid-word always realigns to the next word (word-aligned matcher, locked design). Golu with SpaceSkipsWord=false compares the space against 'n' (one half mistake, caret 4).",
+      "input": { "unit": "char", "target": "orange juice", "events": [ { "at_ms": 0, "type": "text", "text": "ora " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Position": 4, "HalfMistakes": 1, "FullMistakes": 0 },
+      "radha_expected": { "cursor": 7, "missing": 3 }
+    },
+    {
+      "name": "The_Typing_Box_Never_Shows_Letters_The_Typist_Did_Not_Type",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "visited every evening", "events": [ { "at_ms": 0, "type": "text", "text": "visite " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "shown": "visite " },
+      "radha_expected": { "typed_text": "visite " }
+    },
+    {
+      "name": "Overrunning_A_Word_Does_Not_Eat_The_Words_After_It#before_space",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "go now quickly", "events": [ { "at_ms": 0, "type": "text", "text": "goextra" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CurrentWordText": "go" },
+      "radha_expected": { "current_word": "go", "extra": 5, "cursor": 2 }
+    },
+    {
+      "name": "Overrunning_A_Word_Does_Not_Eat_The_Words_After_It#after_space",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "go now quickly", "events": [ { "at_ms": 0, "type": "text", "text": "goextra " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CurrentWordText": "now", "shown": "goextra " },
+      "radha_expected": { "current_word": "now", "typed_text": "goextra " }
+    },
+    {
+      "name": "A_Whole_Passage_Still_Types_Through_Cleanly",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "go now quickly", "events": [ { "at_ms": 0, "type": "text", "text": "go now quickly" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "IsComplete": true, "FullMistakes": 0, "HalfMistakes": 0, "AccuracyPercent": 100 },
+      "radha_expected": { "finished": true, "state": "Complete", "error_count": 0, "accuracy": 100.0 }
+    },
+    {
+      "name": "With_The_Skip_Turned_Off_Extra_Letters_Are_Committed_As_Before",
+      "kind": "session",
+      "tag": "intentional_divergence",
+      "reason": "No positional type-through mode in Radha (word-aligned matcher, locked design): letters past a word's end are Extra and take no slot, so the caret stays at 2.",
+      "input": { "unit": "char", "target": "go now quickly", "events": [ { "at_ms": 0, "type": "text", "text": "goextra" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Position": 7 },
+      "radha_expected": { "cursor": 2 }
+    },
+    {
+      "name": "The_Whole_Current_Word_Is_Highlighted_By_Default",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "the dog", "events": [], "snapshot_at_ms": 0 },
+      "golu_expected": { "HighlightMode": "WordHighlight", "highlighted": "the" },
+      "radha_expected": { "current_word": "the", "word_states": "PPPPPPP" }
+    },
+    {
+      "name": "Finishing_A_Words_Letters_Does_Not_Move_The_Band_On_Its_Own",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "the dog runs", "events": [ { "at_ms": 0, "type": "text", "text": "the" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CurrentWordText": "the" },
+      "radha_expected": { "current_word": "the", "cursor": 3 }
+    },
+    {
+      "name": "Space_Is_What_Moves_The_Band_To_The_Next_Word",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "the dog runs", "events": [ { "at_ms": 0, "type": "text", "text": "the " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CurrentWordText": "dog" },
+      "radha_expected": { "current_word": "dog" }
+    },
+    {
+      "name": "A_Double_Space_Does_Not_Blank_The_Band",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "the  dog", "events": [ { "at_ms": 0, "type": "text", "text": "the " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CurrentWordText": "dog" },
+      "radha_expected": { "current_word": "dog" }
+    },
+    {
+      "name": "Some_Word_Is_Always_Highlighted_While_Typing",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "the dog runs fast", "events": [ { "at_ms": 0, "type": "text", "text": "the dog runs fast" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "every prefix": "some cell highlighted" },
+      "radha_expected": { "current_word_always_set": true, "finished": true }
+    },
+    {
+      "name": "Space_Moves_The_Band_Onward_Even_From_An_Unfinished_Word#before",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "visited every evening", "events": [ { "at_ms": 0, "type": "text", "text": "vis" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CurrentWordText": "visited" },
+      "radha_expected": { "current_word": "visited" }
+    },
+    {
+      "name": "Space_Moves_The_Band_Onward_Even_From_An_Unfinished_Word#after",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "visited every evening", "events": [ { "at_ms": 0, "type": "text", "text": "vis " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CurrentWordText": "every" },
+      "radha_expected": { "current_word": "every" }
+    },
+    {
+      "name": "A_Wrong_Word_Turns_Entirely_Red_On_Space",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "green apple", "events": [ { "at_ms": 0, "type": "text", "text": "graan " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "WordCells(0,5)": "all Wrong" },
+      "radha_expected": { "word_states": "WWWWWPPPPPP" }
+    },
+    {
+      "name": "A_Correct_Word_Turns_Entirely_Green_On_Space",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "green apple", "events": [ { "at_ms": 0, "type": "text", "text": "green " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "WordCells(0,5)": "all Correct" },
+      "radha_expected": { "word_states": "CCCCCPPPPPP" }
+    },
+    {
+      "name": "Nothing_Turns_Red_While_The_Word_Is_Still_Being_Typed",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "green apple", "events": [ { "at_ms": 0, "type": "text", "text": "gra" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "WordCells(0,5)": "none Wrong", "FullMistakes": 1 },
+      "radha_expected": { "word_states": "PPPPPPPPPPP", "error_count": 1, "unit_full": 1 }
+    },
+    {
+      "name": "A_Word_Is_Not_Green_Until_Space_Commits_It",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "green apple", "events": [ { "at_ms": 0, "type": "text", "text": "green" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "WordCells(0,5)": "all Pending" },
+      "radha_expected": { "word_states": "PPPPPPPPPPP", "word_outcomes": "" }
+    },
+    {
+      "name": "Extra_Letters_Make_The_Word_Wrong",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "us which", "events": [ { "at_ms": 0, "type": "text", "text": "uss " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "WordCells(0,2)": "all Wrong" },
+      "radha_expected": { "word_states": "WWPPPPPP" }
+    },
+    {
+      "name": "An_Unfinished_Word_Is_Wrong",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "visited every", "events": [ { "at_ms": 0, "type": "text", "text": "visite " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "WordCells(0,7)": "all Wrong" },
+      "radha_expected": { "word_states": "WWWWWWWPPPPPP" }
+    },
+    {
+      "name": "Earlier_Verdicts_Are_Not_Disturbed_By_Later_Words",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "green apple pie", "events": [ { "at_ms": 0, "type": "text", "text": "graan apple " } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "WordCells(0,5)": "all Wrong", "WordCells(6,5)": "all Correct" },
+      "radha_expected": { "word_states": "WWWWWPCCCCCPPPP", "word_outcomes": "IC" }
+    },
+    {
+      "name": "Per_Key_Mode_Colours_The_Wrong_Letter_Immediately",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "green apple", "events": [ { "at_ms": 0, "type": "text", "text": "gra" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "cell[2]": "Wrong", "cell[0]": "Correct" },
+      "radha_expected": { "key_states": "CCWPPPPPPPP" }
+    },
+    {
+      "name": "Switching_Mode_Recolours_The_Passage_Immediately",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "green apple", "events": [ { "at_ms": 0, "type": "text", "text": "gra" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "OnEachKey cell[2]": "Wrong", "OnWordCommit cell[2]": "Pending" },
+      "radha_expected": { "key_states": "CCWPPPPPPPP", "word_states": "PPPPPPPPPPP" }
+    },
+    {
+      "name": "The_Caret_Index_Follows_The_Caret",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "the quick brown fox", "events": [ { "at_ms": 0, "type": "text", "text": "the" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CurrentCellIndex": 3 },
+      "radha_expected": { "cursor": 3 }
+    },
+    {
+      "name": "Typing_Through_A_Paused_Session_Does_Nothing#paused",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "the quick brown", "events": [ { "at_ms": 0, "type": "text", "text": "the" }, { "at_ms": 1000, "type": "pause" }, { "at_ms": 2000, "type": "text", "text": " quick" } ], "snapshot_at_ms": 3000 },
+      "golu_expected": { "Position": 3 },
+      "radha_expected": { "cursor": 3, "state": "Paused", "typed_text": "the" }
+    },
+    {
+      "name": "Typing_Through_A_Paused_Session_Does_Nothing#resumed",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "char", "target": "the quick brown", "events": [ { "at_ms": 0, "type": "text", "text": "the" }, { "at_ms": 1000, "type": "pause" }, { "at_ms": 2000, "type": "text", "text": " quick" }, { "at_ms": 3000, "type": "resume" }, { "at_ms": 4000, "type": "text", "text": " quick" } ], "snapshot_at_ms": 4000 },
+      "golu_expected": { "Position": 9 },
+      "radha_expected": { "cursor": 9, "state": "Active", "pause_error": false, "elapsed_seconds": 2.0 }
+    }
+  ]
+}

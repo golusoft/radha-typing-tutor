@@ -1,0 +1,28 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "up-police-asi"
+profile_version = 1
+display_name = "UP Police ASI & Computer Op."
+body = "UP Police Recruitment and Promotion Board"
+
+[notice]
+title = "ASI (Ministerial / Accounts) and Computer Operator — typing tests"
+note = "Primary notification not read in Radha; rules are unknown."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "English and Hindi computer typing tests for ministerial / accounts posts"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://uppbpb.gov.in/FilesUploaded/Notice/vig3_18082023b7b8e0b8-2247-477e-87e2-b8473eadfeb3.pdf"
+
+[[reference_claims]]
+claim = "English 30 WPM · Hindi 25 WPM · 15 Min · 85% Acc. · Backspace allowed · Unicode InScript"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

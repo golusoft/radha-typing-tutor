@@ -22,6 +22,20 @@
 // Accents are named tokens, not colours: `Accents` below maps a name to a `Theme`
 // value. That keeps every colour decision inside the theme layer, so no raw hex
 // can leak into product data.
+//
+// v2 (PRD Chapter 17, DESIGN Chapter 20)
+// --------------------------------------
+// Each card now carries a "signature" — a row of key caps that makes the three
+// cards in a section look distinct while sharing one structure:
+//   deck-label   small caps title above the keys
+//   deck-keys    the caps themselves ("·" and "→" render as separators)
+//   deck-note    right-aligned note on the same line
+// The lists are `in-out` because Rust rewrites them when the search box changes
+// (see `src/catalog.rs`); the literals below are the unfiltered masters.
+//
+// The `meta-1` counts below are the planned content budget (STRUCTURE.MD). At
+// startup Rust rewrites each with the number actually installed
+// (`catalog::count_chip`), so a product with no content says "coming soon".
 // ============================================================================
 
 import { Theme } from "../theme/palette.slint";
@@ -30,6 +44,8 @@ import { Theme } from "../theme/palette.slint";
 export struct ProductEntry {
     /// Stable id, matching `radha_content::ProductId::slug`.
     slug: string,
+    /// Small caps line above the title ("TRACK 02 · RHYTHM ENGINE"). Empty to omit.
+    eyebrow: string,
     /// Product name.
     title: string,
     /// Tagline shown under the title.
@@ -46,6 +62,10 @@ export struct ProductEntry {
     identity-accent: string,
     /// Optional monospaced key sequence, e.g. "[W H S]". Empty to omit.
     key-sequence: string,
+    /// Signature block (v2): label, key caps and a right-hand note. Empty keys omit it.
+    deck-label: string,
+    deck-keys: [string],
+    deck-note: string,
     /// Up to three short metadata chips. Empty strings are skipped.
     meta-1: string,
     meta-2: string,
@@ -74,92 +94,126 @@ export global Accents {
 }
 
 export global Products {
+    /// Typing Flow card: the last real smoothness ("94%"), or "—" when no
+    /// Flow session is recorded yet. Written by Rust from the database;
+    /// never a made-up figure.
+    in-out property <string> flow-smoothness: "—";
+
     // --- Section 1: English Typing Mastery --------------------------------
     // Classic and Number+Punctuation share the family accent (`primary`).
     // Typing Flow is marked a dedicated experience in DESIGN.md Section 5.1, so it
     // carries a distinct accent even on Home.
-    out property <[ProductEntry]> english: [
+    in-out property <[ProductEntry]> english: [
         {
             slug: "english-classic",
             title: "English Typing Mastery",
-            description: "Complete QWERTY typing, foundation to expert.",
+            subtitle: "Track 01 · Classic",
+            description: "Complete QWERTY curriculum, from home-row muscle memory to editorial passages.",
             badge: "Classic",
             accent: "primary",
+            deck-label: "HOME ROW ANCHOR",
+            deck-keys: ["A", "S", "D", "F", "·", "J", "K", "L", ";"],
+            deck-note: "Finger posture guide",
             // Metadata is kept to two short chips. The row does not wrap, so long
             // chips drive the card's minimum width up and push the three-card row
             // past the 1024px minimum window size.
             meta-1: "200 Exercises",
-            meta-2: "QWERTY",
+            meta-2: "Learn + Test",
             cta: "Start Practice",
         },
         {
             slug: "typing-flow",
+            eyebrow: "TRACK 02 · RHYTHM ENGINE",
             title: "Typing Flow",
-            subtitle: "Smooth • Consistent • Effortless",
-            description: "Build rhythm, consistency and natural typing flow.",
+            badge: "Adaptive AI",
+            description: "Smooth, zero-hesitation word-stream training designed to lock in a steady metronome keystroke cadence.",
             accent: "accent",
-            meta-1: "Flow Training",
-            meta-2: "Adaptive",
+            deck-label: "CADENCE STREAM",
+            deck-keys: ["the", "·", "quick", "·", "brown", "·", "fox"],
+            // The smoothness preview is live data (Products.flow-smoothness),
+            // drawn by ProductGrid; "—" until a Flow session is recorded.
+            deck-note: "",
+            meta-1: "100 Exercises",
+            meta-2: "Weak-Key Targeted",
             cta: "Start Flow",
         },
         {
             slug: "number-punctuation",
-            title: "Number + Punctuation Mastery",
-            subtitle: "Speed • Accuracy • Efficiency",
-            description: "Master numbers, symbols and punctuation.",
-            accent: "primary",
-            meta-1: "Numbers",
-            meta-2: "Symbols",
+            title: "Number + Punctuation",
+            subtitle: "Track 03 · Alphanumeric",
+            description: "Drills for the number row, calculations, brackets and special characters.",
+            accent: "secondary",
+            deck-label: "TOP-ROW MATRIX",
+            deck-keys: ["1", "2", "3", "₹", "%", "&", "(", ")"],
+            deck-note: "Numbers + symbols",
+            meta-1: "50 Drills",
+            meta-2: "Timed",
             cta: "Start Practice",
         },
     ];
 
     // --- Section 2: Hindi Typing Mastery ----------------------------------
-    // All three share ONE accent (`secondary`) per DESIGN.md Section 9.3 — they are
-    // one design family, told apart by the identity chip rather than by colour.
-    out property <[ProductEntry]> hindi-mastery: [
+    // All three share ONE accent (`secondary`) for the section header and CTA per
+    // DESIGN.md Section 9.3. The card's own top bar and identity chip carry the
+    // unique identity accent (decision DV-02).
+    //
+    // The caps show Devanagari characters as a visual sampler of the layout. They
+    // are NOT a statement of key positions — those live in `radha-layouts`.
+    in-out property <[ProductEntry]> hindi-mastery: [
         {
             slug: "hindi-mastery-gail",
             title: "Remington GAIL Typing",
-            subtitle: "Government exam standard",
-            description: "GAIL layout practice with full guide support.",
+            subtitle: "Mangal Unicode · GAIL",
+            description: "Remington GAIL layout practice with full guide support.",
             identity-label: "GAIL",
             identity-accent: "success",
-            accent: "secondary",
-            meta-1: "Remington",
-            meta-2: "Unicode",
+            accent: "success",
+            deck-label: "DEVANAGARI UNICODE",
+            deck-keys: ["क", "ि", "ह", "ी", "श", "स", "य"],
+            deck-note: "Matra guide",
+            meta-1: "200 Exercises",
+            meta-2: "Learn + Test",
             cta: "Start Practice",
         },
         {
             slug: "hindi-mastery-cbi",
             title: "Remington CBI Typing",
-            subtitle: "Government exam standard",
-            description: "CBI layout practice with full guide support.",
+            subtitle: "Mangal Unicode · CBI",
+            description: "An independent CBI key-mapping profile, not a variant of GAIL.",
             identity-label: "CBI",
             identity-accent: "accent",
-            accent: "secondary",
-            meta-1: "Remington",
-            meta-2: "Unicode",
+            accent: "accent",
+            deck-label: "CBI KEYBOARD PROFILE",
+            deck-keys: ["म", "त", "ज", "ल", "न", "प", "व"],
+            deck-note: "Live error telemetry",
+            meta-1: "200 Exercises",
+            meta-2: "Learn + Test",
             cta: "Start Practice",
         },
         {
             slug: "hindi-mastery-krutidev",
             title: "Kruti Dev Typing",
-            subtitle: "Traditional Hindi font typing",
+            subtitle: "Legacy font · Kruti Dev 010",
             description: "Kruti Dev practice with font-accurate output.",
             identity-label: "Kruti Dev",
             identity-accent: "primary",
-            accent: "secondary",
-            meta-1: "Kruti Dev",
-            meta-2: "Legacy",
+            accent: "primary",
+            // d -> क and f -> ि are confirmed in Expert AI docs/krutidev-character-audit.md.
+            // The mock-up's "Alt+0216 -> क्र" claim was not found there, so it is not shown.
+            deck-label: "KEY TO CHARACTER",
+            deck-keys: ["d", "→", "क", "·", "f", "→", "ि"],
+            deck-note: "Legacy encoding",
+            meta-1: "200 Exercises",
+            meta-2: "Learn + Test",
             cta: "Start Practice",
         },
     ];
 
     // --- Section 3: Hindi Learn (Beginner) --------------------------------
     // Three dedicated beginner experiences, so three distinct accents. Key
-    // sequences are from PRD.md Section 6.4.
-    out property <[ProductEntry]> hindi-learn: [
+    // sequences are from PRD.md Section 6.4. Each layout has Beginner 100 and
+    // Classic 100 exercises behind the BEGINNER | CLASSIC toggle.
+    in-out property <[ProductEntry]> hindi-learn: [
         {
             slug: "hindi-learn-gail",
             title: "Remington GAIL",
@@ -169,7 +223,7 @@ export global Products {
             accent: "success",
             key-sequence: "C V C V M H A V N C P N",
             meta-1: "12 Steps",
-            meta-2: "Guided",
+            meta-2: "Beginner + Classic",
             cta: "Start Learning",
         },
         {
@@ -181,7 +235,7 @@ export global Products {
             accent: "accent",
             key-sequence: "W H S",
             meta-1: "3 Steps",
-            meta-2: "Guided",
+            meta-2: "Beginner + Classic",
             cta: "Start Learning",
         },
         {
@@ -193,7 +247,7 @@ export global Products {
             accent: "secondary",
             key-sequence: "B M H C R A S N",
             meta-1: "8 Steps",
-            meta-2: "Guided",
+            meta-2: "Beginner + Classic",
             cta: "Start Learning",
         },
     ];

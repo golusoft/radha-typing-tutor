@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Multilingual\\RemingtonCbiGoldenTests.cs",
+    "sha256": "eebe0fd8fb9f78f2a58f4aaca0f2d97951196564c2fc785159782ef349c53f75",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "Consonant_Ka",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "d",
+      "golu_expected": "क",
+      "radha_expected": "क"
+    },
+    {
+      "name": "Backquote_Nya",
+      "tag": "intentional_divergence",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "`",
+      "golu_expected": "ञ",
+      "radha_expected": "़",
+      "reason": "book 03 CBI-MAP-001: ` is the nukta"
+    },
+    {
+      "name": "Vowel_Aa_Recomposed",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "vk",
+      "golu_expected": "आ",
+      "radha_expected": "आ"
+    },
+    {
+      "name": "Logical_IMatra_TypedAfterConsonant",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "df",
+      "golu_expected": "कि",
+      "radha_expected": "कि"
+    },
+    {
+      "name": "OMatra_TwoPart",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "dks",
+      "golu_expected": "को",
+      "radha_expected": "को"
+    },
+    {
+      "name": "AuMatra_TwoPart",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "dkS",
+      "golu_expected": "कौ",
+      "radha_expected": "कौ"
+    },
+    {
+      "name": "Digit_Five",
+      "tag": "intentional_divergence",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "5",
+      "golu_expected": "५",
+      "radha_expected": "5",
+      "reason": "book 03 CBI-MAP-006: the number row is ASCII; numpad gives ५ with Caps Lock off"
+    },
+    {
+      "name": "Digit_Zero",
+      "tag": "intentional_divergence",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "0",
+      "golu_expected": "०",
+      "radha_expected": "0",
+      "reason": "book 03 CBI-MAP-011: the number row is ASCII"
+    },
+    {
+      "name": "HalfToFull_Kha",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "[k",
+      "golu_expected": "ख",
+      "radha_expected": "ख"
+    },
+    {
+      "name": "Ksha_Half_Completed",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "{k",
+      "golu_expected": "क्ष",
+      "radha_expected": "क्ष"
+    },
+    {
+      "name": "ShiftEight_Ddha",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "*",
+      "golu_expected": "द्ध",
+      "radha_expected": "द्ध"
+    },
+    {
+      "name": "ShiftNine_Tra",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "(",
+      "golu_expected": "त्र",
+      "radha_expected": "त्र"
+    },
+    {
+      "name": "ShiftZero_Rri",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": ")",
+      "golu_expected": "ऋ",
+      "radha_expected": "ऋ"
+    },
+    {
+      "name": "ShiftThree_Visarga",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "#",
+      "golu_expected": "ः",
+      "radha_expected": "ः"
+    },
+    {
+      "name": "ShiftRBracket_Dva",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "}",
+      "golu_expected": "द्व",
+      "radha_expected": "द्व"
+    },
+    {
+      "name": "ShiftSemicolon_Ruu",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": ":",
+      "golu_expected": "रू",
+      "radha_expected": "रू"
+    },
+    {
+      "name": "ShiftBackquote_Abbrev",
+      "tag": "intentional_divergence",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "~",
+      "golu_expected": "॰",
+      "radha_expected": "द्य",
+      "reason": "book 03 CBI-MAP-048: Shift+` is द्य"
+    },
+    {
+      "name": "Rakar_After_Consonant",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "dz",
+      "golu_expected": "क्र",
+      "radha_expected": "क्र"
+    },
+    {
+      "name": "Reph_Then_Consonant",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "Zd",
+      "golu_expected": "र्क",
+      "radha_expected": "र्क"
+    },
+    {
+      "name": "Karka_Is_Typed_With_The_Reph_Last",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "ddZ",
+      "golu_expected": "कर्क",
+      "radha_expected": "कर्क"
+    },
+    {
+      "name": "Karya_Is_Typed_With_The_Reph_Last",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "dk;Z",
+      "golu_expected": "कार्य",
+      "radha_expected": "कार्य"
+    },
+    {
+      "name": "A_Consonant_After_A_Reph_Starts_A_New_Syllable",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "dZd",
+      "golu_expected": "र्कक",
+      "radha_expected": "र्कक"
+    },
+    {
+      "name": "I_Plus_Reph_Yields_Long_Ii",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "bZ",
+      "golu_expected": "ई",
+      "radha_expected": "ई"
+    },
+    {
+      "name": "AltGr_B_Yields_Long_Ii",
+      "tag": "intentional_divergence",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "",
+      "altgr_after": "b",
+      "golu_expected": "ई",
+      "radha_expected": "",
+      "reason": "book 03: CBI has no AltGr layer (ई = b + Shift+Z)"
+    },
+    {
+      "name": "Ka_I_Reph_Yields_Kaii",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "dbZ",
+      "golu_expected": "कई",
+      "radha_expected": "कई"
+    },
+    {
+      "name": "AltGr_Period_Danda",
+      "tag": "intentional_divergence",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "",
+      "altgr_after": ".",
+      "golu_expected": "।",
+      "radha_expected": "",
+      "reason": "book 03: CBI has no AltGr layer (। = Shift+1, CBI-MAP-049)"
+    },
+    {
+      "name": "AltGr_Comma_Candrabindu",
+      "tag": "intentional_divergence",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "g",
+      "altgr_after": ",",
+      "golu_expected": "हँ",
+      "radha_expected": "ह",
+      "reason": "book 03: CBI has no AltGr layer (ँ = Shift+W + a, CBI-MAP-119)"
+    },
+    {
+      "name": "AltGr_Backquote_Nukta",
+      "tag": "intentional_divergence",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "d",
+      "altgr_after": "`",
+      "golu_expected": "क़",
+      "radha_expected": "क",
+      "reason": "book 03: CBI has no AltGr layer (nukta = `, CBI-MAP-001)"
+    },
+    {
+      "name": "AltGr_W_CandraO_Matra",
+      "tag": "intentional_divergence",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "",
+      "altgr_after": "w",
+      "golu_expected": "ॉ",
+      "radha_expected": "",
+      "reason": "book 03: CBI has no AltGr layer (ॉ = k + Shift+W)"
+    },
+    {
+      "name": "Ka_CandraO_Matra",
+      "tag": "intentional_divergence",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "d",
+      "altgr_after": "w",
+      "golu_expected": "कॉ",
+      "radha_expected": "क",
+      "reason": "book 03: CBI has no AltGr layer (कॉ = d k Shift+W)"
+    },
+    {
+      "name": "Word_Namaste",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "ueLrs",
+      "golu_expected": "नमस्ते",
+      "radha_expected": "नमस्ते"
+    },
+    {
+      "name": "Word_Hindi_LogicalOrder",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "gfUnh",
+      "golu_expected": "हिन्दी",
+      "radha_expected": "हिन्दी"
+    },
+    {
+      "name": "Word_Bharat",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "Hkkjr",
+      "golu_expected": "भारत",
+      "radha_expected": "भारत"
+    },
+    {
+      "name": "Backspace_Removes_Matra",
+      "tag": "must_match",
+      "kind": "type",
+      "layout": "cbi",
+      "keys": "dk\b",
+      "golu_expected": "क",
+      "radha_expected": "क"
+    },
+    {
+      "name": "AltGrKeyCaps_Show_Exactly_The_Build_AltGr_Outputs",
+      "tag": "intentional_divergence",
+      "kind": "altgr_keycaps",
+      "layout": "cbi",
+      "golu_expected": [
+        "।",
+        "ँ",
+        "़",
+        "ॐ",
+        "ई",
+        "ॉ",
+        "?"
+      ],
+      "radha_expected": [],
+      "reason": "book 03: CBI has no AltGr layer"
+    }
+  ]
+}

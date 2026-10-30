@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "radha-prd",
+    "path": "PRD.md",
+    "sha256": "396f055af2834979be31f0df63101802da73af56414d58a49ac1c006cf270f7c",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "8.2_wpm_300_characters_in_2_minutes",
+      "kind": "score",
+      "tag": "must_match",
+      "input": { "correct": 300, "errors": 0, "elapsed_ms": 120000 },
+      "radha_expected": { "wpm": 30.0 }
+    },
+    {
+      "name": "8.2_net_wpm_45_with_10_errors_in_2_minutes",
+      "kind": "score",
+      "tag": "must_match",
+      "input": { "wpm": 45.0, "errors": 10, "elapsed_ms": 120000 },
+      "radha_expected": { "net_wpm": 40.0 }
+    },
+    {
+      "name": "8.2_net_wpm_cannot_be_negative",
+      "kind": "score",
+      "tag": "must_match",
+      "input": { "correct": 0, "errors": 100, "elapsed_ms": 60000 },
+      "radha_expected": { "wpm": 20.0, "net_wpm": 0.0 }
+    },
+    {
+      "name": "8.2_accuracy_480_of_500",
+      "kind": "score",
+      "tag": "must_match",
+      "input": { "correct": 480, "errors": 20, "elapsed_ms": 60000 },
+      "radha_expected": { "accuracy": 96.0, "error_count": 20 }
+    },
+    {
+      "name": "8.2_accuracy_nothing_typed_is_100",
+      "kind": "score",
+      "tag": "must_match",
+      "input": { "correct": 0, "errors": 0, "elapsed_ms": 60000 },
+      "radha_expected": { "accuracy": 100.0 }
+    },
+    {
+      "name": "9.3_consistency_uniform_intervals",
+      "kind": "consistency",
+      "tag": "must_match",
+      "input": { "intervals_ms": [200, 200, 200] },
+      "radha_expected": { "consistency": 100.0 }
+    },
+    {
+      "name": "9.3_consistency_variable_intervals",
+      "kind": "consistency",
+      "tag": "intentional_divergence",
+      "reason": "PRD 9.3's comment says ~65%, but its own formula gives 53.645% for 100/300/150 ms (mean 183.3, population sd 84.98, CV 0.4635). The formula is implemented exactly; the example arithmetic is logged as a PRD defect in docs/golu-gap-log.md.",
+      "input": { "intervals_ms": [100, 300, 150] },
+      "golu_expected": { "PRD comment": "~65%" },
+      "radha_expected": { "consistency": 53.6452771491565 }
+    },
+    {
+      "name": "9.3_consistency_no_intervals_is_100",
+      "kind": "consistency",
+      "tag": "must_match",
+      "reason": "Radha definition (PRD divides by zero here): nothing typed has no irregularity, as accuracy's empty case.",
+      "input": { "intervals_ms": [] },
+      "radha_expected": { "consistency": 100.0 }
+    },
+    {
+      "name": "kdph_250_characters_in_1_minute",
+      "kind": "score",
+      "tag": "must_match",
+      "reason": "KDPH = key depressions per hour (PRD TY-04/RS-04 name it; Golu ScoringEngine defines keystrokes / hours).",
+      "input": { "correct": 250, "errors": 0, "elapsed_ms": 60000 },
+      "radha_expected": { "kdph": 15000.0 }
+    }
+  ]
+}

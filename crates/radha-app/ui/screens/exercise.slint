@@ -1,0 +1,1257 @@
+// ============================================================================
+// ExerciseScreen v2 — Screen 2 of the four-screen flow (PRD 17.4, DESIGN 20.6)
+// ============================================================================
+//
+//   Header      back, breadcrumb + title, mode toggle (per matrix), layout
+//               switch (Hindi exam), theme
+//   Banner      practice-only / provisional / generated notice (honest status)
+//   Left 8/12   search + "shown N of M" + difficulty, category pills,
+//               virtualised 3-column grid (Rust sends only the visible window)
+//   Right 4/12  sticky inspector + dock (timer studio | guide | locked timer),
+//               START with its consequence, or the reason it is disabled
+//
+// Reference: design-reference/02-exercise-select.html, translated to Radha
+// tokens (indigo -> primary, violet -> secondary, amber -> accent, emerald ->
+// success). No blur, no shadows beyond flat borders: this screen stays cheap.
+//
+// Every value comes from the `ExerciseView` global, which Rust writes; every
+// interaction is a request Rust answers (RULES.MD Rule 16).
+//
+// Layout: every width is computed here from the screen's own width (which the
+// window sets from outside) and passed down as an explicit length. Nothing is
+// sized from its content, and sub-components never derive child widths from
+// their own `width` (the Home ProductGrid 1.25x bug).
+// ============================================================================
+
+import { ScrollView } from "std-widgets.slint";
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke, Motion, WindowMetrics } from "../theme/metrics.slint";
+import { AppHeader } from "../components/app_header.slint";
+import { RadhaButton, ButtonVariant } from "../components/button.slint";
+import { ChoiceChip } from "../components/choice_chip.slint";
+import { SegmentedToggle } from "../components/segmented_toggle.slint";
+import { SearchField } from "../components/search_field.slint";
+import { FilterPill } from "../components/filter_pill.slint";
+import { KeyDeck } from "../components/key_deck.slint";
+import { RadhaBadge, BadgeTone } from "../components/badge.slint";
+import { VerificationBadge } from "../components/verification_badge.slint";
+import { ThemeToggle } from "../components/theme_toggle.slint";
+import { Accents } from "../data/products.slint";
+import { ExerciseView, ExerciseCard } from "../data/practice.slint";
+
+// Tone token -> badge tone ("success" | "warning" | "secondary").
+component ToneBadge inherits RadhaBadge {
+    in property <string> token;
+    tone: root.token == "success" ? BadgeTone.Success
+        : root.token == "warning" ? BadgeTone.Warning
+        : BadgeTone.Secondary;
+    dot: true;
+    dot-color: root.token == "success" ? Theme.success
+        : root.token == "warning" ? Theme.warning
+        : Theme.secondary;
+}
+
+// Small uppercase section label.
+component Eyebrow inherits Text {
+    font-family: Typography.family-ui;
+    font-size: Typography.size-micro;
+    font-weight: Typography.weight-semibold;
+    letter-spacing: Typography.tracking-wide;
+    color: Theme.text-tertiary;
+}
+
+// One grid card (EX-05). `w` / `h` come from the screen.
+component ExerciseCardView inherits Rectangle {
+    in property <ExerciseCard> card;
+    in property <length> w;
+    in property <length> h;
+    in property <color> accent;
+    in property <string> title-font;
+
+    callback activated();
+
+    private property <length> inner: root.w - 2 * Spacing.md;
+
+    width: root.w;
+    height: root.h;
+    border-radius: Radius.lg;
+    background: root.card.selected ? Theme.bg-surface
+        : (touch.has-hover ? Theme.bg-raised : Theme.bg-surface);
+    border-width: root.card.selected || focus.has-focus ? Stroke.thick : Stroke.hairline;
+    border-color: root.card.selected ? root.accent
+        : focus.has-focus ? Theme.primary
+        : (touch.has-hover ? Theme.border-strong : Theme.border-soft);
+
+    animate background { duration: Motion.fast; }
+
+    // Soft ring around the selected card (flat, no blur).
+    if root.card.selected: Rectangle {
+        x: -3px;
+        y: -3px;
+        width: root.w + 6px;
+        height: root.h + 6px;
+        border-radius: Radius.lg + 3px;
+        border-width: 3px;
+        border-color: root.accent.with-alpha(0.18);
+    }
+
+    // Top accent stripe on the selected card.
+    Rectangle {
+        x: Spacing.md;
+        y: 0px;
+        width: root.inner;
+        height: 3px;
+        border-radius: 1.5px;
+        background: root.card.selected ? root.accent : transparent;
+    }
+
+    // --- Row 1: code, difficulty dots, completion --------------------------
+    Rectangle {
+        x: Spacing.md;
+        y: Spacing.md;
+        width: 52px;
+        height: 20px;
+        border-radius: Radius.sm;
+        background: root.card.selected ? root.accent : Theme.bg-sunken;
+        Text {
+            text: root.card.code;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-micro;
+            font-weight: Typography.weight-bold;
+            color: root.card.selected ? Theme.text-on-primary : root.accent;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+
+    for d in 5: Rectangle {
+        x: Spacing.md + 60px + d * 9px;
+        y: Spacing.md + 7px;
+        width: 6px;
+        height: 6px;
+        border-radius: 3px;
+        background: d < root.card.level ? root.accent : Theme.border-soft;
+    }
+
+    Text {
+        x: Spacing.md + 60px + 48px;
+        y: Spacing.md;
+        width: 40px;
+        height: 20px;
+        text: root.card.score;
+        font-family: Typography.family-mono;
+        font-size: Typography.size-micro;
+        color: Theme.text-tertiary;
+        vertical-alignment: center;
+    }
+
+    if root.card.completed: Rectangle {
+        x: root.w - Spacing.md - 20px;
+        y: Spacing.md;
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        background: Theme.success-subtle;
+        Text {
+            text: "✓";
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            font-weight: Typography.weight-bold;
+            color: Theme.success;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+
+    // --- Title and category -------------------------------------------------
+    Text {
+        x: Spacing.md;
+        y: Spacing.md + 28px;
+        width: root.inner;
+        text: root.card.title;
+        font-family: root.title-font;
+        font-size: Typography.size-body-sm;
+        font-weight: Typography.weight-semibold;
+        color: Theme.text-primary;
+        overflow: elide;
+    }
+
+    Text {
+        x: Spacing.md;
+        y: Spacing.md + 50px;
+        width: root.inner;
+        text: root.card.category;
+        font-family: root.title-font;
+        font-size: Typography.size-caption;
+        color: Theme.text-tertiary;
+        overflow: elide;
+    }
+
+    // --- Targets, length, status, best --------------------------------------
+    Text {
+        x: Spacing.md;
+        y: Spacing.md + 72px;
+        width: root.inner;
+        text: root.card.targets + "  ·  " + root.card.length;
+        font-family: Typography.family-mono;
+        font-size: Typography.size-micro;
+        color: Theme.text-secondary;
+        overflow: elide;
+    }
+
+    Rectangle {
+        x: Spacing.md;
+        y: root.h - Spacing.md - 18px;
+        width: root.inner;
+        height: 18px;
+
+        Rectangle {
+            x: 0px;
+            y: 6px;
+            width: 6px;
+            height: 6px;
+            border-radius: 3px;
+            background: root.card.status-tone == "success" ? Theme.success
+                : root.card.status-tone == "warning" ? Theme.warning
+                : Theme.secondary;
+        }
+
+        Text {
+            x: 10px;
+            width: root.inner * 0.5 - 10px;
+            height: 18px;
+            text: root.card.status;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-micro;
+            color: Theme.text-tertiary;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+
+        Text {
+            x: root.inner * 0.5;
+            width: root.inner * 0.5;
+            height: 18px;
+            text: root.card.best == "" ? "Not practised" : root.card.best;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-micro;
+            font-weight: root.card.best == "" ? Typography.weight-regular : Typography.weight-semibold;
+            color: root.card.best == "" ? Theme.text-disabled : Theme.success;
+            horizontal-alignment: right;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+    }
+
+    focus := FocusScope {
+        key-pressed(event) => {
+            if (event.text == " " || event.text == "\n") {
+                root.activated();
+                return EventResult.accept;
+            }
+            return EventResult.reject;
+        }
+    }
+
+    touch := TouchArea {
+        mouse-cursor: MouseCursor.pointer;
+        clicked => {
+            focus.focus();
+            root.activated();
+        }
+    }
+}
+
+// A labelled metric tile in the inspector.
+component MetricTile inherits Rectangle {
+    in property <string> label;
+    in property <string> value;
+    in property <color> tint: Theme.text-primary;
+    in property <length> w;
+
+    width: root.w;
+    height: 52px;
+    border-radius: Radius.md;
+    background: Theme.bg-sunken;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-soft;
+
+    Text {
+        x: Spacing.sm;
+        y: 7px;
+        width: root.w - 2 * Spacing.sm;
+        text: root.label;
+        font-family: Typography.family-ui;
+        font-size: Typography.size-micro;
+        color: Theme.text-tertiary;
+        overflow: elide;
+    }
+
+    Text {
+        x: Spacing.sm;
+        y: 24px;
+        width: root.w - 2 * Spacing.sm;
+        text: root.value;
+        font-family: Typography.family-mono;
+        font-size: Typography.size-body-sm;
+        font-weight: Typography.weight-bold;
+        color: root.tint;
+        overflow: elide;
+    }
+}
+
+export component ExerciseScreen inherits Rectangle {
+    callback back-requested();
+    callback theme-toggle-requested();
+
+    // --- Geometry (outside-in, from the window-given width) -----------------
+    property <length> pad: root.width < 1100px ? Spacing.lg : Spacing.xl;
+    property <length> body-w: Math.min(root.width, WindowMetrics.content-max-width) - 2 * root.pad;
+    property <length> body-x: (root.width - root.body-w) / 2;
+    property <length> side-w: Math.max(300px, Math.min(400px, root.body-w * 0.32));
+    property <length> main-w: root.body-w - Spacing.lg - root.side-w;
+    property <length> side-inner: root.side-w - 2 * Spacing.lg - 14px;
+    property <length> header-h: 64px;
+    property <length> banner-h: ExerciseView.banner != "" ? 36px : 0px;
+    property <length> body-y: root.header-h + root.banner-h + Spacing.lg;
+    property <length> body-h: root.height - root.body-y - root.pad;
+    property <length> toolbar-h: 36px;
+    property <length> pills-h: 30px;
+    property <length> grid-y: root.toolbar-h + Spacing.md + root.pills-h + Spacing.md;
+    property <length> grid-h: root.body-h - root.grid-y;
+    property <length> gap: Spacing.md;
+    property <length> scrollbar: 14px;
+    property <int> columns: root.main-w >= 600px ? 3 : 2;
+    property <length> card-w: (root.main-w - root.scrollbar - (root.columns - 1) * root.gap) / root.columns;
+    property <length> difficulty-w: 252px;
+    property <length> shown-w: 120px;
+    property <length> search-w: root.main-w - root.difficulty-w - root.shown-w - 2 * Spacing.sm;
+    property <length> cta-h: ExerciseView.start-reason != "" ? 72px : 52px;
+    property <length> chip-w: (root.side-inner - 4 * 6px) / 5;
+    property <length> tile-w: (root.side-inner - 2 * Spacing.sm) / 3;
+    property <length> pill-w: (root.side-inner - Spacing.sm) / 2;
+
+    property <color> accent: Accents.resolve(ExerciseView.accent);
+    property <string> title-font: ExerciseView.hindi ? Typography.family-devanagari : Typography.family-ui;
+
+    // Rust bumps the token to scroll the grid back to the top (new filter).
+    property <int> scroll-token: ExerciseView.scroll-token;
+    changed scroll-token => {
+        grid.content-y = 0px;
+        root.report-grid();
+    }
+    changed columns => {
+        root.report-grid();
+    }
+    // A pure height change (maximise, fullscreen) must widen the visible
+    // window too, or rows past the old overscan stay empty until a scroll.
+    changed grid-h => {
+        root.report-grid();
+    }
+
+    // Only the visible screen reports: the Flow chooser shares the same
+    // grid model with its own column count.
+    function report-grid() {
+        if (root.visible) {
+            ExerciseView.grid-scrolled(root.columns, root.grid-h, -grid.content-y);
+        }
+    }
+    changed visible => {
+        root.report-grid();
+    }
+
+    background: Theme.bg-base;
+
+    // =====================================================================
+    // Header (EX-01, EX-02)
+    // =====================================================================
+    AppHeader {
+        x: 0px;
+        y: 0px;
+        width: root.width;
+        height: root.header-h;
+        content-padding: root.pad;
+
+        VerticalLayout {
+            alignment: center;
+            RadhaButton {
+                text: "← Home";
+                variant: ButtonVariant.Ghost;
+                compact: true;
+                clicked => {
+                    root.back-requested();
+                }
+            }
+        }
+
+        VerticalLayout {
+            alignment: center;
+            spacing: Spacing.xxs;
+            horizontal-stretch: 1;
+            min-width: 120px;
+
+            Text {
+                text: ExerciseView.breadcrumb;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-micro;
+                color: Theme.text-tertiary;
+                overflow: elide;
+            }
+
+            Text {
+                text: ExerciseView.product-name;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-h3;
+                font-weight: Typography.weight-bold;
+                color: Theme.text-primary;
+                overflow: elide;
+            }
+        }
+
+        if ExerciseView.mode-options.length > 0: VerticalLayout {
+            alignment: center;
+            SegmentedToggle {
+                options: ExerciseView.mode-options;
+                current: ExerciseView.mode-current;
+                selected(id) => {
+                    ExerciseView.mode-selected(id);
+                }
+            }
+        }
+
+        if ExerciseView.layout-options.length > 0: VerticalLayout {
+            alignment: center;
+            SegmentedToggle {
+                options: ExerciseView.layout-options;
+                current: ExerciseView.layout-current;
+                compact: true;
+                selected(id) => {
+                    ExerciseView.layout-selected(id);
+                }
+            }
+        }
+
+        VerticalLayout {
+            alignment: center;
+            ThemeToggle {
+                toggle-requested => {
+                    root.theme-toggle-requested();
+                }
+            }
+        }
+    }
+
+    // =====================================================================
+    // Honest-status banner (EX-11, RULES.MD Rule 32)
+    // =====================================================================
+    Rectangle {
+        x: 0px;
+        y: root.header-h;
+        width: root.width;
+        height: root.banner-h;
+        visible: ExerciseView.banner != "";
+        background: ExerciseView.banner-level == "provisional" ? Theme.warning-subtle : Theme.secondary-subtle;
+
+        if ExerciseView.banner-level == "practice": VerificationBadge {
+            x: root.body-x;
+            y: (parent.height - self.height) / 2;
+            level: "practice";
+        }
+
+        Text {
+            x: root.body-x + (ExerciseView.banner-level == "practice" ? 120px : 0px);
+            width: root.body-w - (ExerciseView.banner-level == "practice" ? 120px : 0px);
+            height: parent.height;
+            text: ExerciseView.banner;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-caption;
+            color: ExerciseView.banner-level == "provisional" ? Theme.warning : Theme.secondary;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+    }
+
+    // =====================================================================
+    // Left: discovery (EX-03, EX-04)
+    // =====================================================================
+    // A plain Rectangle with absolutely placed children, not a layout: the
+    // panels' widths derive from the window width, and a layout would feed
+    // them back into the window's own size constraints (a binding loop).
+    Rectangle {
+        x: root.body-x;
+        y: root.body-y;
+        width: root.main-w;
+        height: root.body-h;
+
+        SearchField {
+            x: 0px;
+            y: 0px;
+            width: root.search-w;
+            text <=> ExerciseView.search-text;
+            placeholder: "Search title, category or EX-number";
+            hint: "";
+            edited(text) => {
+                ExerciseView.search-edited(text);
+            }
+        }
+
+        Text {
+            x: root.search-w + Spacing.sm;
+            y: 0px;
+            width: root.shown-w;
+            height: root.toolbar-h;
+            text: ExerciseView.shown-text;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-micro;
+            color: Theme.text-tertiary;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+
+        Rectangle {
+            x: root.main-w - root.difficulty-w;
+            y: 1px;
+            width: root.difficulty-w;
+            height: root.toolbar-h;
+            HorizontalLayout {
+                alignment: end;
+                SegmentedToggle {
+                    options: [
+                        { id: "all", label: "All" },
+                        { id: "easy", label: "Easy" },
+                        { id: "medium", label: "Medium" },
+                        { id: "hard", label: "Hard" },
+                    ];
+                    current: ExerciseView.difficulty;
+                    selected(id) => {
+                        ExerciseView.difficulty-selected(id);
+                    }
+                }
+            }
+        }
+
+        // Category pills: a horizontal strip that scrolls when a product has
+        // many categories (the strip's width is fixed; only its viewport
+        // follows the pills).
+        Flickable {
+            x: 0px;
+            y: root.toolbar-h + Spacing.md;
+            width: root.main-w;
+            height: root.pills-h;
+            interactive: true;
+
+            HorizontalLayout {
+                spacing: Spacing.sm;
+                alignment: start;
+
+                FilterPill {
+                    label: "All categories";
+                    active: ExerciseView.category == "all";
+                    clicked => {
+                        ExerciseView.category-selected("all");
+                    }
+                }
+
+                for item in ExerciseView.categories: FilterPill {
+                    label: item.label;
+                    count-text: item.count-text;
+                    active: ExerciseView.category == item.id;
+                    clicked => {
+                        ExerciseView.category-selected(item.id);
+                    }
+                }
+            }
+        }
+
+        // --- The virtualised grid -----------------------------------------
+        grid := ScrollView {
+            x: 0px;
+            y: root.grid-y;
+            width: root.main-w;
+            height: root.grid-h;
+            visible: ExerciseView.list-state == "ready";
+            content-width: root.main-w - root.scrollbar;
+            content-height: Math.max(root.grid-h, ExerciseView.total-rows * ExerciseView.row-pitch);
+
+            changed content-y => {
+                root.report-grid();
+            }
+
+            for card in ExerciseView.cards: ExerciseCardView {
+                x: Math.mod(card.index, root.columns) * (root.card-w + root.gap);
+                y: Math.floor(card.index / root.columns) * ExerciseView.row-pitch + 4px;
+                card: card;
+                w: root.card-w;
+                h: ExerciseView.card-height;
+                accent: root.accent;
+                title-font: root.title-font;
+                activated => {
+                    ExerciseView.select(card.index);
+                }
+            }
+        }
+
+        // --- Empty / no match / error (EX-12) ------------------------------
+        Rectangle {
+            x: 0px;
+            y: root.grid-y;
+            width: root.main-w;
+            height: Math.min(root.grid-h, 200px);
+            visible: ExerciseView.list-state != "ready";
+            border-radius: Radius.lg;
+            background: ExerciseView.list-state == "error" ? Theme.error-subtle : Theme.bg-sunken;
+            border-width: Stroke.hairline;
+            border-color: Theme.border-soft;
+
+            Text {
+                x: Spacing.xl;
+                y: Spacing.xl;
+                width: root.main-w - 2 * Spacing.xl;
+                text: ExerciseView.state-title;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-h3;
+                font-weight: Typography.weight-semibold;
+                color: ExerciseView.list-state == "error" ? Theme.error : Theme.text-primary;
+                wrap: word-wrap;
+            }
+
+            Text {
+                x: Spacing.xl;
+                y: Spacing.xl + 36px;
+                width: root.main-w - 2 * Spacing.xl;
+                height: Math.min(root.grid-h, 200px) - Spacing.xl - 36px - Spacing.md;
+                text: ExerciseView.state-message;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-body-sm;
+                color: Theme.text-secondary;
+                wrap: word-wrap;
+                overflow: elide;
+            }
+        }
+    }
+
+    // =====================================================================
+    // Right: sticky inspector + dock (EX-06 .. EX-08, EX-11)
+    // =====================================================================
+    Rectangle {
+        x: root.body-x + root.main-w + Spacing.lg;
+        y: root.body-y;
+        width: root.side-w;
+        height: root.body-h;
+        border-radius: Radius.lg;
+        background: Theme.bg-surface;
+        border-width: Stroke.hairline;
+        border-color: Theme.border-soft;
+        clip: true;
+
+        ScrollView {
+            x: 0px;
+            y: 0px;
+            width: root.side-w;
+            height: root.body-h - root.cta-h;
+            content-width: root.side-w - root.scrollbar;
+
+            VerticalLayout {
+                padding: Spacing.lg;
+                spacing: Spacing.sm;
+                alignment: start;
+
+                // --- Inspector ------------------------------------------------
+                if !ExerciseView.insp-visible: Text {
+                    width: root.side-inner;
+                    text: ExerciseView.insp-error != "" ? ExerciseView.insp-error : "Select an exercise to see its targets and key drill.";
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-body-sm;
+                    color: ExerciseView.insp-error != "" ? Theme.error : Theme.text-tertiary;
+                    wrap: word-wrap;
+                }
+
+                if ExerciseView.insp-visible: VerticalLayout {
+                    spacing: Spacing.sm;
+
+                    HorizontalLayout {
+                        spacing: Spacing.sm;
+                        height: 24px;
+
+                        Rectangle {
+                            width: 64px;
+                            border-radius: Radius.sm;
+                            background: root.accent;
+                            Text {
+                                text: ExerciseView.insp-code;
+                                font-family: Typography.family-mono;
+                                font-size: Typography.size-caption;
+                                font-weight: Typography.weight-bold;
+                                color: Theme.text-on-primary;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        Text {
+                            text: ExerciseView.insp-category;
+                            font-family: root.title-font;
+                            font-size: Typography.size-micro;
+                            font-weight: Typography.weight-semibold;
+                            color: root.accent;
+                            vertical-alignment: center;
+                            overflow: elide;
+                            horizontal-stretch: 1;
+                        }
+
+                        Text {
+                            text: ExerciseView.insp-level;
+                            font-family: Typography.family-mono;
+                            font-size: Typography.size-micro;
+                            color: Theme.text-secondary;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    Text {
+                        width: root.side-inner;
+                        text: ExerciseView.insp-title;
+                        font-family: root.title-font;
+                        font-size: Typography.size-h3;
+                        font-weight: Typography.weight-bold;
+                        color: Theme.text-primary;
+                        wrap: word-wrap;
+                    }
+
+                    HorizontalLayout {
+                        spacing: Spacing.sm;
+                        alignment: start;
+                        ToneBadge {
+                            text: ExerciseView.insp-status;
+                            token: ExerciseView.insp-status-tone;
+                        }
+                        Text {
+                            text: ExerciseView.insp-best;
+                            font-family: Typography.family-ui;
+                            font-size: Typography.size-caption;
+                            font-weight: Typography.weight-semibold;
+                            color: Theme.success;
+                            vertical-alignment: center;
+                            overflow: elide;
+                        }
+                    }
+
+                    Text {
+                        width: root.side-inner;
+                        text: ExerciseView.insp-note;
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-caption;
+                        color: Theme.text-secondary;
+                        wrap: word-wrap;
+                    }
+
+                    if ExerciseView.insp-keys.length > 0: Eyebrow {
+                        text: "KEY DRILL FOCUS";
+                    }
+
+                    if ExerciseView.insp-keys.length > 0: HorizontalLayout {
+                        alignment: start;
+                        KeyDeck {
+                            keys: ExerciseView.insp-keys;
+                            active-index: 0;
+                            accent: root.accent;
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: Spacing.sm;
+                        height: 52px;
+                        MetricTile {
+                            w: root.tile-w;
+                            label: "Target WPM";
+                            value: ExerciseView.insp-target-wpm;
+                            tint: root.accent;
+                        }
+                        MetricTile {
+                            w: root.tile-w;
+                            label: "Min accuracy";
+                            value: ExerciseView.insp-min-accuracy;
+                            tint: Theme.success;
+                        }
+                        MetricTile {
+                            w: root.tile-w;
+                            label: "Length";
+                            value: ExerciseView.insp-length;
+                        }
+                    }
+
+                    if ExerciseView.insp-fingers.length > 0: Eyebrow {
+                        text: "ACTIVE FINGER ZONES";
+                    }
+
+                    if ExerciseView.insp-fingers.length > 0: Rectangle {
+                        height: Math.ceil(ExerciseView.insp-fingers.length / 2) * 30px;
+                        for f[i] in ExerciseView.insp-fingers: Rectangle {
+                            x: Math.mod(i, 2) * (root.pill-w + Spacing.sm);
+                            y: Math.floor(i / 2) * 30px;
+                            width: root.pill-w;
+                            height: 24px;
+                            border-radius: Radius.pill;
+                            background: Theme.secondary-subtle;
+                            Text {
+                                text: f;
+                                font-family: Typography.family-ui;
+                                font-size: Typography.size-micro;
+                                font-weight: Typography.weight-medium;
+                                color: Theme.secondary;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                                overflow: elide;
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    height: Stroke.hairline;
+                    background: Theme.border-soft;
+                }
+
+                // --- Timer studio (TEST, Flow, Number + Punctuation) ----------
+                if ExerciseView.dock == "timer": VerticalLayout {
+                    spacing: Spacing.sm;
+
+                    HorizontalLayout {
+                        spacing: Spacing.sm;
+                        Eyebrow {
+                            text: "SESSION TIMER";
+                            vertical-alignment: center;
+                            horizontal-stretch: 1;
+                        }
+                        SegmentedToggle {
+                            compact: true;
+                            options: [
+                                { id: "countdown", label: "Countdown" },
+                                { id: "stopwatch", label: "Stopwatch" },
+                                { id: "off", label: "Off" },
+                            ];
+                            current: ExerciseView.timer-kind;
+                            selected(id) => {
+                                ExerciseView.timer-kind-selected(id);
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        height: 64px;
+                        border-radius: Radius.md;
+                        background: Theme.bg-sunken;
+                        border-width: Stroke.hairline;
+                        border-color: Theme.border-soft;
+
+                        Text {
+                            x: Spacing.md;
+                            y: 6px;
+                            text: ExerciseView.timer-readout;
+                            font-family: Typography.family-mono;
+                            font-size: Typography.size-h1;
+                            font-weight: Typography.weight-bold;
+                            color: ExerciseView.timer-kind == "countdown" ? root.accent : Theme.text-secondary;
+                        }
+
+                        Text {
+                            x: Spacing.md;
+                            y: 44px;
+                            width: root.side-inner - 2 * Spacing.md;
+                            text: ExerciseView.timer-sentence;
+                            font-family: Typography.family-ui;
+                            font-size: Typography.size-micro;
+                            color: Theme.text-tertiary;
+                            overflow: elide;
+                        }
+                    }
+
+                    // Ten presets, five per row, from computed widths.
+                    Rectangle {
+                        height: 2 * 30px + 6px;
+                        for t[i] in ExerciseView.timers: ChoiceChip {
+                            x: Math.mod(i, 5) * (root.chip-w + 6px);
+                            y: Math.floor(i / 5) * (30px + 6px);
+                            width: root.chip-w;
+                            text: t.label;
+                            selected: t.selected;
+                            accent: root.accent;
+                            clicked => {
+                                ExerciseView.choose-timer(i);
+                            }
+                        }
+                    }
+
+                    // Stepper + MM:SS custom input.
+                    HorizontalLayout {
+                        spacing: 6px;
+                        height: 32px;
+
+                        RadhaButton {
+                            text: "−30s";
+                            variant: ButtonVariant.Secondary;
+                            compact: true;
+                            clicked => {
+                                ExerciseView.step-timer(-30);
+                            }
+                        }
+
+                        Rectangle {
+                            horizontal-stretch: 1;
+                            border-radius: Radius.sm;
+                            background: custom.has-focus ? Theme.bg-surface : Theme.bg-sunken;
+                            border-width: custom.has-focus || ExerciseView.custom-timer-error != "" ? Stroke.thick : Stroke.hairline;
+                            border-color: ExerciseView.custom-timer-error != "" ? Theme.error
+                                : (custom.has-focus ? root.accent : Theme.border-soft);
+
+                            custom := TextInput {
+                                text <=> ExerciseView.custom-timer-text;
+                                x: Spacing.sm;
+                                y: (parent.height - self.height) / 2;
+                                width: parent.width - 2 * Spacing.sm;
+                                single-line: true;
+                                font-family: Typography.family-mono;
+                                font-size: Typography.size-body-sm;
+                                color: Theme.text-primary;
+                                accepted => {
+                                    ExerciseView.custom-timer(self.text);
+                                }
+                                edited => {
+                                    ExerciseView.custom-timer(self.text);
+                                }
+                            }
+
+                            if custom.text == "": Text {
+                                x: Spacing.sm;
+                                y: (parent.height - self.height) / 2;
+                                text: "min or MM:SS";
+                                font-family: Typography.family-mono;
+                                font-size: Typography.size-body-sm;
+                                color: Theme.text-tertiary;
+                            }
+                        }
+
+                        RadhaButton {
+                            text: "Set";
+                            variant: ButtonVariant.Secondary;
+                            compact: true;
+                            clicked => {
+                                ExerciseView.custom-timer(custom.text);
+                            }
+                        }
+
+                        RadhaButton {
+                            text: "+30s";
+                            variant: ButtonVariant.Secondary;
+                            compact: true;
+                            clicked => {
+                                ExerciseView.step-timer(30);
+                            }
+                        }
+                    }
+
+                    if ExerciseView.custom-timer-error != "": Text {
+                        width: root.side-inner;
+                        text: ExerciseView.custom-timer-error;
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-caption;
+                        color: Theme.error;
+                        wrap: word-wrap;
+                    }
+
+                    Eyebrow {
+                        text: "RULES";
+                    }
+
+                    HorizontalLayout {
+                        spacing: Spacing.sm;
+                        height: 30px;
+                        ChoiceChip {
+                            width: root.side-inner;
+                            text: (ExerciseView.no-backspace ? "✓ " : "") + "Strict: Backspace disabled";
+                            selected: ExerciseView.no-backspace;
+                            accent: root.accent;
+                            clicked => {
+                                ExerciseView.toggle-no-backspace();
+                            }
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: Spacing.sm;
+                        height: 30px;
+                        ChoiceChip {
+                            width: root.side-inner;
+                            text: (ExerciseView.key-guide ? "✓ " : "") + "Key Guide: next key and mistake marking";
+                            selected: ExerciseView.key-guide;
+                            accent: root.accent;
+                            clicked => {
+                                ExerciseView.toggle-key-guide();
+                            }
+                        }
+                    }
+                }
+
+                // --- Guide dock (LEARN, BEGINNER, CLASSIC) --------------------
+                if ExerciseView.dock == "guide": VerticalLayout {
+                    spacing: Spacing.sm;
+
+                    Eyebrow {
+                        text: "GUIDE";
+                    }
+
+                    HorizontalLayout {
+                        alignment: start;
+                        SegmentedToggle {
+                            options: [
+                                { id: "full", label: "Full" },
+                                { id: "smart", label: "Smart" },
+                                { id: "minimal", label: "Minimal" },
+                                { id: "off", label: "Off" },
+                            ];
+                            current: ExerciseView.guide-mode;
+                            selected(id) => {
+                                ExerciseView.guide-mode-selected(id);
+                            }
+                        }
+                    }
+
+                    Eyebrow {
+                        text: "KEY GUIDE · MISTAKE-KEY MARKING";
+                    }
+
+                    HorizontalLayout {
+                        alignment: start;
+                        SegmentedToggle {
+                            options: [
+                                { id: "on", label: "On" },
+                                { id: "off", label: "Off" },
+                            ];
+                            current: ExerciseView.key-guide ? "on" : "off";
+                            selected(id) => {
+                                if ((id == "on") != ExerciseView.key-guide) {
+                                    ExerciseView.toggle-key-guide();
+                                }
+                            }
+                        }
+                    }
+
+                    Text {
+                        width: root.side-inner;
+                        text: "No timer and no verdict in this mode. The Key Guide is off by default: the passage highlights whole words. Turn it on for the next key, finger and mistake marking (Smart: after a pause or a mistake; Minimal: key only).";
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-micro;
+                        color: Theme.text-tertiary;
+                        wrap: word-wrap;
+                    }
+
+                    // --- Hindi Learn beginner path (HL-01, HL-07, HL-08) ------
+                    if ExerciseView.learn-steps.length > 0: VerticalLayout {
+                        spacing: Spacing.xs;
+
+                        Eyebrow {
+                            text: "FINGER-FIRST STEPS";
+                        }
+
+                        Rectangle {
+                            property <length> chip-w: (root.side-inner - 5 * 4px) / 6;
+                            property <length> chip-h: 40px;
+                            width: root.side-inner;
+                            height: ExerciseView.learn-steps.length > 6 ? 2 * self.chip-h + 4px : self.chip-h;
+
+                            for chip[i] in ExerciseView.learn-steps: Rectangle {
+                                x: Math.mod(i, 6) * (parent.chip-w + 4px);
+                                y: Math.floor(i / 6) * (parent.chip-h + 4px);
+                                width: parent.chip-w;
+                                height: parent.chip-h;
+                                border-radius: Radius.sm;
+                                border-width: chip.current ? Stroke.regular : Stroke.hairline;
+                                border-color: chip.current ? Theme.primary : Theme.border-soft;
+                                background: chip.state == 2
+                                    ? Theme.success-subtle
+                                    : chip.state == 1 ? Theme.bg-surface : Theme.bg-sunken;
+
+                                VerticalLayout {
+                                    alignment: center;
+                                    Text {
+                                        text: chip.label;
+                                        font-family: Typography.family-mono;
+                                        font-size: Typography.size-micro;
+                                        font-weight: Typography.weight-bold;
+                                        color: chip.state == 0 ? Theme.text-disabled : Theme.text-secondary;
+                                        horizontal-alignment: center;
+                                    }
+
+                                    Text {
+                                        text: chip.state == 0 ? "locked" : chip.glyph;
+                                        font-family: chip.state == 0 ? Typography.family-ui : Typography.family-devanagari;
+                                        font-size: chip.state == 0 ? Typography.size-micro : Typography.size-body-sm;
+                                        color: chip.state == 0 ? Theme.text-disabled : Theme.text-primary;
+                                        horizontal-alignment: center;
+                                    }
+                                }
+
+                                TouchArea {
+                                    enabled: chip.state != 0;
+                                    mouse-cursor: chip.state != 0 ? pointer : default;
+                                    clicked => {
+                                        ExerciseView.start-step(i);
+                                    }
+                                }
+                            }
+                        }
+
+                        Text {
+                            width: root.side-inner;
+                            text: ExerciseView.learn-status;
+                            font-family: Typography.family-ui;
+                            font-size: Typography.size-micro;
+                            color: Theme.text-secondary;
+                            wrap: word-wrap;
+                        }
+
+                        Text {
+                            width: root.side-inner;
+                            text: ExerciseView.learn-plan;
+                            font-family: Typography.family-devanagari;
+                            font-size: Typography.size-micro;
+                            color: Theme.text-primary;
+                            wrap: word-wrap;
+                        }
+
+                        HorizontalLayout {
+                            spacing: Spacing.xs;
+                            alignment: start;
+                            RadhaButton {
+                                text: "Matra trainer";
+                                variant: ButtonVariant.Secondary;
+                                compact: true;
+                                clicked => {
+                                    ExerciseView.start-trainer("matra");
+                                }
+                            }
+
+                            RadhaButton {
+                                text: "Half letters";
+                                variant: ButtonVariant.Secondary;
+                                compact: true;
+                                clicked => {
+                                    ExerciseView.start-trainer("half");
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // --- Locked exam timer (EX-11) --------------------------------
+                if ExerciseView.dock == "locked": VerticalLayout {
+                    spacing: Spacing.sm;
+
+                    HorizontalLayout {
+                        spacing: Spacing.sm;
+                        Image {
+                            source: @image-url("../../../../assets/icons/lock.svg");
+                            width: 14px;
+                            height: 14px;
+                            colorize: Theme.text-tertiary;
+                            y: (parent.height - self.height) / 2;
+                        }
+                        Eyebrow {
+                            text: "EXAM TIMER · LOCKED";
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    Rectangle {
+                        height: 52px;
+                        border-radius: Radius.md;
+                        background: Theme.bg-sunken;
+                        border-width: Stroke.hairline;
+                        border-color: Theme.border-soft;
+                        Text {
+                            x: Spacing.md;
+                            text: ExerciseView.timer-readout;
+                            height: parent.height;
+                            vertical-alignment: center;
+                            font-family: Typography.family-mono;
+                            font-size: Typography.size-h1;
+                            font-weight: Typography.weight-bold;
+                            color: Theme.text-secondary;
+                        }
+                    }
+
+                    Text {
+                        width: root.side-inner;
+                        text: ExerciseView.locked-reason;
+                        font-family: Typography.family-ui;
+                        font-size: Typography.size-caption;
+                        color: Theme.text-secondary;
+                        wrap: word-wrap;
+                    }
+                }
+
+                // --- KEY / WORD (every mode) ----------------------------------
+                Eyebrow {
+                    text: "MISTAKE MARKING";
+                }
+
+                HorizontalLayout {
+                    alignment: start;
+                    SegmentedToggle {
+                        options: [
+                            { id: "key", label: "KEY · each character" },
+                            { id: "word", label: "WORD · on Space" },
+                        ];
+                        current: ExerciseView.key-mode ? "key" : "word";
+                        selected(id) => {
+                            ExerciseView.set-key-mode(id == "key");
+                        }
+                    }
+                }
+            }
+        }
+
+        // --- START (EX-13): always visible, never scrolled away -------------
+        Rectangle {
+            x: 0px;
+            y: root.body-h - root.cta-h;
+            width: root.side-w;
+            height: root.cta-h;
+            background: Theme.bg-surface;
+
+            Rectangle {
+                y: 0px;
+                width: root.side-w;
+                height: Stroke.hairline;
+                background: Theme.border-soft;
+            }
+
+            if ExerciseView.start-reason != "": Text {
+                x: Spacing.lg;
+                y: 6px;
+                width: root.side-w - 2 * Spacing.lg;
+                height: 18px;
+                text: ExerciseView.start-reason;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                color: Theme.warning;
+                vertical-alignment: center;
+                overflow: elide;
+            }
+
+            RadhaButton {
+                x: Spacing.lg;
+                y: root.cta-h - 8px - self.height;
+                width: root.side-w - 2 * Spacing.lg;
+                text: ExerciseView.start-text;
+                enabled: ExerciseView.can-start;
+                full-width: true;
+                clicked => {
+                    ExerciseView.start();
+                }
+            }
+        }
+    }
+}

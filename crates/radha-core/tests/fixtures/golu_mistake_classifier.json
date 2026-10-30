@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Results\\ResultGradeAndClassifierTests.cs",
+    "sha256": "0b42ed839a80f79f9882d603e43358b417d21dbe4d20da1fd27cbc3d507d5244",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "Classification_Preserves_The_Half_Versus_Full_Split#1",
+      "kind": "classify",
+      "tag": "must_match",
+      "input": { "expected": "a", "typed": "A" },
+      "golu_expected": { "kind": "WrongCase", "isHalf": true },
+      "radha_expected": { "mistake_kind": "WrongCase", "severity": "Half" }
+    },
+    {
+      "name": "Classification_Preserves_The_Half_Versus_Full_Split#2",
+      "kind": "classify",
+      "tag": "must_match",
+      "input": { "expected": "A", "typed": "a" },
+      "golu_expected": { "kind": "WrongCase", "isHalf": true },
+      "radha_expected": { "mistake_kind": "WrongCase", "severity": "Half" }
+    },
+    {
+      "name": "Classification_Preserves_The_Half_Versus_Full_Split#3",
+      "kind": "classify",
+      "tag": "must_match",
+      "input": { "expected": " ", "typed": "x" },
+      "golu_expected": { "kind": "Spacing", "isHalf": true },
+      "radha_expected": { "mistake_kind": "Spacing", "severity": "Half" }
+    },
+    {
+      "name": "Classification_Preserves_The_Half_Versus_Full_Split#4",
+      "kind": "classify",
+      "tag": "must_match",
+      "input": { "expected": "x", "typed": " " },
+      "golu_expected": { "kind": "Spacing", "isHalf": true },
+      "radha_expected": { "mistake_kind": "Spacing", "severity": "Half" }
+    },
+    {
+      "name": "Classification_Preserves_The_Half_Versus_Full_Split#5",
+      "kind": "classify",
+      "tag": "must_match",
+      "input": { "expected": ".", "typed": "x" },
+      "golu_expected": { "kind": "Punctuation", "isHalf": true },
+      "radha_expected": { "mistake_kind": "Punctuation", "severity": "Half" }
+    },
+    {
+      "name": "Classification_Preserves_The_Half_Versus_Full_Split#6",
+      "kind": "classify",
+      "tag": "must_match",
+      "input": { "expected": "x", "typed": "," },
+      "golu_expected": { "kind": "Punctuation", "isHalf": true },
+      "radha_expected": { "mistake_kind": "Punctuation", "severity": "Half" }
+    },
+    {
+      "name": "Classification_Preserves_The_Half_Versus_Full_Split#7",
+      "kind": "classify",
+      "tag": "must_match",
+      "input": { "expected": "a", "typed": "b" },
+      "golu_expected": { "kind": "WrongCharacter", "isHalf": false, "isFull": true },
+      "radha_expected": { "mistake_kind": "WrongCharacter", "severity": "Full" }
+    },
+    {
+      "name": "A_Matching_Character_Is_Not_A_Mistake_At_All",
+      "kind": "classify",
+      "tag": "must_match",
+      "input": { "expected": "a", "typed": "a" },
+      "golu_expected": { "kind": "None", "isHalf": false, "isFull": false },
+      "radha_expected": { "mistake_kind": "None", "severity": "None" }
+    }
+  ]
+}

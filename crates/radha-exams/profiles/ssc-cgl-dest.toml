@@ -1,0 +1,28 @@
+# Reference exam (PRD EM-09): PracticeOnly until the primary notification is
+# read in Radha. Every figure below is an unverified reference claim.
+schema_version = 1
+id = "ssc-cgl-dest"
+profile_version = 1
+display_name = "SSC CGL — DEST Module"
+body = "Staff Selection Commission"
+
+[notice]
+title = "Combined Graduate Level — Data Entry Speed Test"
+note = "Primary notification not read in Radha; rules are unknown."
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "DEST 15 min, about 2,000 key depressions, qualifying"
+source = "User's research list (Research and official-rule cautions)"
+url = "https://ssc.gov.in/api/attachment/uploads/masterData/NoticeBoards/Notice_of_adv_cgl_2026.pdf"
+
+[[reference_claims]]
+claim = "English 8,000 KDPH · Hindi 2,000 Keys · 15 Min · KDPH Mode · Backspace allowed · English QWERTY · DEST"
+source = "design-reference/01-home.html EXAM_SIMULATIONS (mock-up)"

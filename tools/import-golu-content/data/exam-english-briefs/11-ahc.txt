@@ -1,0 +1,151 @@
+// AHC — Allahabad High Court Group-C practice (fictional Devgarh District Court Registry)
+
+#AHC-001 | receipt of a new file in a district court registry
+- A new file reaching the registry is checked for the number of papers listed on its cover.
+- The receipt is entered in the inward register with the date and the sending office.
+- Papers missing from the file are recorded on a short note attached to the cover.
+- The file is then passed to the section that will register it.
+
+#AHC-002 | preparing a court cause list
+- The cause list is compiled from the dates fixed in each case by the presiding officer.
+- Fresh matters, part-heard matters and matters for orders are listed under separate headings.
+- The list is proofread against the case diary before it is displayed.
+- Copies are supplied to the bar association and the court reader.
+
+#AHC-003 | a notice of hearing in formal English
+- A notice of hearing informs a party of the date, the time and the court in which the matter will be heard.
+- It names the case and the parties in full.
+- The notice warns that the matter may be decided in the party's absence if no one appears.
+- It is signed by the officer authorised to issue notices.
+
+#AHC-004 | a court record index and page number verification
+- The record index lists every document in the file with its page numbers.
+- The clerk turns every page to confirm that the numbering is continuous.
+- A missing page number is investigated before the file goes to the court.
+- The verified index is signed and dated.
+
+#AHC-005 | an application for a certified copy
+- The application names the applicant, the case and the documents of which copies are wanted.
+- It states whether the copies are needed urgently, with the urgency fee if applicable.
+- The copying section gives the application a number and a likely date of delivery.
+- The applicant collects the copies on that date against a signature.
+
+#AHC-006 | dispatching summons to the right address
+- The address on each summons is copied exactly from the plaint or the application for summons.
+- Incomplete addresses are referred to the party for correction before dispatch.
+- The dispatch register records the mode of service chosen.
+- The process server's report is attached to the file on return.
+
+#AHC-007 | updating case status and the next hearing date
+- The case status is updated in the register as soon as the court passes an order.
+- The next hearing date is copied from the order sheet and checked twice.
+- The updated status is entered in the online system for the public.
+- Parties who call the enquiry counter are given the date from the updated record.
+
+#AHC-008 | a registry objection and compliance note
+- A registry objection note lists defects such as missing signatures or deficient court fee.
+- Each defect is numbered, and the time allowed for compliance is stated.
+- When the party cures a defect, the date is written against that defect.
+- The note is placed in the file and forms part of the record.
+
+#AHC-009 | a record room issue register
+- Every file issued from the record room is entered with the case number and the name of the person receiving it.
+- The purpose of the issue, such as inspection or copying, is noted.
+- Files are returned to the same shelf position from which they were taken.
+- The register is checked weekly for files not yet returned.
+
+#AHC-010 | a daily court workload summary
+- The workload summary gives the number of matters listed, heard and adjourned in each court.
+- Adjournments are classified by reason, such as absence of a party or of a witness.
+- The summary is prepared from the court diaries at the end of the day.
+- Monthly totals are worked out from the daily summaries.
+
+#AHC-011 | a statement of pending applications
+- The statement lists applications pending before each court with their filing dates.
+- It shows how long each application has been pending, in months.
+- Applications pending for a long time are highlighted for the attention of the court.
+- The statement is prepared every month.
+
+#AHC-012 | a court fee receipt and filing checklist
+- The filing checklist confirms that the court fee has been paid and receipted.
+- It also checks the vakalatnama, the index and the copies for the opposite party.
+- The clerk ticks each item on the checklist before accepting the filing.
+- The completed checklist is attached to the filing.
+
+#AHC-013 | digital court records and e-filing
+- E-filing allows documents to be submitted to the court without visiting the counter.
+- Digital records can be searched by case number, party name or year.
+- Scanned records must be clear enough to read every word and figure.
+- Digital records are backed up regularly to prevent loss.
+
+#AHC-014 | maintaining a list of court holidays
+- The holiday list is prepared at the start of the year from the official calendar.
+- Each holiday is listed with its date and the day of the week.
+- Local holidays declared during the year are added to the list with the date of the order.
+- The list is displayed in the registry and on the court website.
+
+#AHC-015 | a notice for a public helpdesk
+- The helpdesk notice tells visitors what help is available, such as case status and directions.
+- It gives the helpdesk timings and the location within the court premises.
+- The notice lists the documents a visitor should bring for an enquiry.
+- It is written in simple language and displayed near the entrance.
+
+#AHC-016 | reducing delay in case processing
+- Delay often arises when summons are not served on time or files are not ready for hearing.
+- Regular review of pending service reports reduces adjournments.
+- Files are prepared a day before the hearing so that the court can take them up at once.
+- Monthly reports help identify the stages at which delay is most common.
+
+#AHC-017 | formal correspondence between court sections
+- Correspondence between sections is carried on through short office notes.
+- Each note states the case, the point to be dealt with and the action requested.
+- Replies refer to the note by its date and number.
+- Notes and replies are kept in the file to show the history of the matter.
+
+#AHC-018 | names and addresses in judicial records
+- Names in judicial records are written exactly as they appear in the pleadings.
+- Addresses include the village or locality, the post office, the police station and the district.
+- Changes of address are recorded only on an application by the party.
+- Accurate addresses are essential for the service of notices.
+
+#AHC-019 | preserving documents during scanning
+- Documents are handled gently during scanning to avoid tearing old paper.
+- Staples and pins are removed carefully and the papers re-fastened afterwards.
+- Pages are scanned in their original order, and none are left out.
+- The original file is returned to the record room in the same condition.
+
+#AHC-020 | the confidentiality of parties' personal information
+- Personal details of parties, such as phone numbers and addresses, are used only for court work.
+- Such details are not read aloud at the counter.
+- Records containing sensitive details are kept away from public view.
+- Requests for personal information from outsiders are refused unless the court directs otherwise.
+
+#AHC-021 | court staff attendance and duty roster
+- The attendance register records the arrival of every staff member each morning.
+- The duty roster assigns staff to courts, counters and record rooms.
+- Absences are covered by staff from a reserve list.
+- The roster is reviewed weekly and approved by the officer in charge.
+
+#AHC-022 | a typed brief of an administrative order
+- The brief summarises an administrative order in a few short paragraphs.
+- It states what the order requires, who must act and from what date.
+- Nothing is added that the order does not say.
+- The brief refers to the order by its number and date.
+
+#AHC-023 | legal office vocabulary and punctuation
+- Legal writing uses words such as appellant, respondent, petitioner and opposite party with precise meanings.
+- Case titles are written with the names of the parties separated by the word versus.
+- Commas, semicolons and full stops are used carefully, because they can change the meaning of a sentence.
+- Abbreviations are used only where the office style allows them.
+
+#AHC-024 | mixed case numbers, dates and filing references
+- This passage combines case numbers, filing references and dates in close succession.
+- Each reference has a fixed pattern of letters, numbers and separators.
+- The typist must keep every separator mark exactly as it appears.
+- Dates are written in the full form used in court records.
+
+#AHC-025 | a Group-C typing practice passage for district courts
+- This practice passage reflects the clerical work of district court staff.
+- It covers registers, notices and letters in formal English.
+- The passage includes fictional names, case numbers and dates.
+- Rules for the actual test must be taken from the notice for the recruitment cycle.

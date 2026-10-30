@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Engine\\IsolatedMatraSessionTests.cs",
+    "sha256": "78b056ccf09219cc83d4ad401e63db6926c955dbf02274bc46dd28aeb30b50be",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "One_Keystroke_On_An_Isolated_Matra_Advances_Exactly_One_CodePoint_And_Marks_It_Correct",
+      "kind": "session",
+      "tag": "must_match",
+      "reason": "Golu drives the CBI layout key 'a'; layouts arrive in P03, so the produced character (U+0902) is pushed directly.",
+      "input": { "unit": "akshar", "target": "\u0902 \u0902 \u0902", "events": [ { "at_ms": 0, "type": "text", "text": "\u0902" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Position": 1, "Cell0": "Correct", "Cell1": " (current)" },
+      "radha_expected": { "outcomes": "c", "cursor": 1, "key_states": "CPPPP" }
+    },
+    {
+      "name": "Typing_The_Whole_Isolated_Matra_Drill_Keeps_Every_Cell_In_Step",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "akshar", "target": "\u0902 \u0947 \u0902", "events": [ { "at_ms": 0, "type": "text", "text": "\u0902 \u0947 \u0902" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Position": 5, "CharStates": "all Correct", "cells": 5 },
+      "radha_expected": { "finished": true, "outcomes": "ccccc", "key_states": "CCCCC" }
+    },
+    {
+      "name": "A_Wrong_Key_On_An_Isolated_Matra_Marks_Only_That_Cell_Wrong",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "akshar", "target": "\u0902 \u0902", "events": [ { "at_ms": 0, "type": "text", "text": "\u0947" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "Position": 1, "Cell0": "Wrong", "Cell1": " " },
+      "radha_expected": { "cursor": 1, "key_states": "WPP", "error_count": 1 }
+    },
+    {
+      "name": "A_Real_Conjunct_Word_Still_Groups_Into_One_Cell_Per_Akshara",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "akshar", "target": "\u0915\u094D\u0937\u0947\u0924\u094D\u0930", "events": [], "snapshot_at_ms": 0 },
+      "golu_expected": { "cells": 2, "Cell0.Length": 4, "Cell1.Length": 3 },
+      "radha_expected": { "key_states": "PP", "current_word": "\u0915\u094D\u0937\u0947\u0924\u094D\u0930", "cursor": 0 }
+    }
+  ]
+}

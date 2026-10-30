@@ -1,0 +1,618 @@
+// ============================================================================
+// FlowResultScreen — Typing Flow rhythm report (DESIGN 8.5)
+// ============================================================================
+//
+//   [ smoothness ring ]  [ cadence across the session: bars + corridor ]
+//   "Your rhythm held steady for 94% of this session" · vs personal best
+//   Cadence variance · Net WPM · Accuracy · Hesitations · Longest run · Beat · Time
+//   [ hesitation points ]  [ keys that broke the flow ]  [ drill + Start drill ]
+//   ─────────────────────────────────────────────────────────────────────
+//   Flow Again · Next Flow · All flows · Home                       (fixed dock)
+//
+// Rhythm figures come from FlowView (the Rust flow engine), speed figures
+// from ResultView (the one scoring module). Nothing is computed here, and
+// nothing is shown that the session did not measure.
+// ============================================================================
+
+import { Theme } from "../../theme/palette.slint";
+import { Typography } from "../../theme/typography.slint";
+import { Spacing, Radius, Stroke } from "../../theme/metrics.slint";
+import { RadhaButton, ButtonVariant } from "../../components/button.slint";
+import { ResultView } from "../../data/practice.slint";
+import { FlowView } from "../../data/flow.slint";
+
+component Eyebrow inherits Text {
+    font-family: Typography.family-ui;
+    font-size: Typography.size-micro;
+    font-weight: Typography.weight-semibold;
+    letter-spacing: Typography.tracking-wide;
+    color: Theme.text-tertiary;
+    overflow: elide;
+}
+
+component Card inherits Rectangle {
+    border-radius: Radius.lg;
+    background: Theme.bg-surface;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-soft;
+    clip: true;
+}
+
+component Figure inherits Card {
+    in property <string> label;
+    in property <string> value;
+    in property <color> tone: Theme.text-primary;
+
+    Eyebrow {
+        x: Spacing.md;
+        y: Spacing.sm;
+        width: parent.width - 2 * Spacing.md;
+        text: root.label;
+    }
+
+    Text {
+        x: Spacing.md;
+        y: Spacing.sm + 18px;
+        width: parent.width - 2 * Spacing.md;
+        text: root.value;
+        font-family: Typography.family-mono;
+        font-size: Typography.size-h3;
+        font-weight: Typography.weight-bold;
+        color: root.tone;
+        overflow: elide;
+    }
+}
+
+export component FlowResultScreen inherits Rectangle {
+    callback back-requested();
+
+    // --- Geometry (from the screen size only) --------------------------------
+    property <length> pad: Spacing.xl;
+    property <length> gap: Spacing.md;
+    property <length> dock-h: 60px;
+    property <length> col-w: Math.min(root.width - 2 * Spacing.lg, 1080px);
+    property <length> col-x: (root.width - root.col-w) / 2;
+    property <length> hero-h: 210px;
+    property <length> ring-w: 250px;
+    property <length> line-y: Spacing.lg + root.hero-h + root.gap;
+    property <length> line-h: 58px;
+    property <length> kpi-y: root.line-y + root.line-h + root.gap;
+    property <length> kpi-h: 62px;
+    property <length> kpi-w: (root.col-w - 6 * Spacing.sm) / 7;
+    property <length> cards-y: root.kpi-y + root.kpi-h + root.gap;
+    property <length> cards-h: Math.max(200px, Math.min(250px, root.height - root.dock-h - root.cards-y - Spacing.lg));
+    property <length> third-w: (root.col-w - 2 * root.gap) / 3;
+    property <length> content-h: root.cards-y + root.cards-h + Spacing.lg;
+    property <length> chip-w: (root.third-w - 2 * Spacing.md - 2 * 6px) / 3;
+    property <color> best-tone: FlowView.best-tone == "best" ? Theme.success
+        : FlowView.best-tone == "close" ? Theme.accent
+        : FlowView.best-tone == "below" ? Theme.secondary : Theme.text-secondary;
+
+    background: Theme.bg-base;
+
+    // A Flickable (no scrollbar widget): at the 1024 x 768 minimum window
+    // the report fits; it still scrolls if a smaller one is ever allowed.
+    Flickable {
+        x: 0px;
+        y: 0px;
+        width: root.width;
+        height: root.height - root.dock-h;
+        content-height: root.content-h;
+
+        // =================================================================
+        // Hero: smoothness ring
+        // =================================================================
+        Card {
+            x: root.col-x;
+            y: Spacing.lg;
+            width: root.ring-w;
+            height: root.hero-h;
+            background: Theme.accent-subtle;
+
+            Eyebrow {
+                x: Spacing.lg;
+                y: Spacing.md;
+                width: parent.width - 2 * Spacing.lg;
+                text: "FLOW COMPLETE · SMOOTHNESS";
+                color: Theme.accent;
+            }
+
+            Rectangle {
+                x: (parent.width - 128px) / 2;
+                y: 40px;
+                width: 128px;
+                height: 128px;
+
+                Path {
+                    width: parent.width;
+                    height: parent.height;
+                    viewbox-width: 36;
+                    viewbox-height: 36;
+                    commands: "M 18 3 A 15 15 0 1 1 18 33 A 15 15 0 1 1 18 3";
+                    fill: transparent;
+                    stroke: Theme.border-soft;
+                    stroke-width: 10px;
+                }
+                Path {
+                    visible: FlowView.smooth-level > 0;
+                    width: parent.width;
+                    height: parent.height;
+                    viewbox-width: 36;
+                    viewbox-height: 36;
+                    commands: FlowView.smooth-arc;
+                    fill: transparent;
+                    stroke: Theme.accent;
+                    stroke-width: 10px;
+                    stroke-line-cap: round;
+                }
+                Text {
+                    width: parent.width;
+                    height: parent.height;
+                    text: FlowView.smoothness;
+                    font-family: Typography.family-mono;
+                    font-size: Typography.size-h1;
+                    font-weight: Typography.weight-bold;
+                    color: Theme.text-primary;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+
+            Text {
+                x: Spacing.lg;
+                y: parent.height - Spacing.md - 16px;
+                width: parent.width - 2 * Spacing.lg;
+                text: ResultView.save-status;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-micro;
+                color: ResultView.save-status == "Saved to your progress" ? Theme.success : Theme.text-tertiary;
+                horizontal-alignment: center;
+                overflow: elide;
+            }
+        }
+
+        // =================================================================
+        // Hero: cadence across the session
+        // =================================================================
+        Card {
+            property <length> plot-x: Spacing.lg;
+            property <length> plot-y: 40px;
+            property <length> plot-w: self.width - 2 * Spacing.lg;
+            property <length> plot-h: self.height - self.plot-y - 36px;
+            property <length> bar-gap: 2px;
+            property <length> bar-w: (self.plot-w - (FlowView.cadence.length - 1) * self.bar-gap) / Math.max(1, FlowView.cadence.length);
+
+            x: root.col-x + root.ring-w + root.gap;
+            y: Spacing.lg;
+            width: root.col-w - root.ring-w - root.gap;
+            height: root.hero-h;
+
+            Eyebrow {
+                x: Spacing.lg;
+                y: Spacing.md;
+                width: parent.width * 0.6;
+                text: "CADENCE ACROSS THE SESSION · bar = average gap, line = smoothness";
+            }
+
+            Text {
+                x: parent.width * 0.6;
+                y: Spacing.md - 2px;
+                width: parent.width * 0.4 - Spacing.lg;
+                text: "variance " + FlowView.cadence-variance;
+                font-family: Typography.family-mono;
+                font-size: Typography.size-caption;
+                font-weight: Typography.weight-semibold;
+                color: Theme.text-secondary;
+                horizontal-alignment: right;
+            }
+
+            Rectangle {
+                x: parent.plot-x;
+                y: parent.plot-y;
+                width: parent.plot-w;
+                height: parent.plot-h;
+                border-radius: Radius.md;
+                background: Theme.bg-sunken;
+            }
+
+            // Your average beat (a bar at 0.5).
+            Rectangle {
+                visible: FlowView.cadence.length > 0;
+                x: parent.plot-x;
+                y: parent.plot-y + parent.plot-h / 2;
+                width: parent.plot-w;
+                height: 1px;
+                background: Theme.success.with-alpha(0.55);
+            }
+
+            for b[i] in FlowView.cadence: Rectangle {
+                x: parent.plot-x + i * (parent.bar-w + parent.bar-gap);
+                y: parent.plot-y + parent.plot-h - self.height;
+                width: Math.max(1px, parent.bar-w);
+                height: parent.plot-h * Math.max(0, Math.min(1, b.level));
+                border-radius: Math.min(2px, parent.bar-w / 2);
+                background: b.smooth ? Theme.accent.with-alpha(0.55) : Theme.secondary-light.with-alpha(0.55);
+            }
+
+            Path {
+                visible: FlowView.corridor-has-data;
+                x: parent.plot-x;
+                y: parent.plot-y;
+                width: parent.plot-w;
+                height: parent.plot-h;
+                commands: FlowView.corridor-line;
+                viewbox-width: 360;
+                viewbox-height: 72;
+                fit: fill;
+                fill: transparent;
+                stroke: Theme.accent;
+                stroke-width: 2px;
+                stroke-line-cap: round;
+            }
+
+            Text {
+                visible: !FlowView.corridor-has-data;
+                x: parent.plot-x;
+                y: parent.plot-y;
+                width: parent.plot-w;
+                height: parent.plot-h;
+                text: "Not enough keystrokes in a row to chart a cadence";
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                color: Theme.text-tertiary;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+
+            Text {
+                x: Spacing.lg;
+                y: parent.height - 28px;
+                width: parent.width - 2 * Spacing.lg;
+                text: FlowView.corridor-footer;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-micro;
+                color: Theme.text-tertiary;
+                overflow: elide;
+            }
+        }
+
+        // =================================================================
+        // Headline + personal best
+        // =================================================================
+        Card {
+            x: root.col-x;
+            y: root.line-y;
+            width: root.col-w;
+            height: root.line-h;
+
+            Text {
+                x: Spacing.lg;
+                y: 8px;
+                width: parent.width - 2 * Spacing.lg;
+                text: FlowView.headline;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-body;
+                font-weight: Typography.weight-bold;
+                color: Theme.text-primary;
+                overflow: elide;
+            }
+
+            Text {
+                x: Spacing.lg;
+                y: 32px;
+                width: parent.width - 2 * Spacing.lg;
+                text: FlowView.best-line + "  ·  " + ResultView.title;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                font-weight: FlowView.best-tone == "best" ? Typography.weight-bold : Typography.weight-regular;
+                color: root.best-tone;
+                overflow: elide;
+            }
+        }
+
+        // =================================================================
+        // Figures
+        // =================================================================
+        // One repeated Figure (generated once) instead of seven instances.
+        for f[i] in [
+            { label: "CADENCE VAR.", value: FlowView.cadence-variance, tone: 0 },
+            { label: "NET WPM", value: ResultView.net-wpm, tone: 1 },
+            { label: "ACCURACY", value: ResultView.accuracy, tone: 0 },
+            { label: "HESITATIONS", value: FlowView.hesitations, tone: FlowView.hesitations == "0" ? 2 : 3 },
+            { label: "LONGEST RUN", value: FlowView.longest-run, tone: 0 },
+            { label: "AVERAGE BEAT", value: FlowView.mean-interval, tone: 0 },
+            { label: "TIME", value: ResultView.time, tone: 0 },
+        ]: Figure {
+            x: root.col-x + i * (root.kpi-w + Spacing.sm);
+            y: root.kpi-y;
+            width: root.kpi-w;
+            height: root.kpi-h;
+            label: f.label;
+            value: f.value;
+            tone: f.tone == 1 ? Theme.accent : f.tone == 2 ? Theme.success : f.tone == 3 ? Theme.secondary : Theme.text-primary;
+        }
+
+        // =================================================================
+        // Hesitation points in the text
+        // =================================================================
+        Card {
+            x: root.col-x;
+            y: root.cards-y;
+            width: root.third-w;
+            height: root.cards-h;
+
+            Eyebrow {
+                x: Spacing.md;
+                y: Spacing.md;
+                width: parent.width - 2 * Spacing.md;
+                text: "WHERE YOU HESITATED";
+            }
+
+            for h[i] in FlowView.hesitation-points: Rectangle {
+                x: Spacing.md + Math.mod(i, 3) * (root.chip-w + 6px);
+                y: Spacing.md + 22px + Math.floor(i / 3) * 40px;
+                width: root.chip-w;
+                height: 34px;
+                border-radius: Radius.sm;
+                background: h.count > 1 ? Theme.passage-wrong-bg : Theme.bg-sunken;
+                border-width: Stroke.hairline;
+                border-color: h.count > 1 ? Theme.passage-wrong.with-alpha(0.4) : Theme.border-soft;
+
+                Text {
+                    x: 6px;
+                    y: 2px;
+                    width: parent.width - 12px;
+                    text: h.word;
+                    font-family: Typography.family-mono;
+                    font-size: Typography.size-caption;
+                    font-weight: Typography.weight-bold;
+                    color: Theme.text-primary;
+                    overflow: elide;
+                }
+                Text {
+                    x: 6px;
+                    y: 18px;
+                    width: parent.width - 12px;
+                    text: h.detail;
+                    font-family: Typography.family-ui;
+                    font-size: 10px;
+                    color: Theme.text-tertiary;
+                    overflow: elide;
+                }
+            }
+
+            Text {
+                x: Spacing.md;
+                y: parent.height - Spacing.md - 30px;
+                width: parent.width - 2 * Spacing.md;
+                height: 30px;
+                text: FlowView.hesitation-note;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-micro;
+                color: Theme.text-tertiary;
+                wrap: word-wrap;
+                overflow: elide;
+            }
+        }
+
+        // =================================================================
+        // Keys that broke the flow
+        // =================================================================
+        Card {
+            x: root.col-x + root.third-w + root.gap;
+            y: root.cards-y;
+            width: root.third-w;
+            height: root.cards-h;
+
+            Eyebrow {
+                x: Spacing.md;
+                y: Spacing.md;
+                width: parent.width - 2 * Spacing.md;
+                text: "KEYS THAT BROKE THE FLOW";
+            }
+
+            for k[i] in FlowView.weak-keys: Rectangle {
+                x: Spacing.md;
+                y: Spacing.md + 22px + i * 30px;
+                width: parent.width - 2 * Spacing.md;
+                height: 26px;
+
+                Rectangle {
+                    x: 0px;
+                    width: 44px;
+                    height: 26px;
+                    border-radius: Radius.sm;
+                    background: Theme.accent-subtle;
+                    border-width: Stroke.hairline;
+                    border-color: Theme.accent;
+                    Text {
+                        width: parent.width;
+                        height: parent.height;
+                        text: k.key;
+                        font-family: Typography.family-mono;
+                        font-size: Typography.size-body-sm;
+                        font-weight: Typography.weight-bold;
+                        color: Theme.accent;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+
+                Text {
+                    x: 52px;
+                    width: parent.width - 52px;
+                    height: parent.height;
+                    text: k.detail;
+                    font-family: Typography.family-ui;
+                    font-size: Typography.size-caption;
+                    color: Theme.text-secondary;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+            }
+
+            Text {
+                x: Spacing.md;
+                y: parent.height - Spacing.md - 30px;
+                width: parent.width - 2 * Spacing.md;
+                height: 30px;
+                text: FlowView.weak-note;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-micro;
+                color: Theme.text-tertiary;
+                wrap: word-wrap;
+                overflow: elide;
+            }
+        }
+
+        // =================================================================
+        // Recommended drill
+        // =================================================================
+        Card {
+            x: root.col-x + 2 * (root.third-w + root.gap);
+            y: root.cards-y;
+            width: root.third-w;
+            height: root.cards-h;
+            background: Theme.accent-subtle;
+
+            Eyebrow {
+                x: Spacing.md;
+                y: Spacing.md;
+                width: parent.width - 2 * Spacing.md;
+                text: "YOUR NEXT STEP";
+                color: Theme.accent;
+            }
+
+            Text {
+                x: Spacing.md;
+                y: Spacing.md + 18px;
+                width: parent.width - 2 * Spacing.md;
+                text: FlowView.advice-title;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-body;
+                font-weight: Typography.weight-bold;
+                color: Theme.text-primary;
+                overflow: elide;
+            }
+
+            Text {
+                x: Spacing.md;
+                y: Spacing.md + 42px;
+                width: parent.width - 2 * Spacing.md;
+                height: 46px;
+                text: FlowView.advice-detail;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-caption;
+                color: Theme.text-secondary;
+                wrap: word-wrap;
+                overflow: elide;
+            }
+
+            Rectangle {
+                x: Spacing.md;
+                y: Spacing.md + 92px;
+                width: parent.width - 2 * Spacing.md;
+                height: parent.height - Spacing.md - 92px - 50px - Spacing.md;
+                border-radius: Radius.sm;
+                background: Theme.bg-surface;
+                border-width: Stroke.hairline;
+                border-color: Theme.border-soft;
+
+                Text {
+                    x: Spacing.sm;
+                    y: Spacing.xs;
+                    width: parent.width - 2 * Spacing.sm;
+                    text: FlowView.drill-stage != "" ? FlowView.drill-stage : "Recovery drill · missed words and keys";
+                    font-family: Typography.family-ui;
+                    font-size: 10px;
+                    font-weight: Typography.weight-semibold;
+                    color: Theme.accent;
+                    overflow: elide;
+                }
+
+                Text {
+                    x: Spacing.sm;
+                    y: Spacing.xs + 16px;
+                    width: parent.width - 2 * Spacing.sm;
+                    height: parent.height - Spacing.xs - 20px;
+                    text: !ResultView.drill-available
+                        ? "No drill needed: no key broke the flow often enough."
+                        : FlowView.drill-text;
+                    font-family: Typography.family-mono;
+                    font-size: Typography.size-micro;
+                    color: Theme.text-secondary;
+                    wrap: word-wrap;
+                    overflow: elide;
+                }
+            }
+
+            RadhaButton {
+                x: Spacing.md;
+                y: parent.height - Spacing.md - 40px;
+                width: parent.width - 2 * Spacing.md;
+                text: "Start drill";
+                enabled: ResultView.drill-available;
+                clicked => {
+                    ResultView.drill();
+                }
+            }
+        }
+    }
+
+    // =====================================================================
+    // Actions (fixed dock)
+    // =====================================================================
+    Rectangle {
+        x: 0px;
+        y: root.height - root.dock-h;
+        width: root.width;
+        height: root.dock-h;
+        background: Theme.bg-surface;
+
+        Rectangle {
+            x: 0px;
+            y: 0px;
+            width: parent.width;
+            height: 1px;
+            background: Theme.border-soft;
+        }
+
+        HorizontalLayout {
+            x: root.col-x;
+            y: 10px;
+            width: root.col-w;
+            height: 40px;
+            spacing: Spacing.sm;
+            alignment: center;
+
+            RadhaButton {
+                text: "Flow Again";
+                clicked => {
+                    ResultView.retry();
+                }
+            }
+            RadhaButton {
+                text: "Next Flow";
+                variant: ButtonVariant.Secondary;
+                enabled: ResultView.has-next;
+                clicked => {
+                    ResultView.next();
+                }
+            }
+            RadhaButton {
+                text: "All flows";
+                variant: ButtonVariant.Ghost;
+                clicked => {
+                    ResultView.list();
+                }
+            }
+            RadhaButton {
+                text: "Home";
+                variant: ButtonVariant.Ghost;
+                clicked => {
+                    ResultView.home();
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Engine\\TargetTextNormalizationTests.cs",
+    "sha256": "a4a06e7d2316930bb423903d5145a037cd0a4e2e8953e94f96082b118db88744",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "Both_Spellings_Of_The_Same_Letter_Become_Identical#single_code_point",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "\u0958" },
+      "golu_expected": { "TargetText": "same as for U+0915 U+093C (NFC; U+0958 is a composition exclusion)" },
+      "radha_expected": { "clusters": ["\u0915\u093C"] }
+    },
+    {
+      "name": "Both_Spellings_Of_The_Same_Letter_Become_Identical#two_code_points",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "\u0915\u093C" },
+      "golu_expected": { "TargetText": "same as for U+0958" },
+      "radha_expected": { "clusters": ["\u0915\u093C"] }
+    },
+    {
+      "name": "Correct_Typing_Scores_Correct_However_The_Passage_Was_Authored#U+0958",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "akshar", "target": "\u0958", "events": [ { "at_ms": 0, "type": "text", "text": "\u0915\u093C" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CharStates": "all Correct", "FullMistakes": 0, "IsComplete": true },
+      "radha_expected": { "finished": true, "error_count": 0, "state": "Complete", "key_states": "C" }
+    },
+    {
+      "name": "Correct_Typing_Scores_Correct_However_The_Passage_Was_Authored#U+0915_U+093C",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "akshar", "target": "\u0915\u093C", "events": [ { "at_ms": 0, "type": "text", "text": "\u0958" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "CharStates": "all Correct", "FullMistakes": 0, "IsComplete": true },
+      "radha_expected": { "finished": true, "error_count": 0, "state": "Complete" }
+    },
+    {
+      "name": "Ordinary_Passages_Are_Passed_Through_Unchanged#ascii",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "the quick brown fox" },
+      "golu_expected": { "TargetText": "the quick brown fox" },
+      "radha_expected": { "clusters": ["t", "h", "e", " ", "q", "u", "i", "c", "k", " ", "b", "r", "o", "w", "n", " ", "f", "o", "x"] }
+    },
+    {
+      "name": "Ordinary_Passages_Are_Passed_Through_Unchanged#karya",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "\u0915\u093E\u0930\u094D\u092F" },
+      "golu_expected": { "TargetText": "\u0915\u093E\u0930\u094D\u092F" },
+      "radha_expected": { "clusters": ["\u0915\u093E", "\u0930\u094D\u092F"] }
+    },
+    {
+      "name": "Ordinary_Passages_Are_Passed_Through_Unchanged#empty",
+      "kind": "segment",
+      "tag": "must_match",
+      "input": { "text": "" },
+      "golu_expected": { "TargetText": "" },
+      "radha_expected": { "clusters": [] }
+    },
+    {
+      "name": "A_Genuinely_Wrong_Letter_Still_Scores_Wrong",
+      "kind": "session",
+      "tag": "must_match",
+      "input": { "unit": "akshar", "target": "\u0958", "events": [ { "at_ms": 0, "type": "text", "text": "\u0917" } ], "snapshot_at_ms": 0 },
+      "golu_expected": { "FullMistakes": 1 },
+      "radha_expected": { "error_count": 1, "unit_full": 1, "finished": false }
+    },
+    {
+      "name": "A_Null_Passage_Is_Treated_As_Empty",
+      "kind": "session",
+      "tag": "must_match",
+      "reason": "Rust has no null string; the empty passage is the equivalent.",
+      "input": { "unit": "akshar", "target": "", "events": [], "snapshot_at_ms": 0 },
+      "golu_expected": { "TargetText": "", "CharStates": [] },
+      "radha_expected": { "key_states": "", "outcomes": "", "finished": false, "current_word": null }
+    }
+  ]
+}

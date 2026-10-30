@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "source": {
+    "origin": "golu-expert-ai",
+    "path": "tests\\Golu.Tests\\Engine\\ScoringEngineTests.cs",
+    "sha256": "52a54d64969775cc65377280cdde6925850cdb1d5df92b56ebb2c2e1fad50533",
+    "extracted": "2026-10-25"
+  },
+  "cases": [
+    {
+      "name": "Golden_250_Keystrokes_No_Mistakes_One_Minute",
+      "kind": "score",
+      "tag": "must_match",
+      "input": { "correct": 250, "errors": 0, "elapsed_ms": 60000 },
+      "golu_expected": { "GrossWpm": 50.0, "NetWpm": 50.0, "AccuracyPercent": 100.0, "Kdph": 15000.0, "EffectiveMistakes": 0 },
+      "radha_expected": { "wpm": 50.0, "net_wpm": 50.0, "accuracy": 100.0, "kdph": 15000.0, "error_count": 0 }
+    },
+    {
+      "name": "Full_And_Half_Mistakes_Are_Weighted",
+      "kind": "score",
+      "tag": "intentional_divergence",
+      "reason": "Default scoring is PRD 8.2: every error counts once (net = 60 - 6/1 = 54). Golu weights 4 half mistakes at 0.5 (net 56); half-mistake weighting is exam policy (P09, radha-exams), never the default (P02 decision D2).",
+      "input": { "correct": 294, "errors": 6, "elapsed_ms": 60000 },
+      "golu_expected": { "TotalKeystrokes": 300, "FullMistakes": 2, "HalfMistakes": 4, "EffectiveMistakes": 4.0, "GrossWpm": 60.0, "NetWpm": 56.0 },
+      "radha_expected": { "wpm": 60.0, "net_wpm": 54.0, "accuracy": 98.0, "error_count": 6 }
+    },
+    {
+      "name": "Net_Wpm_Never_Goes_Negative",
+      "kind": "score",
+      "tag": "must_match",
+      "input": { "correct": 0, "errors": 50, "elapsed_ms": 60000 },
+      "golu_expected": { "NetWpm": 0 },
+      "radha_expected": { "net_wpm": 0.0, "wpm": 10.0 }
+    },
+    {
+      "name": "Zero_Elapsed_Returns_Zero_Rates_Without_Throwing",
+      "kind": "score",
+      "tag": "must_match",
+      "input": { "correct": 90, "errors": 10, "elapsed_ms": 0 },
+      "golu_expected": { "GrossWpm": 0, "NetWpm": 0, "Kdph": 0, "AccuracyPercent": 90.0 },
+      "radha_expected": { "wpm": 0.0, "net_wpm": 0.0, "kdph": 0.0, "accuracy": 90.0 }
+    },
+    {
+      "name": "Zero_Keystrokes_Gives_Zero_Accuracy",
+      "kind": "score",
+      "tag": "intentional_divergence",
+      "reason": "PRD 8.2 accuracy: `if total == 0 { return 100.0; }` - nothing typed is not a mistake and the live display must not open at 0%. Golu returns 0.",
+      "input": { "correct": 0, "errors": 0, "elapsed_ms": 60000 },
+      "golu_expected": { "AccuracyPercent": 0 },
+      "radha_expected": { "accuracy": 100.0 }
+    },
+    {
+      "name": "Accuracy_Is_Correct_Over_Total",
+      "kind": "score",
+      "tag": "must_match",
+      "input": { "correct": 200, "errors": 50, "elapsed_ms": 60000 },
+      "golu_expected": { "AccuracyPercent": 80.0 },
+      "radha_expected": { "accuracy": 80.0 }
+    }
+  ]
+}

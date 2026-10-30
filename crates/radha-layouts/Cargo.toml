@@ -11,3 +11,10 @@ publish.workspace = true
 [dependencies]
 radha-core.workspace = true
 log.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+# Golden-vector fixtures and reference charts are JSON (tests/fixtures,
+# tests/charts). Same exact pins as radha-core, so the lock does not change.
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.151"

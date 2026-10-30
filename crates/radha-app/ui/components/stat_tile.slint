@@ -1,0 +1,50 @@
+// ============================================================================
+// StatTile — one labelled figure (TIME, WPM, ACCURACY …)
+// ============================================================================
+//
+// Width comes from the caller (computed from the window width).
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Spacing, Radius, Stroke } from "../theme/metrics.slint";
+
+export component StatTile inherits Rectangle {
+    in property <string> label;
+    in property <string> value;
+    /// Draw the value in the brand colour (the headline figure).
+    in property <bool> emphasis: false;
+    in property <length> tile-height: 72px;
+
+    height: root.tile-height;
+    background: Theme.bg-surface;
+    border-radius: Radius.lg;
+    border-width: Stroke.hairline;
+    border-color: Theme.border-soft;
+
+    VerticalLayout {
+        padding-left: Spacing.md;
+        padding-right: Spacing.md;
+        spacing: Spacing.xxs;
+        alignment: center;
+
+        Text {
+            text: root.label;
+            font-family: Typography.family-ui;
+            font-size: Typography.size-micro;
+            font-weight: Typography.weight-semibold;
+            letter-spacing: Typography.tracking-wide;
+            color: Theme.text-tertiary;
+            overflow: elide;
+        }
+
+        Text {
+            text: root.value;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-h1;
+            font-weight: Typography.weight-bold;
+            color: root.emphasis ? Theme.primary : Theme.text-primary;
+            overflow: elide;
+        }
+    }
+}

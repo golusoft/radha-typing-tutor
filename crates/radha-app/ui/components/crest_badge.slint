@@ -1,0 +1,42 @@
+// ============================================================================
+// CrestBadge — square monogram tile for an exam or organisation
+// ============================================================================
+//
+// DESIGN.md Chapter 20.3 / 20.5. A rounded square filled with the owner's
+// accent, carrying a short code ("SSC", "CPCT", "AIIMS") in mono bold.
+// Codes longer than four characters drop from 11 px to 9 px so they fit.
+//
+// Extracted from ExamCard, which uses it at 42 px; the default is 40 px.
+// The code is text, so the tile never depends on colour alone.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { Typography } from "../theme/typography.slint";
+import { Radius } from "../theme/metrics.slint";
+
+export component CrestBadge inherits Rectangle {
+    /// Short monogram, ideally 2–5 characters.
+    in property <string> code;
+    /// Tile fill; pass a Theme token.
+    in property <color> accent: Theme.primary;
+    /// Edge length of the square.
+    in property <length> size: 40px;
+
+    width: root.size;
+    height: root.size;
+    border-radius: Radius.md;
+    background: root.accent;
+
+    HorizontalLayout {
+        alignment: center;
+
+        Text {
+            text: root.code;
+            font-family: Typography.family-mono;
+            font-size: root.code.character-count > 4 ? 9px : 11px;
+            font-weight: Typography.weight-bold;
+            color: Theme.text-on-primary;
+            vertical-alignment: center;
+        }
+    }
+}

@@ -1,0 +1,42 @@
+// ============================================================================
+// VerificationBadge — how far an exam's rules are verified
+// ============================================================================
+//
+// RULES.MD Rule 32 (honest certification), DESIGN.md 20.5. Three levels:
+//
+//   level                      text              tone / dot
+//   official                   "Official rules"  Success  (emerald)
+//   provisional                "Provisional"     Warning  (amber)
+//   practice | practice-only   "Practice only"   Secondary (plum)
+//
+//   official     every required rule is verified from a notification
+//   provisional  thresholds known, other rules not yet verified
+//   practice     thresholds unknown: practice only, no pass/fail
+//
+// Any other value is shown as "Practice only": an unknown level must never be
+// presented as more verified than it is.
+//
+// Always text + dot, never colour alone.
+// ============================================================================
+
+import { Theme } from "../theme/palette.slint";
+import { RadhaBadge, BadgeTone } from "badge.slint";
+
+export component VerificationBadge inherits RadhaBadge {
+    /// "official" | "provisional" | "practice" (also accepts "practice-only").
+    in property <string> level: "practice";
+
+    text: root.level == "official"
+        ? "Official rules"
+        : (root.level == "provisional" ? "Provisional" : "Practice only");
+
+    tone: root.level == "official"
+        ? BadgeTone.Success
+        : (root.level == "provisional" ? BadgeTone.Warning : BadgeTone.Secondary);
+
+    dot: true;
+
+    dot-color: root.level == "official"
+        ? Theme.success
+        : (root.level == "provisional" ? Theme.warning : Theme.secondary);
+}

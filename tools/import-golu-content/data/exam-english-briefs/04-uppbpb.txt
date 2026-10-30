@@ -1,0 +1,151 @@
+// UPPBPB — UP Police ASI / Computer Operator (fictional Rampur Kalan Police Office)
+
+#UPPBPB-001 | receiving a citizen complaint at the police desk
+- The desk officer listens to the complainant first and then writes the complaint in the complainant's own words.
+- The complaint is read back to the complainant, who signs it after confirming that it is correct.
+- A receipt with the complaint number and date is given to the complainant before they leave.
+- The complaint is entered in the computer system on the same day and forwarded to the officer concerned.
+
+#UPPBPB-002 | administrative information in a general diary entry
+- A general diary entry records the time, the event and the name of the officer who made the entry.
+- Entries are made in strict time order, and no blank lines are left between them.
+- Administrative entries cover matters such as the arrival of staff, the receipt of letters and the dispatch of messages.
+- An entry once made is never erased; a correction is made by a later entry that refers to the earlier one.
+
+#UPPBPB-003 | preparing a case file index
+- The case file index lists each paper with its serial number, a short description and its page numbers.
+- Papers are arranged in the order of their dates, oldest first.
+- The index is updated each time a new paper is added to the file.
+- The officer in charge signs the index when the file is sent to another office.
+
+#UPPBPB-004 | verification of names and contact details
+- Names are confirmed against an identity document, and the spelling on the document is used in the record.
+- Addresses include the house number, locality, police station area and district.
+- A contact number is confirmed by calling it once in the presence of the person concerned.
+- Details that cannot be confirmed are marked as unverified rather than left looking complete.
+
+#UPPBPB-005 | traffic complaint registration and referral
+- A traffic complaint records the place, the time, the vehicle number if known and what happened.
+- Complaints about road conditions are referred to the civic body, with a copy kept in the police record.
+- Complaints about rash driving are referred to the traffic unit for action.
+- The complainant is told where the complaint has been sent and how to follow it up.
+
+#UPPBPB-006 | recording basic details in a cyber complaint intake
+- The intake form records the complainant's details, the type of cyber incident and the date on which it happened.
+- Transaction numbers, website addresses and phone numbers mentioned by the complainant are copied exactly.
+- The complainant is advised not to delete messages or call records that may be needed later.
+- The form is entered in the system and the complaint number is given to the complainant.
+
+#UPPBPB-007 | record accuracy in an evidence property register
+- Each item in the property register is described by its type, colour, markings and quantity.
+- The register shows the case number to which the item belongs and the date on which it was received.
+- Every movement of an item, such as sending it for examination, is recorded with the date and the officer's name.
+- The register is checked against the property room at regular intervals.
+
+#UPPBPB-008 | official message receipt and dispatch
+- Every message received is entered with its number, the sending office, the time of receipt and the subject.
+- Urgent messages are shown to the officer in charge at once, and the time at which they were shown is noted.
+- Outgoing messages are entered with the address and the time of dispatch.
+- The message register is closed at midnight and a new page is started for the next day.
+
+#UPPBPB-009 | preparing a duty schedule for the office
+- The duty schedule shows each staff member's shift, the counter or desk assigned and any special duties.
+- Weekly offs are spread so that each desk always has at least one trained person on duty.
+- Changes to the schedule are approved in writing and announced to the staff concerned.
+- The schedule is displayed on the notice board and a copy is kept in the office file.
+
+#UPPBPB-010 | court summons receipt and service record
+- A summons received from a court is entered with the court name, the case number and the date of appearance.
+- The summons is assigned to an officer for service, and the date of assignment is recorded.
+- The service report states whether the summons was served personally, affixed or returned.
+- The report is sent back to the court before the date of appearance.
+
+#UPPBPB-011 | a missing document report and its acknowledgement
+- A report of a lost document records the type of document, its number if known and the place where it was lost.
+- The report does not ask the person to prove the loss; it records the statement as given.
+- An acknowledgement with the report number is given, which the person can use to apply for a duplicate.
+- The report is entered in the computer system and can be printed again if the acknowledgement is lost.
+
+#UPPBPB-012 | preparing a daily station activity summary
+- The daily summary lists the number of complaints received, messages handled and patrols conducted.
+- Figures in the summary are taken from the registers, not from memory.
+- Important events are described in one or two sentences each.
+- The summary is sent to the supervising office by the time fixed in the standing instructions.
+
+#UPPBPB-013 | a road safety campaign notice
+- The notice announces the dates and places of a road safety campaign.
+- It reminds the public about helmets, seat belts and safe speeds in plain language.
+- Schools and local groups are invited to take part in the awareness activities.
+- The notice ends with the name of the office organising the campaign and a contact number.
+
+#UPPBPB-014 | a public event permission application record
+- An application for permission to hold a public event records the organiser, the venue, the date and the expected number of people.
+- The record notes the reports received from the local beat officer and the traffic unit.
+- The conditions attached to the permission are typed in full in the reply.
+- The record shows the date on which the permission was granted or refused, with the reason.
+
+#UPPBPB-015 | control room call logs and time stamps
+- Each call to the control room is logged with the time it was received, the caller's number and the nature of the call.
+- The time at which a unit was sent and the time at which it reached the spot are added to the same entry.
+- Time stamps are taken from the system clock, which is checked against the standard time every day.
+- The log is reviewed each morning to see how quickly calls were answered.
+
+#UPPBPB-016 | confidentiality in police computer records
+- Each user of the police computer system has a personal login, and actions are recorded against it.
+- Records are searched only for official purposes connected with a case or an application.
+- Printouts of confidential records are kept in a locked drawer and destroyed when no longer needed.
+- Suspected misuse of the system is reported to the officer in charge without delay.
+
+#UPPBPB-017 | data backup for office registers
+- The computer registers of the office are backed up at the end of every working day.
+- Backups are kept on a separate drive that is stored away from the main computer.
+- Once a month, a backup is restored on a test machine to confirm that it can be read.
+- The backup log records the date, the time and the person who made each backup.
+
+#UPPBPB-018 | a report on lost and found property
+- The report lists items handed in during the month with a description and the date of receipt.
+- Items returned to their owners are shown with the date of return and the proof of ownership seen.
+- Unclaimed items are listed separately and kept according to the rules for unclaimed property.
+- The report gives the total number of items received, returned and still held.
+
+#UPPBPB-019 | a staff attendance and leave record
+- The attendance record shows each staff member's daily attendance and the type of leave taken.
+- Leave is entered only after it has been sanctioned, and the sanction number is noted.
+- The record is closed at the end of each month and totals are worked out for each person.
+- A copy of the monthly record is sent to the accounts branch for salary purposes.
+
+#UPPBPB-020 | a formal reply to a citizen request
+- The reply begins by referring to the citizen's letter, its date and its subject.
+- It explains the decision or the information requested in clear and courteous language.
+- Where a request cannot be met, the reply gives the reason and, if possible, an alternative.
+- The reply is signed by the competent officer and a copy is kept on the file.
+
+#UPPBPB-021 | a table of traffic violations by date
+- The table lists each day of the week with the number of violations recorded under each main head.
+- Heads such as helmet, seat belt, signal and parking are shown in separate columns.
+- Row totals give the violations for each day, and column totals give the week's figure for each head.
+- The grand total is checked both across the rows and down the columns.
+
+#UPPBPB-022 | a digital record search by case reference
+- A search by case reference returns the case details, the papers filed and the current status.
+- The operator enters the reference exactly, including the year and any separator marks.
+- If the search returns nothing, the operator checks for a typing error before reporting that no record exists.
+- Search results are shared only with persons entitled to see them.
+
+#UPPBPB-023 | a cyber awareness notice for the public
+- The notice warns the public never to share a one-time password with anyone who calls or messages.
+- It advises people to check website addresses carefully before entering bank details.
+- It explains how to report a cyber fraud quickly through the national helpline or the local police.
+- The notice uses short sentences and large print so that it can be read on a poster.
+
+#UPPBPB-024 | a computer operator data validation checklist
+- The checklist reminds the operator to confirm every mandatory field before saving a record.
+- Dates are checked to ensure that none lies in the future when it should be in the past.
+- Numbers such as mobile and vehicle numbers are checked for the correct length and pattern.
+- A final check confirms that the saved record appears correctly in the search results.
+
+#UPPBPB-025 | a ministerial typing practice passage for police offices
+- This practice passage brings together the kinds of text typed in police ministerial work.
+- It contains names, dates, reference numbers and formal sentences in a single continuous piece.
+- The typist should keep a steady rhythm and treat every number as carefully as every word.
+- The practice is fictional and does not describe any real case or person.

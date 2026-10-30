@@ -1,0 +1,151 @@
+// BELTRON — DEO (fictional District Data Services Centre)
+
+#BELTRON-001 | entering citizen details into a service portal
+- The operator enters the applicant's name exactly as written on the identity document attached to the form.
+- Mandatory fields on the portal are marked, and the form cannot be saved until each of them is filled.
+- The mobile number is entered twice by the system's design, which helps catch a single mistyped digit.
+- After saving, the portal shows an application number that the operator writes on the paper form.
+
+#BELTRON-002 | checking names and dates in application records
+- Names are checked letter by letter, because a single wrong letter can make a record impossible to find.
+- Dates of birth are compared with the certificate and entered in the day, month and year order used by the portal.
+- A record in which the date of birth appears later than the date of application is set aside for review.
+- Corrections are made only through the edit option that keeps a log of the old and new values.
+
+#BELTRON-003 | a district-wise beneficiary summary
+- The summary lists each district with the number of beneficiaries approved, pending and rejected under a scheme.
+- District totals are added to give a state total, which must match the figure in the portal report.
+- Districts are listed in alphabetical order so that readers can find a district quickly.
+- Any district whose figures change sharply from the previous month is marked for a check.
+
+#BELTRON-004 | a certificate application receipt register
+- The receipt register records every application for caste, income or residence certificates on the day it is received.
+- Each line shows the token number, the applicant's name, the type of certificate and the date of receipt.
+- The expected date of delivery is written beside each entry according to the service time limit.
+- Applications returned for missing documents are marked with the reason and the date of return.
+
+#BELTRON-005 | a public service centre token and queue log
+- Each visitor receives a numbered token, and the token number is called out when a counter becomes free.
+- The log records the time at which each token was issued and the time at which service began.
+- Waiting times are worked out from the log at the end of the day and averaged for each counter.
+- Counters with long waiting times are given extra staff during the busiest hours.
+
+#BELTRON-006 | digitising paper forms into structured records
+- Paper forms are sorted by type before entry begins, so that the operator uses one screen layout at a time.
+- Every field on the paper form has a matching field on the screen, and nothing is entered in a free comment box by mistake.
+- Illegible handwriting is not guessed; the form is marked for verification with the applicant.
+- Each completed form is stamped as entered, with the date and the operator's code.
+
+#BELTRON-007 | resolving duplicate entries in a database
+- A duplicate is suspected when two records share the same name, date of birth and address.
+- Before merging, the operator compares the application numbers and dates to find which record came first.
+- The older record is usually kept, and the newer one is marked as a duplicate with a reference to the original.
+- No record is deleted outright; the system keeps it with a duplicate flag for audit purposes.
+
+#BELTRON-008 | a data entry quality checklist
+- The checklist asks the operator to confirm that names, numbers and dates match the source document.
+- It also asks whether every mandatory field is filled and whether the record has been saved successfully.
+- A supervisor checks a sample of records from each operator every day using the same checklist.
+- Errors found in the sample are discussed with the operator, so that the same mistake is not repeated.
+
+#BELTRON-009 | a monthly summary of applications received
+- The monthly summary shows the number of applications received for each service, week by week.
+- The four or five weekly figures are added to give the total for the month.
+- The summary compares the month's total with the previous month and notes any large change.
+- It is prepared from the portal report and checked against the counter registers.
+
+#BELTRON-010 | tracking pending and completed service requests
+- Each service request is shown as received, under process, completed or rejected.
+- Requests that remain under process beyond the time limit are listed separately for follow-up.
+- The completion date is entered as soon as the certificate or reply is issued.
+- A weekly report shows the number of requests in each status for every counter.
+
+#BELTRON-011 | agricultural scheme beneficiary data
+- Beneficiary records for a farm support scheme include the farmer's name, village, land area and bank account.
+- Land area is entered in the unit used on the land record, such as hectares or acres, without conversion.
+- Bank account numbers are entered with great care, because a wrong digit sends money to the wrong account.
+- Records are verified by the block office before payments are released.
+
+#BELTRON-012 | school enrolment and attendance data
+- Enrolment data lists each class with the number of boys and girls admitted at the start of the session.
+- Monthly attendance is entered as the number of days each pupil attended out of the working days.
+- Totals for each class are added and compared with the school's own register.
+- Any pupil absent for a long period is listed so that the school can contact the family.
+
+#BELTRON-013 | health centre stock and visit records
+- The stock record lists medicines and supplies with the quantity received, issued and remaining.
+- The visit record shows the number of patients seen each day, divided into new and repeat visits.
+- Both records are entered at the end of each day so that they stay up to date.
+- Shortages shown in the stock record are reported to the district store in a weekly statement.
+
+#BELTRON-014 | pension request records and verification status
+- Each pension request record holds the applicant's details, the scheme and the documents submitted.
+- Verification status is updated when the field officer confirms the applicant's age and residence.
+- Requests waiting for a document are marked pending, with the name of the missing document.
+- Approved requests move to the payment list, and the date of approval is entered in the record.
+
+#BELTRON-015 | updating contact details after document review
+- A change of address or mobile number is made only after the supporting document has been seen.
+- The old details are not erased; the system keeps them in the history of the record.
+- The date of the change and the operator's code are recorded with every update.
+- The citizen receives a message confirming that the contact details have been changed.
+
+#BELTRON-016 | a daily workload report for a DEO
+- The daily workload report shows how many records the operator entered, verified and corrected.
+- Time spent on other tasks, such as scanning or answering queries, is noted separately.
+- The report is generated from the portal and signed by the supervisor at the end of the shift.
+- Monthly totals from the daily reports are used to plan staffing for the following month.
+
+#BELTRON-017 | data transfer between office registers
+- When a manual register is replaced by a computer system, its entries are transferred in their original order.
+- Each transferred entry carries the register volume and page number from which it was copied.
+- A sample of entries is checked against the old register after every hundred lines.
+- The old register is kept safely after transfer, since it remains the original record.
+
+#BELTRON-018 | verifying numeric fields and reference IDs
+- Numeric fields such as amounts, quantities and dates are checked for the correct number of digits.
+- Reference IDs follow a fixed pattern of letters and numbers, and any ID that breaks the pattern is questioned.
+- Leading zeros in an ID are kept, because removing them changes the identifier.
+- The operator reads long numbers in groups of three or four to reduce transposition errors.
+
+#BELTRON-019 | an online form submission error log
+- The error log records each failed submission with the time, the form type and the message shown on screen.
+- Common errors include a missing mandatory field, a wrong date format and an expired session.
+- The operator corrects the cause and resubmits the form, noting the second attempt in the log.
+- Errors that keep recurring are reported to the technical team with screenshots and the log entries.
+
+#BELTRON-020 | a Bihar government service information notice
+- The notice tells citizens which services are available at the centre and the documents each one needs.
+- It gives the opening hours of the centre and the days on which it remains closed.
+- Fees, where they apply, are listed beside each service in rupees.
+- The notice ends with the helpline number and the address for complaints about service.
+
+#BELTRON-021 | a district-level table of service delivery
+- The table lists each block with the applications received, delivered within time and delivered late.
+- A column shows the percentage of applications delivered within the time limit.
+- Blocks are sorted by that percentage, so that the slowest blocks appear at the bottom.
+- The table is checked by adding each column and comparing the totals with the district report.
+
+#BELTRON-022 | scanning, naming and archiving office documents
+- Documents are scanned at a resolution that keeps small print readable when the image is enlarged.
+- Each scanned file is named with the department code, the file number and the date of the document.
+- Scanned files are stored in folders arranged by year and month.
+- A copy of every folder is backed up on a separate drive at the end of each week.
+
+#BELTRON-023 | data confidentiality and responsible record access
+- Operators access only the records needed for their assigned work.
+- Passwords are never shared, and the computer is locked whenever the operator leaves the desk.
+- Printed lists containing personal details are kept out of public view and shredded when no longer needed.
+- Any accidental disclosure is reported to the supervisor at once.
+
+#BELTRON-024 | a mixed passage of names, dates and numbers
+- This practice passage mixes personal names, dates, amounts and reference numbers in ordinary sentences.
+- The typist must keep capital letters in names and the exact spacing in dates and amounts.
+- Numbers are not rounded or shortened; each one is typed exactly as it appears.
+- Careful typists slow down slightly at each number and speed up again on plain words.
+
+#BELTRON-025 | a timed data-entry practice passage
+- The timed passage tests how steadily an operator can type without losing accuracy.
+- Short words and long reference numbers alternate, as they do in real application forms.
+- The operator should not stop to look back; it is better to keep moving and correct only when the rules allow.
+- At the end, the speed and the number of errors are both reviewed before the next attempt.

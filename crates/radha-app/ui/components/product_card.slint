@@ -29,6 +29,7 @@ import { Theme } from "../theme/palette.slint";
 import { Typography } from "../theme/typography.slint";
 import { Spacing, Radius, Elevation, Motion, Stroke } from "../theme/metrics.slint";
 import { RadhaBadge, BadgeTone } from "badge.slint";
+import { KeyDeck } from "key_deck.slint";
 
 component MetaChip inherits Rectangle {
     in property <string> label;
@@ -54,12 +55,18 @@ component MetaChip inherits Rectangle {
 }
 
 export component ProductCard inherits Rectangle {
+    /// Optional small-caps line above the title.
+    in property <string> eyebrow;
     in property <string> title;
     in property <string> subtitle;
     in property <string> description;
     in property <string> badge;
     in property <string> identity-label;
     in property <string> key-sequence;
+    /// v2 signature block: label, key caps and a right-hand note. No keys, no block.
+    in property <string> deck-label;
+    in property <[string]> deck-keys;
+    in property <string> deck-note;
     in property <string> meta-1;
     in property <string> meta-2;
     in property <string> meta-3;
@@ -77,7 +84,12 @@ export component ProductCard inherits Rectangle {
     // no `horizontal-stretch` and no `min-width`: stretch would fight the assigned
     // width, and a minimum would let a long description push the card wider than
     // its share of the row.
-    min-height: 208px;
+    // Tall enough for the longest card (3-line description + signature deck + chips +
+    // CTA). Slint cannot size a card from wrapped text at its assigned width, so the
+    // content height is stated here rather than discovered; too small and the CTA
+    // spills into the next section heading.
+    // 368 since P07: the Typing Flow card carries an eyebrow and a badge.
+    min-height: 368px;
 
     border-radius: Radius.lg;
     background: hovered ? Theme.bg-raised : Theme.bg-surface;
@@ -110,7 +122,9 @@ export component ProductCard inherits Rectangle {
         y: 0;
         width: root.width;
         height: 3px;
-        background: root.accent;
+        // Layout cards carry their own identity colour on the bar (DV-02); the
+        // title accent and CTA keep the family colour.
+        background: root.identity-label != "" ? root.identity-accent : root.accent;
         border-top-left-radius: Radius.lg;
         border-top-right-radius: Radius.lg;
     }
@@ -120,7 +134,17 @@ export component ProductCard inherits Rectangle {
         padding-top: Spacing.xl + 3px; // clear the accent bar
         spacing: Spacing.sm;
 
-        // --- Title ----------------------------------------------------------
+        // --- Eyebrow + title ------------------------------------------------
+        if root.eyebrow != "": Text {
+            text: root.eyebrow;
+            font-family: Typography.family-mono;
+            font-size: Typography.size-micro;
+            font-weight: Typography.weight-semibold;
+            letter-spacing: Typography.tracking-wide;
+            color: root.accent;
+            overflow: elide;
+        }
+
         Text {
             text: root.title;
             font-family: Typography.family-ui;
@@ -193,6 +217,57 @@ export component ProductCard inherits Rectangle {
             }
         }
 
+        // --- Signature deck (v2) ---------------------------------------------
+        // A labelled row of key caps. This is what makes the cards in one section
+        // look different while keeping a single card structure.
+        //
+        // Built from absolutely positioned children inside a fixed-height, clipped
+        // Rectangle on purpose. As a layout of caps and labels it reported its full
+        // natural width as the card's MINIMUM width, so three cards demanded ~1190 px
+        // and the whole Home screen was laid out wider than a 1024 px window (header
+        // and right-hand cards clipped). Absolute children contribute no minimum, so
+        // the card keeps the width the grid assigns it. The caps are sized to fit the
+        // narrowest card (about 309 px); `clip` is only a safety net.
+        if root.deck-keys.length > 0: Rectangle {
+            height: 68px;
+            background: Theme.bg-sunken;
+            border-radius: Radius.md;
+            clip: true;
+
+            Text {
+                x: Spacing.md;
+                y: Spacing.md;
+                width: (parent.width - Spacing.md * 2) * 0.55;
+                text: root.deck-label;
+                font-family: Typography.family-mono;
+                font-size: Typography.size-micro;
+                font-weight: Typography.weight-semibold;
+                letter-spacing: Typography.tracking-wide;
+                color: Theme.text-tertiary;
+                overflow: elide;
+            }
+
+            Text {
+                x: parent.width * 0.55;
+                y: Spacing.md;
+                width: parent.width * 0.45 - Spacing.md;
+                text: root.deck-note;
+                font-family: Typography.family-ui;
+                font-size: Typography.size-micro;
+                font-weight: Typography.weight-semibold;
+                color: root.identity-label != "" ? root.identity-accent : root.accent;
+                horizontal-alignment: right;
+                overflow: elide;
+            }
+
+            KeyDeck {
+                x: Spacing.md;
+                y: Spacing.md + 20px;
+                width: parent.width - Spacing.md * 2;
+                keys: root.deck-keys;
+                accent: root.identity-label != "" ? root.identity-accent : root.accent;
+            }
+        }
         // Pushes the metadata and CTA to the bottom so every card in a row aligns.
         Rectangle {
             vertical-stretch: 1;

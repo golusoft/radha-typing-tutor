@@ -23,6 +23,8 @@ export enum BadgeTone {
     Success,
     Warning,
     Error,
+    // Plum wash — the "Practice only" verification level (DESIGN.md 20.5).
+    Secondary,
 }
 
 export component RadhaBadge inherits Rectangle {
@@ -43,6 +45,7 @@ export component RadhaBadge inherits Rectangle {
         : tone == BadgeTone.Success ? Theme.success
         : tone == BadgeTone.Warning ? Theme.warning
         : tone == BadgeTone.Error ? Theme.error
+        : tone == BadgeTone.Secondary ? Theme.secondary
         : Theme.text-secondary;
 
     property <color> tone-bg:
@@ -51,6 +54,7 @@ export component RadhaBadge inherits Rectangle {
         : tone == BadgeTone.Success ? Theme.success-subtle
         : tone == BadgeTone.Warning ? Theme.warning-subtle
         : tone == BadgeTone.Error ? Theme.error-subtle
+        : tone == BadgeTone.Secondary ? Theme.secondary-subtle
         : Theme.bg-sunken;
 
     height: 22px;

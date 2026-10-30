@@ -30,6 +30,54 @@ const APPLICATION: &str = "Radha Typing Tutor";
 pub struct AppPaths {
     data_dir: PathBuf,
     config_dir: PathBuf,
+    /// Read-only exercise bundles shipped with the app (`content/exercises`).
+    content_dir: PathBuf,
+}
+
+/// Where the shipped exercise bundles are: `content/exercises` beside the
+/// executable when installed, else the workspace copy (development builds).
+fn bundled_content_dir() -> PathBuf {
+    let relative = Path::new("content").join("exercises");
+    if let Some(beside_exe) = std::env::current_exe()
+        .ok()
+        .and_then(|exe| exe.parent().map(|dir| dir.join(&relative)))
+        .filter(|dir| dir.is_dir())
+    {
+        return beside_exe;
+    }
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("..")
+        .join("..")
+        .join(relative)
+}
+
+/// Replace `path` with `bytes` without ever leaving it half written: write
+/// a sibling temp file, flush it to disk, then rename it over `path` (an
+/// atomic replace on NTFS). A power cut mid-save leaves the old file, not a
+/// torn one that the next launch would have to quarantine or discard.
+///
+/// # Errors
+///
+/// The I/O error; `path` is then unchanged.
+pub fn write_replace(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
+    use std::io::Write;
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let mut name = path.file_name().unwrap_or_default().to_os_string();
+    name.push(".tmp");
+    let tmp = path.with_file_name(name);
+    let written = (|| {
+        let mut f = std::fs::File::create(&tmp)?;
+        f.write_all(bytes)?;
+        f.sync_all()?;
+        drop(f);
+        std::fs::rename(&tmp, path)
+    })();
+    if written.is_err() {
+        let _ = std::fs::remove_file(&tmp);
+    }
+    written
 }
 
 impl AppPaths {
@@ -50,6 +98,7 @@ impl AppPaths {
         Ok(AppPaths {
             data_dir: dirs.data_dir().to_path_buf(),
             config_dir: dirs.config_dir().to_path_buf(),
+            content_dir: bundled_content_dir(),
         })
     }
 
@@ -65,7 +114,14 @@ impl AppPaths {
         AppPaths {
             data_dir: root.join("data"),
             config_dir: root.join("config"),
+            content_dir: root.join("content").join("exercises"),
         }
+    }
+
+    /// Directory of the shipped exercise bundles (read-only).
+    #[must_use]
+    pub fn content_dir(&self) -> &Path {
+        &self.content_dir
     }
 
     /// Directory for persistent data (database, logs).
@@ -144,6 +200,28 @@ mod tests {
     fn logs_live_under_the_data_directory() {
         let paths = AppPaths::rooted_at("C:/tmp/radha");
         assert!(paths.log_dir().starts_with(paths.data_dir()));
+    }
+
+    #[test]
+    fn write_replace_swaps_the_whole_file_and_leaves_no_temp() {
+        let temp = tempfile::tempdir().unwrap();
+        let path = temp.path().join("sub").join("settings.toml");
+        write_replace(&path, b"theme = \"dark\"\n").unwrap();
+        assert_eq!(std::fs::read(&path).unwrap(), b"theme = \"dark\"\n");
+        write_replace(&path, b"x").unwrap();
+        assert_eq!(std::fs::read(&path).unwrap(), b"x");
+        let names: Vec<_> = std::fs::read_dir(path.parent().unwrap())
+            .unwrap()
+            .map(|e| e.unwrap().file_name())
+            .collect();
+        assert_eq!(names, vec![std::ffi::OsString::from("settings.toml")]);
+        // A failing replace (the target is a directory) keeps what is there
+        // and cleans its temp file up.
+        let dir = temp.path().join("busy");
+        std::fs::create_dir_all(dir.join("keep")).unwrap();
+        assert!(write_replace(&dir, b"y").is_err());
+        assert!(dir.join("keep").is_dir());
+        assert!(!temp.path().join("busy.tmp").exists());
     }
 
     #[test]

@@ -1,0 +1,151 @@
+// RHC — Rajasthan High Court LDC / JJA (fictional Principal Registry, Marudhar Judicial Complex)
+
+#RHC-001 | daily cause list preparation and verification
+- The cause list is prepared from the list of matters fixed for each court on the next working day.
+- Each entry shows the serial number, the case number, the names of the parties and the advocates.
+- The draft list is compared with the case register to make sure no matter is left out.
+- The final list is published by the evening of the previous day.
+
+#RHC-002 | the case filing counter and its document checklist
+- At the filing counter, the clerk checks that the memo of parties, the index and the court fee are in order.
+- Copies of impugned orders must be attached and legible.
+- Defects are recorded on a defect memo, and the date for removing them is noted.
+- A filing that meets every requirement receives a filing number at once.
+
+#RHC-003 | civil case file indexing and pagination
+- The civil case file is arranged in the order of the documents listed in its index.
+- Pages are numbered in a single series from the first page of the plaint.
+- Each annexure carries its own mark, such as Annexure-3, in addition to the page number.
+- The index is signed and dated by the clerk who prepared it.
+
+#RHC-004 | receipt and registration of a court petition
+- A petition received in the registry is entered in the institution register with its date of receipt.
+- The registration number is given after scrutiny shows that the petition is complete.
+- The petition is then placed before the court according to the listing rules.
+- The petitioner can check the registration number on the court website the same day.
+
+#RHC-005 | summons preparation and a dispatch register
+- A summons names the court, the case, the party summoned and the date and time of appearance.
+- Summonses are prepared from the order sheet and checked against it before signature.
+- The dispatch register records the mode of service and the date of dispatch for each summons.
+- Returned summonses are attached to the file with the report of service.
+
+#RHC-006 | a certified copy application and its fee receipt
+- An application for a certified copy names the case, the document and the number of copies required.
+- The copying fee is calculated by the number of pages and receipted at the counter.
+- The receipt number is written on the application so that payment can be traced.
+- The copy is delivered against the applicant's signature in the delivery register.
+
+#RHC-007 | entering a court order in the case register
+- After a court passes an order, the gist of the order is entered in the case register.
+- The next date of hearing, if fixed, is entered in the same line.
+- The entry is checked against the signed order sheet.
+- The electronic case status is updated so that parties can see the change.
+
+#RHC-008 | listing a matter for the next hearing
+- A matter is listed for the date fixed by the court in its last order.
+- Matters on the same date are arranged according to their category and age.
+- Advocates are informed through the published cause list.
+- A matter that cannot be listed on the fixed date is shown with the reason in the listing register.
+
+#RHC-009 | a court fee record and document verification
+- The court fee paid on a filing is recorded with the amount and the receipt or stamp details.
+- The clerk checks the fee against the schedule for that type of proceeding.
+- Any shortfall is noted in the defect memo with the exact amount due.
+- Verified fees are marked in the register with the clerk's initials.
+
+#RHC-010 | a registry objection memo and its compliance status
+- An objection memo lists each defect found in a filing in a separate numbered point.
+- The advocate is given a fixed time to remove the defects.
+- The compliance status column records the date on which each defect was cured.
+- Filings with defects left uncured after the time allowed are placed before the registrar.
+
+#RHC-011 | a judicial file movement register
+- The file movement register records each transfer of a case file between sections or courts.
+- Every entry shows the date, the time, the sending section and the receiving section.
+- The receiving clerk signs for the file at the time of transfer.
+- The register makes it possible to trace any file within minutes.
+
+#RHC-012 | court staff duty roster and attendance
+- The duty roster assigns readers, clerks and process staff to each court for the week.
+- Attendance is marked every morning, and absences are covered by reserve staff.
+- Leave applications are submitted in advance, except in emergencies.
+- The roster is approved by the registrar and displayed in the staff room.
+
+#RHC-013 | maintaining a record of pending applications
+- The record of pending applications lists every application awaiting orders with its filing date.
+- Applications are grouped by the court before which they are pending.
+- The age of each application is worked out in days from the filing date.
+- The oldest applications are reported to the registrar every month.
+
+#RHC-014 | a notice of court working hours and holidays
+- The notice states the hours during which courts sit and offices remain open.
+- It lists the holidays of the year with their dates and days of the week.
+- Arrangements for urgent matters during holidays are explained in a separate paragraph.
+- The notice is issued at the start of the year and displayed at every entrance.
+
+#RHC-015 | preparing a summary of court proceedings
+- A proceedings summary records what happened in a matter on a given date.
+- It notes the appearance of advocates, the submissions heard in brief and the order passed.
+- The summary uses neutral language and does not comment on the merits.
+- It is checked against the order sheet before being placed on the file.
+
+#RHC-016 | civil court administration in general
+- Civil court administration depends on clear records, fixed procedures and timely listing.
+- The registry receives, scrutinises and registers cases before they reach the court.
+- Process staff serve summonses and notices so that parties can appear on time.
+- Good administration helps the court spend its time on hearing cases rather than on paperwork.
+
+#RHC-017 | indexing annexures and supporting documents
+- Annexures are listed in the index in the order in which they are referred to in the petition.
+- Each annexure is marked on its first page with its number and the page range.
+- Annexures that are copies are certified as true copies by the advocate.
+- An annexure filed later is added to the index with the date of filing.
+
+#RHC-018 | updating case status in an electronic register
+- The electronic register shows the stage, the next date and the last order of every case.
+- The clerk updates the register on the same day the order is passed.
+- Each update is checked against the paper record before it is saved.
+- Errors noticed by litigants are corrected only after the record has been verified.
+
+#RHC-019 | record retention and archive transfer
+- Disposed case files are transferred to the record room according to a fixed schedule.
+- The transfer list shows each file with its case number, the date of disposal and the number of pages.
+- The record room acknowledges receipt by signing the transfer list.
+- Files are kept for the period prescribed for their class and then reviewed.
+
+#RHC-020 | the confidentiality of judicial records
+- Judicial records are inspected only by persons entitled to see them under the rules.
+- Sealed covers are opened only on the court's direction.
+- Staff do not share information about pending matters with outsiders.
+- Copies of records are issued only through the copying section.
+
+#RHC-021 | a formal letter from the court registry
+- A letter from the registry carries a reference number, the date and the name of the receiving office.
+- The subject line refers to the case or the administrative matter concerned.
+- The body of the letter conveys the court's direction or the registry's request precisely.
+- The letter is signed by the officer authorised to sign on behalf of the registry.
+
+#RHC-022 | e-courts and digital filing
+- Digital filing allows advocates to submit petitions online with scanned documents.
+- Each e-filing receives a provisional number until scrutiny is complete.
+- Court fee for an e-filing can be paid online, and the receipt is attached to the filing.
+- Digital records reduce the movement of paper files between sections.
+
+#RHC-023 | typing accuracy with case numbers and dates
+- Case numbers combine a type, a running number and a year, such as a civil writ number with its year.
+- A single wrong digit in a case number can send a paper to the wrong file.
+- Dates of hearing must be typed exactly as fixed in the order sheet.
+- Typists check every case number twice before moving to the next line.
+
+#RHC-024 | legal vocabulary of petition, order, hearing and appeal
+- A petition is the formal request by which a party asks the court for relief.
+- An order is the direction issued by the court on a matter before it.
+- A hearing is the sitting at which the court listens to the parties or their advocates.
+- An appeal is a request to a higher court to examine the decision of a lower court.
+
+#RHC-025 | an English typing practice passage for a high court registry
+- This practice passage reflects the letters, lists and registers typed in a high court registry.
+- It includes legal words, case numbers and dates in formal sentences.
+- The typist should maintain accuracy throughout, since court records allow no careless errors.
+- The court, the parties and the numbers in the passage are fictional.

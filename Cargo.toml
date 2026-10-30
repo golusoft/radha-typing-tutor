@@ -7,6 +7,8 @@ members = [
     "crates/radha-content",
     "crates/radha-db",
     "crates/radha-analytics",
+    "crates/radha-exams",
+    "tools/import-golu-content",
 ]
 
 # ---------------------------------------------------------------------------
@@ -30,6 +32,7 @@ radha-layouts = { path = "crates/radha-layouts" }
 radha-content = { path = "crates/radha-content" }
 radha-db = { path = "crates/radha-db" }
 radha-analytics = { path = "crates/radha-analytics" }
+radha-exams = { path = "crates/radha-exams" }
 
 # Error handling (Task 3)
 thiserror = "1.0.69"
@@ -87,6 +90,69 @@ strip = true
 panic = "abort"
 debug = false
 incremental = false
+
+# Per-package size exception (keeps the exe under the 20MB budget): crates that
+# are NOT on the keystroke or render hot path (app glue + generated UI code,
+# startup/IO: compression, hashing, SQLite, config, logging, image decoding)
+# build with "s". radha-core, radha-layouts and every slint/i-slint-* crate
+# keep opt-level 3.
+[profile.release.package.radha-app]
+opt-level = "s"
+[profile.release.package.miniz_oxide]
+opt-level = "s"
+[profile.release.package.sha2]
+opt-level = "s"
+[profile.release.package.rusqlite]
+opt-level = "s"
+[profile.release.package.libsqlite3-sys]
+opt-level = "s"
+[profile.release.package.toml]
+opt-level = "s"
+[profile.release.package.toml_edit]
+opt-level = "s"
+[profile.release.package.toml_parser]
+opt-level = "s"
+[profile.release.package.toml_writer]
+opt-level = "s"
+[profile.release.package.serde_json]
+opt-level = "s"
+[profile.release.package.env_logger]
+opt-level = "s"
+[profile.release.package.regex]
+opt-level = "s"
+[profile.release.package.regex-automata]
+opt-level = "s"
+[profile.release.package.regex-syntax]
+opt-level = "s"
+[profile.release.package.directories]
+opt-level = "s"
+[profile.release.package.image]
+opt-level = "s"
+[profile.release.package.png]
+opt-level = "s"
+[profile.release.package.gif]
+opt-level = "s"
+[profile.release.package.image-webp]
+opt-level = "s"
+[profile.release.package.zune-jpeg]
+opt-level = "s"
+# Screen-change / startup only (database, aggregates, content loading,
+# compression, date formatting): never on the keystroke or render path.
+[profile.release.package.radha-db]
+opt-level = "s"
+[profile.release.package.radha-analytics]
+opt-level = "s"
+[profile.release.package.radha-content]
+opt-level = "s"
+# Exam profiles: parsed once at startup, scored once per result.
+[profile.release.package.radha-exams]
+opt-level = "s"
+[profile.release.package.flate2]
+opt-level = "s"
+[profile.release.package.crc32fast]
+opt-level = "s"
+[profile.release.package.chrono]
+opt-level = "s"
 
 [profile.release-debuginfo]
 # Release-speed build that keeps symbols, for profiling on low-end hardware.

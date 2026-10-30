@@ -1,0 +1,238 @@
+// ============================================================================
+// Exam catalogue — the data behind the Home "Exam Hub"
+// ============================================================================
+//
+// Presentation only. Exam rules live in the `radha-exams` crate as data-driven
+// ExamProfiles (RULES.MD Rule 31, crates/radha-exams/profiles/*.toml; one profile
+// per card, same id). At startup Rust rewrites each card's `eng-speed`,
+// `hin-speed`, `rule` and `level` from its profile (`ui::apply_exam_profiles`);
+// the literals below are the fallback and are kept equal to the derived values
+// by a test (tests/exam_mode_p09.rs).
+//
+// Honesty rules applied here (RULES.MD Rule 32):
+//
+//   * A rule value appears on a card ONLY if it comes from a notification or from
+//     Golu's own statement of a verified rule. Everything else is "—".
+//   * The speeds shown in the reference mock-up (design-reference/01-home.html) for
+//     SSC, RRB, UPSSSC, CPCT, RSSB, Delhi Police, AIIMS, DSSSB, UP Police, CRPF,
+//     CAPF, UPPCL and the High Courts are UNVERIFIED claims and are deliberately
+//     NOT displayed. They are `reference_claims` in each profile, always
+//     unverified and never applied as rules.
+//   * `level` is the certification level the card advertises:
+//       "official"    all required fields verified          (none yet)
+//       "provisional" thresholds known, other fields not    (Patna HC, BELTRON)
+//       "practice"    thresholds unknown, no pass/fail
+//
+// Sources:
+//   Patna HC COT 2026  - High Court advertisement, Annexure-I (EXAM-MODE plan S-03)
+//   BELTRON DEO        - rules stated by Golu; primary document still pending (X-03)
+//   Bihar Civil Court  - no typing-test rule found for Employment Notice 01/2022
+//   BSSC Inter-Level   - advertisement-by-advertisement; primary PDFs pending (X-04)
+//
+// The `category` values drive the Exam Hub filter: "central", "state", "court".
+// `accent` is a token name resolved by `Accents` in products.slint.
+// ============================================================================
+
+export struct ExamEntry {
+    /// Stable id, used for launch callbacks and (later) the profile registry key.
+    id: string,
+    /// 2-5 letter seal text.
+    crest: string,
+    /// Department / cadre line shown above the title.
+    dept: string,
+    /// Short qualifier chip text.
+    tag: string,
+    title: string,
+    org: string,
+    description: string,
+    /// "—" when not verified.
+    eng-speed: string,
+    hin-speed: string,
+    font-layout: string,
+    /// One-line summary of the test rule, or why none is shown.
+    rule: string,
+    /// "central" | "state" | "court"
+    category: string,
+    /// Accent token name.
+    accent: string,
+    /// "official" | "provisional" | "practice"
+    level: string,
+    /// Hindi only (no English launcher); typed on the Mangal Unicode
+    /// layouts InScript, Remington GAIL and Remington CBI. Entries that omit
+    /// it are bilingual.
+    hindi-only: bool,
+}
+
+export global Exams {
+    out property <[ExamEntry]> all: [
+        // ---- All-in-One Mangal (first card, P09 A7) ------------------------
+        // The passage count in `hin-speed` is rewritten at startup from the
+        // installed Hindi pool (ui.rs), never trusted from this literal.
+        {
+            id: "all-in-one-mangal", crest: "HIN", dept: "MANGAL UNICODE", tag: "Hindi only",
+            title: "All-in-One Mangal Unicode Hindi Exam", org: "Shared Hindi master exam pool",
+            description: "Hindi exam practice on Mangal Unicode. Choose InScript, Remington GAIL or Remington CBI.",
+            eng-speed: "Not offered", hin-speed: "—", font-layout: "Mangal · InScript / GAIL / CBI",
+            rule: "Practice only — no pass / fail", category: "hindi", accent: "success", level: "practice",
+            hindi-only: true,
+        },
+
+        // ---- Central ------------------------------------------------------
+        {
+            id: "ssc-chsl", crest: "SSC", dept: "CHSL · LDC / JSA", tag: "Skill test",
+            title: "SSC CHSL — LDC / JSA", org: "Staff Selection Commission",
+            description: "Typing skill-test practice for LDC and JSA posts, in English and Hindi.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "central", accent: "primary", level: "practice",
+        },
+        {
+            id: "rrb-ntpc", crest: "RRB", dept: "INDIAN RAILWAYS", tag: "Skill test",
+            title: "RRB NTPC", org: "Railway Recruitment Board",
+            description: "Typing skill-test practice for NTPC undergraduate and graduate posts.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "central", accent: "accent", level: "practice",
+        },
+        {
+            id: "ssc-cgl-dest", crest: "DEST", dept: "SSC CGL TIER-II", tag: "Data entry",
+            title: "SSC CGL — DEST Module", org: "Staff Selection Commission",
+            description: "Data Entry Speed Test practice measured in key depressions.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English",
+            rule: "Rules pending verification", category: "central", accent: "secondary", level: "practice",
+        },
+        {
+            id: "aiims-cre", crest: "AIIMS", dept: "MEDICAL CADRE", tag: "CRE",
+            title: "AIIMS CRE — Clerical Posts", org: "All India Institute of Medical Sciences",
+            description: "Common Recruitment Examination typing practice for clerical posts.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "central", accent: "success", level: "practice",
+        },
+        {
+            id: "crpf-hcm", crest: "CRPF", dept: "PARAMILITARY", tag: "Head Constable",
+            title: "CRPF Head Constable (Min.)", org: "Central Reserve Police Force",
+            description: "Ministerial cadre typing practice for Head Constable posts.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "central", accent: "primary", level: "practice",
+        },
+        {
+            id: "capf-hcm", crest: "CAPF", dept: "BSF / CISF / ITBP", tag: "Head Constable",
+            title: "BSF / CAPF HC (Ministerial)", org: "Central Armed Police Forces",
+            description: "Shared ministerial practice pool for the central armed police forces.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "central", accent: "accent", level: "practice",
+        },
+        {
+            id: "epfo-ssa", crest: "EPFO", dept: "LABOUR MINISTRY", tag: "Skill test",
+            title: "EPFO Social Security Asst", org: "Employees Provident Fund Organisation",
+            description: "Computer skill-test practice for Social Security Assistant posts.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "central", accent: "secondary", level: "practice",
+        },
+
+        // ---- State and police ---------------------------------------------
+        {
+            id: "upsssc-ja", crest: "UP", dept: "UPSSSC LUCKNOW", tag: "Junior Assistant",
+            title: "UPSSSC Junior Assistant", org: "UP Subordinate Services Selection Commission",
+            description: "Junior Assistant typing practice in English and Hindi.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "state", accent: "success", level: "practice",
+        },
+        {
+            id: "mp-cpct", crest: "CPCT", dept: "MAP_IT BHOPAL", tag: "Proficiency",
+            title: "MP CPCT — Proficiency Test", org: "MAP_IT Madhya Pradesh",
+            description: "Computer proficiency typing practice for Madhya Pradesh recruitment.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "state", accent: "primary", level: "practice",
+        },
+        {
+            id: "rajasthan-rssb", crest: "RSSB", dept: "JAIPUR CADRE", tag: "LDC & IA",
+            title: "Rajasthan RSSB — LDC & IA", org: "Rajasthan Staff Selection Board",
+            description: "Lower Division Clerk and Informatics Assistant typing practice.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "state", accent: "accent", level: "practice",
+        },
+        {
+            id: "delhi-police-hcm", crest: "DP", dept: "DELHI POLICE", tag: "Head Constable",
+            title: "Delhi Police HC (Ministerial)", org: "Delhi Police",
+            description: "Ministerial Head Constable typing practice.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "state", accent: "secondary", level: "practice",
+        },
+        {
+            id: "dsssb", crest: "DL", dept: "DSSSB DELHI", tag: "LDC & JJA",
+            title: "DSSSB LDC & Junior Judicial Asst", org: "Delhi Subordinate Services Selection Board",
+            description: "Post-specific typing practice for Delhi clerical and judicial assistants.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "state", accent: "success", level: "practice",
+        },
+        {
+            id: "beltron-deo", crest: "BLT", dept: "BSEDC BIHAR", tag: "Bihar DEO",
+            title: "BELTRON Bihar — DEO", org: "Bihar State Electronics Development Corp.",
+            description: "Data Entry Operator practice. Speeds are counted as correct words per minute.",
+            eng-speed: "30 WPM", hin-speed: "25 WPM", font-layout: "QWERTY · Mangal + Remington Gail",
+            rule: "Duration: to verify · 30 / 25 correct WPM", category: "state", accent: "accent", level: "provisional",
+        },
+        {
+            id: "bssc-inter", crest: "BSSC", dept: "BIHAR STAFF SELECTION", tag: "Inter-Level",
+            title: "BSSC Inter-Level", org: "Bihar Staff Selection Commission",
+            description: "Typing-test posts only, organised by advertisement and cycle.",
+            eng-speed: "—", hin-speed: "—", font-layout: "Per advertisement",
+            rule: "Primary advertisement pending", category: "state", accent: "primary", level: "practice",
+        },
+        {
+            id: "up-police-asi", crest: "UPP", dept: "UPPRPB LUCKNOW", tag: "ASI & Computer Op.",
+            title: "UP Police ASI & Computer Op.", org: "UP Police Recruitment and Promotion Board",
+            description: "Ministerial ASI and Computer Operator typing practice.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "state", accent: "secondary", level: "practice",
+        },
+        {
+            id: "uppcl", crest: "PCL", dept: "UP POWER CORP", tag: "Clerical",
+            title: "UPPCL Executive Asst & Clerk", org: "UP Power Corporation Limited",
+            description: "Clerical typing practice for the power-sector recruitment.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "state", accent: "success", level: "practice",
+        },
+
+        // ---- High courts and judiciary ------------------------------------
+        {
+            id: "patna-hc", crest: "PHC", dept: "PATNA HIGH COURT", tag: "Notification-backed",
+            title: "Patna High Court — COT 2026", org: "High Court of Judicature at Patna",
+            description: "Computer Operator-cum-Typist 2026. Hindi uses Remington Gail on Mangal.",
+            eng-speed: "40 WPM · 400 words", hin-speed: "30 WPM · 300 words",
+            font-layout: "QWERTY · Remington Gail + Mangal",
+            rule: "10 min · min 90 / 85 marks", category: "court", accent: "secondary", level: "provisional",
+        },
+        {
+            id: "bihar-civil-court", crest: "BCC", dept: "CIVIL COURTS BIHAR", tag: "Unofficial practice",
+            title: "Bihar Civil Court — Clerk", org: "Civil Courts of Bihar · Notice 01/2022",
+            description: "General typing practice. No official typing-test rule has been verified for this notice.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Practice only — no pass / fail", category: "court", accent: "success", level: "practice",
+        },
+        {
+            id: "rajasthan-hc", crest: "RHC", dept: "JODHPUR / JAIPUR", tag: "LDC / JJA",
+            title: "Rajasthan High Court — LDC / JJA", org: "High Court of Rajasthan",
+            description: "Court-style passages for clerical and judicial assistant posts.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "court", accent: "primary", level: "practice",
+        },
+        {
+            id: "allahabad-hc", crest: "AHC", dept: "PRAYAGRAJ BENCH", tag: "Group-C",
+            title: "Allahabad High Court — Group-C", org: "High Court of Judicature at Allahabad",
+            description: "Group-C clerical typing practice, kept separate from RO / ARO rules.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "court", accent: "accent", level: "practice",
+        },
+        {
+            id: "mp-hc", crest: "MPHC", dept: "JABALPUR BENCH", tag: "JJA & AG-3",
+            title: "MP High Court — JJA & AG-3", org: "High Court of Madhya Pradesh",
+            description: "Judgment and general passages for JJA and Assistant Grade-3 posts.",
+            eng-speed: "—", hin-speed: "—", font-layout: "English · Hindi",
+            rule: "Rules pending verification", category: "court", accent: "secondary", level: "practice",
+        },
+    ];
+
+    /// What the Hub currently displays. Rust rewrites this when the search text or
+    /// the category filter changes; it starts as everything.
+    in-out property <[ExamEntry]> shown: all;
+}

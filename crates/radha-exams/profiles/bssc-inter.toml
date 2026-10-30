@@ -1,0 +1,72 @@
+# BSSC Inter-Level — organised by advertisement, cycle and typing-required
+# post. No primary advertisement has been read (X-04), so speed, duration,
+# layout and qualification are Unknown and the profile is PracticeOnly.
+# A new advertisement is a new [[cycles]] entry, not a code change.
+# Disputed coaching figures are NOT rules: they appear only as
+# reference_claims below (G-02, R10). Vacancy counts are not stored (G-10).
+schema_version = 1
+id = "bssc-inter"
+profile_version = 1
+display_name = "BSSC Inter-Level"
+body = "Bihar Staff Selection Commission"
+
+[notice]
+title = "Inter-Level combined competitive examination (typing-test posts only)"
+note = "Primary advertisements and skill-test notices pending (X-04, X-05)."
+
+[[sources]]
+id = "S-05"
+kind = "primary"
+title = "BSSC tender 752_21: typing / steno / proficiency tests are held on computers (no speed or rule)"
+url = "https://bssc.bihar.gov.in/Advertisement/752_21.pdf"
+read = true
+
+[[sources]]
+id = "S-12"
+kind = "secondary"
+title = "Testbook — BSSC Inter Level"
+url = "https://testbook.com/bssc-inter-level/"
+read = true
+
+[[sources]]
+id = "S-14"
+kind = "secondary"
+title = "Jagran Josh — BSSC Inter Level 2025 posts"
+read = true
+
+[[sources]]
+id = "S-15"
+kind = "secondary"
+title = "FreeJobAlert — BSSC LDC & Welfare Organiser typing test"
+url = "https://www.freejobalert.com/articles/bssc-welfare-organiser-and-ldc-typing-test-date-2026-3036933"
+read = true
+
+[[cycles]]
+advertisement = "02/23"
+label = "Inter-Level advertisement 02/23 (applications 2025-26)"
+note = "Typing-required posts per secondary sources S-12 and S-14; primary advertisement pending."
+posts = [
+    { name = "Lower Division Clerk", typing_required = { status = "configurable", default = true, note = "secondary sources; primary pending (X-04)" } },
+    { name = "Clerk-cum-Typist", typing_required = { status = "configurable", default = true, note = "secondary sources; primary pending (X-04)" } },
+    { name = "Bench Clerk", typing_required = { status = "configurable", default = true, note = "secondary sources; primary pending (X-04)" } },
+]
+
+[[cycles]]
+advertisement = "02/25"
+label = "LDC & Welfare Organiser (typing test date per secondary source S-15)"
+note = "Primary advertisement pending."
+posts = [
+    { name = "Lower Division Clerk", typing_required = { status = "configurable", default = true, note = "secondary source S-15; primary pending (X-04)" } },
+]
+
+[[tests]]
+language = "english"
+scoring = "practice_only"
+
+[[tests]]
+language = "hindi"
+scoring = "practice_only"
+
+[[reference_claims]]
+claim = "English 35 WPM, Hindi 30 WPM, 10 min, Backspace allowed (marked 'Verified Official' in the Expert AI research doc without a primary source; coaching-level figure)"
+source = "Golu Typing Expert AI docs/enterprise-exam-requirements-research.md (I-01)"
