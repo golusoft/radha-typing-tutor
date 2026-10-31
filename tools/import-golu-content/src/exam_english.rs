@@ -549,7 +549,7 @@ const RECORDS: [&str; 20] = [
     "The tally for {weekday} stood at {total} papers: {done} processed by {time2} and {pending} kept for the next day.",
     "Reference {ref} was entered as serial {n} with the date {date} and the time {time}, exactly as written on the slip.",
     "The cover sheet of {ref2} gave the count as {k} enclosures, and {name2} found the same number inside.",
-    "Between {time} and {time2}, the {section} entered {total} records, an average of about {avg} each hour.",
+    "Between {time} and {time2}, the {section} entered {total} records, an average of {avg} each hour.",
     "The dispatch line for serial {n} read: {ref}, {k} pages, sent on {date} to the {section2}.",
     "{name1} typed reference {ref2} into the register as entry {n}, then read it back digit by digit.",
     "The monthly sheet for {month} closed at {total} items, with {pending} awaiting a reply and {done} completed.",
@@ -721,6 +721,18 @@ fn clock(minutes: i64) -> String {
     format!("{h12}:{m:02} {half}")
 }
 
+/// Records per hour for `total` records keyed over `minutes` minutes,
+/// rounded half up from the exact minutes. "about" marks a rounded figure.
+fn hourly_average(total: i64, minutes: i64) -> String {
+    let minutes = minutes.max(1);
+    let rounded = (total * 60 + minutes / 2) / minutes;
+    if total * 60 % minutes == 0 {
+        rounded.to_string()
+    } else {
+        format!("about {rounded}")
+    }
+}
+
 fn ordinal(n: i64) -> String {
     let suffix = match (n % 10, n % 100) {
         (1, 11) | (2, 12) | (3, 13) => "th",
@@ -845,7 +857,7 @@ pub fn compose(
     let k = range(&mut r, 4, 19);
     let units = range(&mut r, 3, 48);
     let unit_paise = range(&mut r, 1_200, 98_000) / 5 * 5;
-    let hours = ((t2 - t1) / 60).max(1);
+    let avg = hourly_average(total, t2 - t1);
     // Exact when it is a whole number, otherwise rounded and said so.
     let pct = if done * 100 % total == 0 {
         format!("{}", done * 100 / total)
@@ -885,7 +897,7 @@ pub fn compose(
     vals.insert("k", k.to_string());
     vals.insert("km1", (k - 1).to_string());
     vals.insert("m", range(&mut r, 6, 25).to_string());
-    vals.insert("avg", (total / hours).to_string());
+    vals.insert("avg", avg);
     vals.insert("amount", rupees(range(&mut r, 50_000, 9_999_999) / 5 * 5));
     vals.insert("unit", rupees(unit_paise));
     vals.insert("extended", rupees(unit_paise * units));
@@ -1154,6 +1166,11 @@ mod tests {
     fn helpers() {
         assert_eq!(clock(9 * 60 + 5), "9:05 a.m.");
         assert_eq!(clock(13 * 60 + 30), "1:30 p.m.");
+        // 81 records from 11:10 a.m. to 2:05 p.m. is 27.8 an hour, and
+        // 57 records from 9:15 a.m. to 2:00 p.m. is exactly 12.
+        assert_eq!(hourly_average(81, 175), "about 28");
+        assert_eq!(hourly_average(57, 285), "12");
+        assert_eq!(hourly_average(60, 180), "20");
         assert_eq!(ordinal(11), "11th");
         assert_eq!(ordinal(22), "22nd");
         assert_eq!(rupees(1_234_550), "12,345.50");

@@ -108,6 +108,67 @@ fn the_english_exam_pool_is_the_title_bank_1_to_500() {
     }
 }
 
+/// "9:15 a.m." / "2:05 p.m." as minutes after midnight.
+fn clock_minutes(s: &str) -> Option<i64> {
+    let (hm, half) = s.trim().split_once(' ')?;
+    let (h, m) = hm.split_once(':')?;
+    let (h, m): (i64, i64) = (h.parse().ok()?, m.parse().ok()?);
+    let h = match (half, h) {
+        ("a.m.", 12) => 0,
+        ("a.m.", h) => h,
+        ("p.m.", 12) => 12,
+        ("p.m.", h) => h + 12,
+        _ => return None,
+    };
+    Some(h * 60 + m)
+}
+
+#[test]
+fn english_exam_hourly_averages_match_their_times() {
+    // "Between {t1} and {t2}, the {section} entered {n} records, an average
+    // of [about ]{avg} each hour." The figure must be the true rate within
+    // 0.5, and only a rounded figure may say "about".
+    let mut checked = 0;
+    for e in &load(ENGLISH_POOL).exercises {
+        for part in e.content.split("Between ").skip(1) {
+            let Some((sentence, _)) = part.split_once(" each hour.") else {
+                continue;
+            };
+            let Some((times, rest)) = sentence.split_once(", the ") else {
+                continue;
+            };
+            let Some((rest, avg)) = rest.split_once(" records, an average of ") else {
+                continue;
+            };
+            let (t1, t2) = times.split_once(" and ").expect("two times");
+            let (t1, t2) = (clock_minutes(t1).unwrap(), clock_minutes(t2).unwrap());
+            let total: i64 = rest.rsplit(' ').next().unwrap().parse().unwrap();
+            let (about, figure) = match avg.strip_prefix("about ") {
+                Some(f) => (true, f),
+                None => (false, avg),
+            };
+            let figure: f64 = figure.parse().unwrap();
+            let minutes = t2 - t1;
+            assert!(minutes > 0, "{}: {sentence}", e.source_id);
+            #[allow(clippy::cast_precision_loss)]
+            let exact = total as f64 * 60.0 / minutes as f64;
+            assert!(
+                (figure - exact).abs() <= 0.5,
+                "{}: {sentence} (true rate {exact:.2})",
+                e.source_id
+            );
+            assert_eq!(
+                about,
+                total * 60 % minutes != 0,
+                "{}: {sentence} (\"about\" only for a rounded rate)",
+                e.source_id
+            );
+            checked += 1;
+        }
+    }
+    assert!(checked > 0, "no hourly-average sentence found");
+}
+
 #[test]
 fn english_exam_passages_share_no_sentence_and_no_near_duplicate() {
     let b = load(ENGLISH_POOL);

@@ -1257,6 +1257,7 @@ mod tests {
             hint = v.hint;
             t += Duration::from_millis(150);
         }
+        assert_eq!(costs.len(), keys, "{layout:?}: the guide planned every key");
         let first: f64 = costs.iter().take(100).sum::<f64>() / 100.0;
         let last: f64 = costs.iter().rev().take(100).sum::<f64>() / 100.0;
         costs.sort_by(f64::total_cmp);
@@ -1389,9 +1390,13 @@ mod tests {
             .collect();
         let english = english.join(" ");
         assert!(radha_layouts::inscript::can_type(&hindi));
+        // Kruti Dev types the legacy key stream of the same 600 words.
+        let legacy = to_legacy(&hindi).legacy;
         for (name, layout, text) in [
             ("GAIL 600 words", LayoutId::RemingtonGail, hindi.as_str()),
+            ("CBI 600 words", LayoutId::RemingtonCbi, hindi.as_str()),
             ("InScript 600 words", LayoutId::Inscript, hindi.as_str()),
+            ("Kruti Dev 600 words", LayoutId::KrutiDev, legacy.as_str()),
             ("QWERTY 600 words", LayoutId::Qwerty, english.as_str()),
         ] {
             let (p50, p99) = bench(layout, text, 1500);
